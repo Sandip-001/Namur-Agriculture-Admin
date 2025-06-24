@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import logo from "../assets/logo.png";
+import logo from "../assets/logo.jpeg";
 import { MyContext } from "../App";
 
 const Login = () => {
@@ -24,9 +24,9 @@ const Login = () => {
     e.preventDefault();
 
     const dummy = {
-      name: "Abhijeet",
-      email: "abhijeet@gmail.com",
-      password: "abhijeet@1234",
+      name: "Prithvi",
+      email: "prithvi@gmail.com",
+      password: "prithvi@1234",
       role: "superadmin",
     };
 

@@ -10,27 +10,18 @@ import Alert from '@mui/material/Alert';
 import Header from "./components/Header";
 import Sidebar from "./components/Sidebar";
 import Dashboard from "./pages/superadmin/Dashboard/Dashboard";
-import AddCourse from "./pages/superadmin/Couse/AddCourse";
-import CourseList from "./pages/superadmin/Couse/CourseList";
-import EditCourse from "./pages/superadmin/Couse/EditCourse";
-import AddAdmin from "./pages/superadmin/Admin/AddAdmin";
-import AdminList from "./pages/superadmin/Admin/AdminList";
-import EditAdmin from "./pages/superadmin/Admin/EditAdmin";
-import AddProductAccess from "./pages/superadmin/Admin/AddProductAccess";
-import AdminAccessList from "./pages/superadmin/Admin/AdminAccessList";
-import EditAdminAccess from "./pages/superadmin/Admin/EditAdminAccess";
-import AddBranchBatchDivision from "./pages/superadmin/Admin/AddBranchBatchDivision";
-import AddBulkQuestion from "./pages/superadmin/BulkQuestion/AddBulkQuestion";
-import BulkQuestionList from "./pages/superadmin/BulkQuestion/BulkQuestionList";
-import EditBulkQuestion from "./pages/superadmin/BulkQuestion/EditBulkQuestion";
-import AddPreviousYearQuestion from "./pages/superadmin/PreviousYearQuestion/AddPreviousYearQuestion";
-import PreviousYearQuestionList from "./pages/superadmin/PreviousYearQuestion/PreviousQuestionList";
 import Login from "./components/Login";
 import PrivateRoute from "./components/PrivateRoute";
-import AddNotification from "./pages/superadmin/Notifications/AddNotification";
-import NotificationList from "./pages/superadmin/Notifications/NotificationList";
-import EditNotification from "./pages/superadmin/Notifications/EditNotification";
-import ExamAndStandardManager from "./pages/superadmin/Couse/ExamSubjectChapter";
+import AddCategory from "./pages/superadmin/Category/AddCategory";
+import CategoryList from "./pages/superadmin/Category/CategoryList";
+import AddSubCategory from "./pages/superadmin/Category/AddSubCategory";
+import SubCategoryList from "./pages/superadmin/Category/SubCategoryList";
+import AddProduct from "./pages/superadmin/Products/AddProduct";
+import ProductList from "./pages/superadmin/Products/ProductList";
+import OrderList from "./pages/superadmin/Orders/OrderList";
+import SellerProfile from "./pages/superadmin/Sellers/SellerDetails";
+import SellerProductList from "./pages/superadmin/Sellers/SellerProductList";
+import Users from "./pages/superadmin/Sellers/Users";
 
 
 const MyContext = createContext();
@@ -108,7 +99,7 @@ function App() {
         className="topLoadingBar"
       />
 
-      <Snackbar open={alertBox.open} autoHideDuration={6000} onClose={handleClose}>
+      <Snackbar open={alertBox.open} autoHideDuration={4000} onClose={handleClose}>
         <Alert
           onClose={handleClose}
           severity={alertBox.error===false?'success' : 'error'}
@@ -139,25 +130,16 @@ function App() {
           <Routes>
             <Route exact path="/login" element={<Login/>} />
             <Route exact path="/" element={<PrivateRoute element={<Dashboard />} allowedRoles={["superadmin"]} />} />
-            <Route exact path="/add-examSubjectChapter" element={<PrivateRoute element={<ExamAndStandardManager/>} allowedRoles={["superadmin"]} />} />
-            <Route exact path="/add-course" element={<PrivateRoute element={<AddCourse />} allowedRoles={["superadmin"]} />} />
-            <Route exact path="/edit-course" element={<PrivateRoute element={<EditCourse />} allowedRoles={["superadmin"]} />} />
-            <Route exact path="/course-list" element={<PrivateRoute element={<CourseList />} allowedRoles={["superadmin"]} />} />
-            <Route exact path="/add-admin" element={<PrivateRoute element={<AddAdmin />} allowedRoles={["superadmin"]} />} />
-            <Route exact path="/edit-admin" element={<PrivateRoute element={<EditAdmin />} allowedRoles={["superadmin"]} />} />
-            <Route exact path="/admin-list" element={<PrivateRoute element={<AdminList />} allowedRoles={["superadmin"]} />} />
-            <Route exact path="/add-product" element={<PrivateRoute element={<AddProductAccess />} allowedRoles={["superadmin"]} />} />
-            <Route exact path="/edit-adminProductAccess" element={<PrivateRoute element={<EditAdminAccess />} allowedRoles={["superadmin"]} />} />
-            <Route exact path="/productAccess-list" element={<PrivateRoute element={<AdminAccessList />} allowedRoles={["superadmin"]} />} />
-            <Route exact path="/add-branchbatchdivision" element={<PrivateRoute element={<AddBranchBatchDivision />} allowedRoles={["superadmin"]} />} />
-            <Route exact path="/add-bulkQuestion" element={<PrivateRoute element={<AddBulkQuestion />} allowedRoles={["superadmin"]} />} />
-            <Route exact path="/edit-bulkQuestion" element={<PrivateRoute element={<EditBulkQuestion />} allowedRoles={["superadmin"]} />} />
-            <Route exact path="/bulkQuestion-list" element={<PrivateRoute element={<BulkQuestionList />} allowedRoles={["superadmin"]} />} />
-            <Route exact path="/add-prevYearQuestion" element={<PrivateRoute element={<AddPreviousYearQuestion />} allowedRoles={["superadmin"]} />} />
-            <Route exact path="/prevYearQuestion-list" element={<PrivateRoute element={<PreviousYearQuestionList />} allowedRoles={["superadmin"]} />} />
-            <Route exact path="/add-notification" element={<PrivateRoute element={<AddNotification />} allowedRoles={["superadmin"]} />} />
-            <Route exact path="/edit-notification" element={<PrivateRoute element={<EditNotification />} allowedRoles={["superadmin"]} />} />
-            <Route exact path="/notification-list" element={<PrivateRoute element={<NotificationList />} allowedRoles={["superadmin"]} />} />
+            <Route exact path="/add-category" element={<PrivateRoute element={<AddCategory />} allowedRoles={["superadmin"]} />} />
+            <Route exact path="/category-list" element={<PrivateRoute element={<CategoryList />} allowedRoles={["superadmin"]} />} />
+            <Route exact path="/add-subCategory" element={<PrivateRoute element={<AddSubCategory />} allowedRoles={["superadmin"]} />} />
+            <Route exact path="/subCategory-list" element={<PrivateRoute element={<SubCategoryList />} allowedRoles={["superadmin"]} />} />
+            <Route exact path="/add-product" element={<PrivateRoute element={<AddProduct />} allowedRoles={["superadmin"]} />} />
+            <Route exact path="/product-list" element={<PrivateRoute element={<ProductList />} allowedRoles={["superadmin"]} />} />
+            <Route exact path="/orders" element={<PrivateRoute element={<OrderList />} allowedRoles={["superadmin"]} />} />
+            <Route exact path="/user-profile/:id" element={<PrivateRoute element={<SellerProfile />} allowedRoles={["superadmin"]} />} />
+            <Route exact path="/user-products/:id" element={<PrivateRoute element={<SellerProductList />} allowedRoles={["superadmin"]} />} />
+            <Route exact path="/users" element={<PrivateRoute element={<Users />} allowedRoles={["superadmin"]} />} />
           </Routes>
         </div>
       </div>

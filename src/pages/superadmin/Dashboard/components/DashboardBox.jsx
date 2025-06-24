@@ -18,7 +18,7 @@ const DashboardBox = (props) => {
   const ITEM_HEIGHT = 48;
 
   return (
-    <Button className='dashboardBox' style={{background:`${props.color}`}}>
+    <Button className='dashboardBox' style={{backgroundImage:`linear-gradient(to right, ${props.color[0]}, ${props.color[1]})`}}>
 
         {
             props.grow === true ?
@@ -29,14 +29,14 @@ const DashboardBox = (props) => {
 
         <div className='d-flex w-100'>
             <div className='col1'>
-                <h4 className=' mb-0'>{props.name}</h4>
-                <span style={{color: "#403e57"}} >{props.length}</span>
+                <h4 className='text-white mb-0'>{props.name}</h4>
+                <span className='text-white'>{props.length}</span>
             </div>
 
             <div className='ms-auto'>
                 {
                     props.icon ?
-                    <span className='icon' style={{background: `${props.bgColor}`}}>
+                    <span className='icon'>
                         {props.icon}
                     </span>
                     :

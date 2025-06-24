@@ -16,8 +16,8 @@ body.dark{
 }
 
 .topLoadingBar{
-  height: 4px !important;
-  background: #1866ee !important;
+  height: 5px !important;
+  background: #05a415 !important;
 }
 
 body.dark .topLoadingBar{
@@ -30,7 +30,7 @@ body.dark .topLoadingBar{
 }
 
 ::-webkit-scrollbar-thumb{
-  background: #0858f7 !important;
+  background: #05a415 !important;
 }
 
 ::-webkit-scrollbar-track{
@@ -129,14 +129,9 @@ header .logo img{
 }
 
 header .logo span{
-  color:#292929;
+  color: #05a415;
   font-weight: 800;
   font-size: 24px;
-}
-
-body.dark header .logo span{
-  color: #fff;
-  opacity: 0.9;
 }
 
 header button.rounded-circle{
@@ -217,10 +212,10 @@ body.dark .searchBox input, body.dark .searchBox input::-webkit-input-placeholde
   overflow: hidden;
   width: 40px;
   height: 40px;
-  border: 1px solid #0858f7;
+  border: 1px solid #8ccc84;
   padding: 2px;
   border-radius: 100%;
-  background: #0858f7;
+  background: #05a415;
   color: #fff;
   font-size: 20px;
 }
@@ -463,7 +458,7 @@ body.dark .main .sidebarWrapper .sidebar ul li button{
 
 
 .main .sidebarWrapper .sidebar ul li button:hover .icon svg {
-  color: #0858f7 !important; /* blue icon on hover */
+  color: #05a415 !important; /* blue icon on hover */
 }
 
 
@@ -481,7 +476,7 @@ body.dark .main .sidebarWrapper .sidebar ul li button.active{
 }
 
 .main .sidebarWrapper .sidebar ul li button.active .icon svg{
-  color: #0858f7 !important;
+  color: #05a415 !important;
 }
 
 .main .sidebarWrapper .sidebar ul li button.active .arrow{
@@ -530,7 +525,7 @@ body.dark .main .sidebarWrapper .sidebar ul .submenu li a{
 }
 
 .main .sidebarWrapper .sidebar ul .submenu li a:hover{
-  color: #0858f7 !important;
+  color: #000 !important;
 }
 
 body.dark .main .sidebarWrapper .sidebar ul .submenu li a:hover{
@@ -567,7 +562,7 @@ body.dark .main .sidebarWrapper .sidebar ul .submenu li a:hover{
   width: 100%;
   height: 130px;
   padding: 25px;
-  background: #bcd2fd;
+  background: #82d68e;
   border-radius: 10px;
   display: flex;
   align-items: center;
@@ -585,7 +580,7 @@ body.dark .logoutWrapper .logoutBox{
   content: '';
   width: 70px;
   height: 70px;
-  background: #0858f7;
+  background: #198754;
   border-radius: 100%;
   position: absolute;
   top: -20px;
@@ -597,7 +592,7 @@ body.dark .logoutWrapper .logoutBox{
   content: '';
   width: 30px;
   height: 30px;
-  background: #0858f7;
+  background: #198754;
   border-radius: 100%;
   position: absolute;
   top: 20px;
@@ -608,6 +603,7 @@ body.dark .logoutWrapper .logoutBox{
 .logoutWrapper .logoutBox button{
   font-size: 14px !important;
   font-weight: 600 !important;
+  background: #05a415 !important;
 }
 
 .logoutWrapper .logoutBox button svg{
@@ -821,6 +817,10 @@ body.dark .css-1ll44ll-MuiOutlinedInput-notchedOutline{
   font-size: 13px;
 }
 
+.table thead th {
+  background-color: #cfffd4;
+}
+
 .table tbody td{
   font-size: 13px;
   color: #2f2d3e;
@@ -950,10 +950,10 @@ body.dark .css-1bug3cd-MuiButtonBase-root-MuiPaginationItem-root:hover{
 
 /* Brand Colors */
 :root {
-  --jaffa: #f0883d;
-  --denim: #0d67ab;
-  --mystic: #e4eeed;
-  --jellybean: #24638c;
+  --jaffa: #50f03d;
+  --denim: #c0d8b6;
+  --mystic: #b9ff9c;
+  --jellybean: #218916;
 }
 
 
@@ -999,7 +999,6 @@ body.dark .css-1bug3cd-MuiButtonBase-root-MuiPaginationItem-root:hover{
   display: block;
   font-size: 0.9rem;
   margin-bottom: 5px;
-  color: var(--mystic);
 }
 
 .login-page .form-group input {

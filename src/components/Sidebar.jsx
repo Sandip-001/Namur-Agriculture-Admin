@@ -1,10 +1,9 @@
 import { Button } from '@mui/material'
 import React, { useContext, useState } from 'react'
-import { GiCalendarHalfYear } from "react-icons/gi";
-import { FaAngleRight } from 'react-icons/fa6'
-import { IoMdLogOut, IoMdNotifications, IoMdPeople } from 'react-icons/io'
-import { MdDashboard, MdManageAccounts, MdQuestionAnswer } from 'react-icons/md'
-import { SiCoursera } from "react-icons/si";
+import { FaAngleRight, FaClipboardCheck, FaUsers } from 'react-icons/fa6'
+import { IoMdLogOut } from 'react-icons/io'
+import { MdDashboard } from 'react-icons/md'
+import { SiCoursera, SiProducthunt } from "react-icons/si";
 import { Link, useNavigate } from 'react-router-dom'
 import { MyContext } from '../App'
 
@@ -41,7 +40,7 @@ const Sidebar = () => {
 
     return (
         <>
-            <div className='sidebar' style={{background: "rgba(31, 48, 121, 1)"}}>
+            <div className='sidebar' style={{background: "#05a415"}}>
 
                     <>
                         <ul>
@@ -56,77 +55,47 @@ const Sidebar = () => {
                             <li>
                                 <Button className={`w-100 ${activeTab === 1 && isToggleSubmenu === true ? 'active' : ''}`} onClick={() => isOpenSubmenu(1)}>
                                     <span className='icon'><SiCoursera /></span>
-                                    Course
+                                    Category & Sub-Category
                                     <span className='arrow'><FaAngleRight /></span>
                                 </Button>
                                 <div className={`submenuWrapper ${activeTab === 1 && isToggleSubmenu === true ? 'colapse' : 'colapsed'}`}>
                                     <ul className='submenu'>
-                                        <li><Link to='/add-examSubjectChapter' onClick={handleCloseSidebarOnMobile}>Add Exam Subject Chapter</Link></li>
-                                        <li><Link to='/add-course' onClick={handleCloseSidebarOnMobile}>Add Course</Link></li>
-                                        <li><Link to='/course-list' onClick={handleCloseSidebarOnMobile}>Cousres</Link></li>
+                                        <li><Link to='/add-category' onClick={handleCloseSidebarOnMobile}>Add Category</Link></li>
+                                        <li><Link to='/category-list' onClick={handleCloseSidebarOnMobile}>CategoryList</Link></li>
+                                        <li><Link to='/add-subCategory' onClick={handleCloseSidebarOnMobile}>Add Sub-Category</Link></li>
+                                        <li><Link to='/subCategory-list' onClick={handleCloseSidebarOnMobile}>Sub-CategoryList</Link></li>
                                     </ul>
                                 </div>
                             </li>
-
                             <li>
                                 <Button className={`w-100 ${activeTab === 2 && isToggleSubmenu === true ? 'active' : ''}`} onClick={() => isOpenSubmenu(2)}>
-                                    <span className='icon'><IoMdPeople/></span>
-                                    Admin Registration
+                                    <span className='icon'><SiProducthunt /></span>
+                                    Product
                                     <span className='arrow'><FaAngleRight /></span>
                                 </Button>
                                 <div className={`submenuWrapper ${activeTab === 2 && isToggleSubmenu === true ? 'colapse' : 'colapsed'}`}>
                                     <ul className='submenu'>
-                                        <li><Link to='/add-admin' onClick={handleCloseSidebarOnMobile}>Add Admin</Link></li>
-                                        <li><Link to='/admin-list' onClick={handleCloseSidebarOnMobile}>Admins</Link></li>
-                                        <li><Link to='/add-product' onClick={handleCloseSidebarOnMobile}>Add Product Access</Link></li>
-                                        <li><Link to='/productAccess-list' onClick={handleCloseSidebarOnMobile}>Product Access List</Link></li>
-                                        <li><Link to='/add-branchbatchdivision' onClick={handleCloseSidebarOnMobile}>Add Branch/Batch/Division</Link></li>
+                                        <li><Link to='/add-product' onClick={handleCloseSidebarOnMobile}>Add Product</Link></li>
+                                        <li><Link to='/product-list' onClick={handleCloseSidebarOnMobile}>Product List</Link></li>
                                     </ul>
                                 </div>
                             </li>
-
                             <li>
-                                <Button className={`w-100 ${activeTab === 3 && isToggleSubmenu === true ? 'active' : ''}`} onClick={() => isOpenSubmenu(3)}>
-                                    <span className='icon'><MdQuestionAnswer /></span>
-                                    Question Bulk Upload
-                                    <span className='arrow'><FaAngleRight /></span>
-                                </Button>
-                                <div className={`submenuWrapper ${activeTab === 3 && isToggleSubmenu === true ? 'colapse' : 'colapsed'}`}>
-                                    <ul className='submenu'>
-                                        <li><Link to='/add-bulkQuestion' onClick={handleCloseSidebarOnMobile}>Add Bulk Question</Link></li>
-                                        <li><Link to='/bulkQuestion-list' onClick={handleCloseSidebarOnMobile}>Bulk Questions</Link></li>
-                                    </ul>
-                                </div>
+                                <Link to='/orders' onClick={handleCloseSidebarOnMobile}>
+                                    <Button className={`w-100 ${activeTab === 3 ? 'active' : ''}`} onClick={() => isOpenSubmenu(3)}>
+                                        <span className='icon'><FaClipboardCheck /></span>
+                                        Orders
+                                    </Button>
+                                </Link>
                             </li>
-
                             <li>
-                                <Button className={`w-100 ${activeTab === 4 && isToggleSubmenu === true ? 'active' : ''}`} onClick={() => isOpenSubmenu(4)}>
-                                    <span className='icon'><GiCalendarHalfYear /></span>
-                                    Upload Previous Year Question & Assign
-                                    <span className='arrow'><FaAngleRight /></span>
-                                </Button>
-                                <div className={`submenuWrapper ${activeTab === 4 && isToggleSubmenu === true ? 'colapse' : 'colapsed'}`}>
-                                    <ul className='submenu'>
-                                        <li><Link to='/add-prevYearQuestion' onClick={handleCloseSidebarOnMobile}>Add Previous Year Question</Link></li>
-                                        <li><Link to='/prevYearQuestion-list' onClick={handleCloseSidebarOnMobile}>Previous Year Question List</Link></li>
-                                    </ul>
-                                </div>
+                                <Link to='/users' onClick={handleCloseSidebarOnMobile}>
+                                    <Button className={`w-100 ${activeTab === 4 ? 'active' : ''}`} onClick={() => isOpenSubmenu(4)}>
+                                        <span className='icon'><FaUsers /></span>
+                                        Users
+                                    </Button>
+                                </Link>
                             </li>
-
-                            <li>
-                                <Button className={`w-100 ${activeTab === 5 && isToggleSubmenu === true ? 'active' : ''}`} onClick={() => isOpenSubmenu(5)}>
-                                    <span className='icon'><IoMdNotifications /></span>
-                                    Notification
-                                    <span className='arrow'><FaAngleRight /></span>
-                                </Button>
-                                <div className={`submenuWrapper ${activeTab === 5 && isToggleSubmenu === true ? 'colapse' : 'colapsed'}`}>
-                                    <ul className='submenu'>
-                                        <li><Link to='/add-notification' onClick={handleCloseSidebarOnMobile}>Add Notification</Link></li>
-                                        <li><Link to='/notification-list' onClick={handleCloseSidebarOnMobile}>Notification List</Link></li>
-                                    </ul>
-                                </div>
-                            </li>
-                            
                         </ul>
 
                     </>

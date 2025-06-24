@@ -1,6 +1,6 @@
 import React,{useContext, useState} from "react";
 import { Link, useNavigate } from "react-router-dom";
-import logo from '../assets/logo.png'
+import logo from '../assets/logo.jpeg'
 import Button from "@mui/material/Button";
 import { MdMenuOpen, MdOutlineLightMode /*MdOutlineMailOutline*/ } from "react-icons/md";
 import { MdOutlineMenu } from "react-icons/md";
@@ -63,8 +63,8 @@ const Header = () => {
           <div className="row d-flex align-items-center w-100">
             <div className="col-sm-2 part1">
               <Link to={'/'} className="d-flex align-items-center logo">
-                {<img src={logo} alt="logo" style={{width: "55%"}}/> }
-                {/*<span className="ms-2">RIVIE</span>*/}
+                {<img src={logo} alt="logo"/> }
+                {<span className="ms-2">NAMUR</span>}
               </Link>
             </div>
 
