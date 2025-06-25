@@ -41,7 +41,7 @@ const Login = () => {
       navigate("/");
     } else {
       setAlertBox({
-        msg: "Ivalid email or password",
+        msg: "Invalid email or password",
         open:true,
         error:true,
       })

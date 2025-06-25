@@ -1555,53 +1555,6 @@ body.dark .css-16wblaj-MuiInputBase-input-MuiOutlinedInput-input{
 }
 
 
-/*Vehicle manufacture model*/
-
-
-.image-preview {
-  width: 150px;
-  border: 2px solid #ddd;
-  border-radius: 10px;
-  overflow: hidden;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.preview-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.upload-btn {
-  background-color: #007bff;
-  color: white;
-  padding: 8px 15px;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: bold;
-  transition: 0.3s;
-}
-
-.upload-btn:hover {
-  background-color: #0056b3;
-}
-
-
-body.dark .css-w76bbz-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input{
-  color: #fff !important;
-}
-
-body.dark .MuiSelect-select{
-  color:#fff !important;
-}
-
-body.dark .assign{
-  color: black !important
-}
 
 @media (max-width: 480px) {
 
@@ -1611,10 +1564,4 @@ body.dark .assign{
   header .logo span {
    display:none
   }
-}
-
-
-/*Exam subjeect standard creation page*/
-.css-1w8ij1b, .css-1lv3kdj, .css-18fl2sy, .css-yxzkvs, .css-160klk4, .css-1yrjfre {
-  margin-left: 0px !important;
 }

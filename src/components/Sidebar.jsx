@@ -6,6 +6,8 @@ import { MdDashboard } from 'react-icons/md'
 import { SiCoursera, SiProducthunt } from "react-icons/si";
 import { Link, useNavigate } from 'react-router-dom'
 import { MyContext } from '../App'
+import { IoNewspaper } from 'react-icons/io5'
+import { RiAdvertisementFill } from "react-icons/ri";
 
 const Sidebar = () => {
     const [activeTab, setActiveTab] = useState(0);
@@ -95,6 +97,32 @@ const Sidebar = () => {
                                         Users
                                     </Button>
                                 </Link>
+                            </li>
+                            <li>
+                                <Button className={`w-100 ${activeTab === 5 && isToggleSubmenu === true ? 'active' : ''}`} onClick={() => isOpenSubmenu(5)}>
+                                    <span className='icon'><IoNewspaper /></span>
+                                    News
+                                    <span className='arrow'><FaAngleRight /></span>
+                                </Button>
+                                <div className={`submenuWrapper ${activeTab === 5 && isToggleSubmenu === true ? 'colapse' : 'colapsed'}`}>
+                                    <ul className='submenu'>
+                                        <li><Link to='/add-news' onClick={handleCloseSidebarOnMobile}>Add News</Link></li>
+                                        <li><Link to='/news-list' onClick={handleCloseSidebarOnMobile}>News List</Link></li>
+                                    </ul>
+                                </div>
+                            </li>
+                            <li>
+                                <Button className={`w-100 ${activeTab === 6 && isToggleSubmenu === true ? 'active' : ''}`} onClick={() => isOpenSubmenu(6)}>
+                                    <span className='icon'><RiAdvertisementFill /></span>
+                                    Advertisement
+                                    <span className='arrow'><FaAngleRight /></span>
+                                </Button>
+                                <div className={`submenuWrapper ${activeTab === 6 && isToggleSubmenu === true ? 'colapse' : 'colapsed'}`}>
+                                    <ul className='submenu'>
+                                        <li><Link to='/add-advertisement' onClick={handleCloseSidebarOnMobile}>Add Advertisement</Link></li>
+                                        <li><Link to='/advertisement-list' onClick={handleCloseSidebarOnMobile}>Advertisement List</Link></li>
+                                    </ul>
+                                </div>
                             </li>
                         </ul>
 
