@@ -26,6 +26,8 @@ import AddNews from "./pages/superadmin/News/AddNews";
 import NewsList from "./pages/superadmin/News/NewsList";
 import AddAdvertisement from "./pages/superadmin/Advertisement/AddAdvertisement";
 import AdvertisementList from "./pages/superadmin/Advertisement/AdvertisementList";
+import AddSubAdmin from "./pages/superadmin/subadmins/AddSubAdmin";
+import SubAdminList from "./pages/superadmin/subadmins/SubAdminList";
 
 
 const MyContext = createContext();
@@ -148,6 +150,8 @@ function App() {
             <Route exact path="/news-list" element={<PrivateRoute element={<NewsList />} allowedRoles={["superadmin"]} />} />
             <Route exact path="/add-advertisement" element={<PrivateRoute element={<AddAdvertisement />} allowedRoles={["superadmin"]} />} />
             <Route exact path="/advertisement-list" element={<PrivateRoute element={<AdvertisementList />} allowedRoles={["superadmin"]} />} />
+            <Route exact path="/add-subadmin" element={<PrivateRoute element={<AddSubAdmin />} allowedRoles={["superadmin"]} />} />
+            <Route exact path="/subadmin-list" element={<PrivateRoute element={<SubAdminList />} allowedRoles={["superadmin"]} />} />
           </Routes>
         </div>
       </div>

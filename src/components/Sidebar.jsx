@@ -7,7 +7,7 @@ import { SiCoursera, SiProducthunt } from "react-icons/si";
 import { Link, useNavigate } from 'react-router-dom'
 import { MyContext } from '../App'
 import { IoNewspaper } from 'react-icons/io5'
-import { RiAdvertisementFill } from "react-icons/ri";
+import { RiAdminFill, RiAdvertisementFill } from "react-icons/ri";
 
 const Sidebar = () => {
     const [activeTab, setActiveTab] = useState(0);
@@ -121,6 +121,19 @@ const Sidebar = () => {
                                     <ul className='submenu'>
                                         <li><Link to='/add-advertisement' onClick={handleCloseSidebarOnMobile}>Add Advertisement</Link></li>
                                         <li><Link to='/advertisement-list' onClick={handleCloseSidebarOnMobile}>Advertisement List</Link></li>
+                                    </ul>
+                                </div>
+                            </li>
+                            <li>
+                                <Button className={`w-100 ${activeTab === 7 && isToggleSubmenu === true ? 'active' : ''}`} onClick={() => isOpenSubmenu(7)}>
+                                    <span className='icon'><RiAdminFill /></span>
+                                    SubAdmin
+                                    <span className='arrow'><FaAngleRight /></span>
+                                </Button>
+                                <div className={`submenuWrapper ${activeTab === 7 && isToggleSubmenu === true ? 'colapse' : 'colapsed'}`}>
+                                    <ul className='submenu'>
+                                        <li><Link to='/add-subadmin' onClick={handleCloseSidebarOnMobile}>Add SubAdmin</Link></li>
+                                        <li><Link to='/subadmin-list' onClick={handleCloseSidebarOnMobile}>SubAdmin List</Link></li>
                                     </ul>
                                 </div>
                             </li>
