@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Card,
@@ -22,6 +22,7 @@ import Breadcrumbs from "@mui/material/Breadcrumbs";
 import Chip from "@mui/material/Chip";
 import HomeIcon from "@mui/icons-material/Home";
 import { FaCloudUploadAlt } from "react-icons/fa";
+import { data } from "react-router-dom";
 
 //breadcrumb code
 const StyledBreadcrumb = styled(Chip)(({ theme }) => {
@@ -60,6 +61,24 @@ const AddSubAdmin = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [districts, setDistricts] = useState([]);
+  const [selectedDistrict, setSelectedDistrict] = useState("");
+
+  useEffect(() => {
+    fetch("https://api.countrystatecity.in/v1/countries/IN/states/KA/cities", {
+      headers: {
+        "X-CSCAPI-KEY": "dHFLWG1XQ3J0OUtTMlRmVTlZUGptRHlUSUxmaHhtUlB0NFMxc1gzaA==",
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+      //console.log("Raw API response:", data);
+      const cityNames = data.map((city) => city.name);
+      //console.log("Mapped city names:", cityNames);
+      setDistricts(cityNames);
+    })
+      .catch((err) => console.error("Failed to fetch cities", err));
+  }, []);
 
   const handlePageChange = (event) => {
     const {
@@ -70,7 +89,7 @@ const AddSubAdmin = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log({ name, selectedPages, email, password });
+    console.log({ name, selectedPages, email, password, selectedDistrict });
   };
 
   return (
@@ -96,6 +115,26 @@ const AddSubAdmin = () => {
 
           <Box component="form" onSubmit={handleSubmit} mt={2}>
             <Grid container spacing={2} columns={{ xs: 1, sm: 2 }}>
+              <Grid item size={1}>
+                {" "}
+                <FormControl fullWidth>
+                  <InputLabel>District</InputLabel>{" "}
+                  <Select
+                    value={selectedDistrict}
+                    label="District"
+                    onChange={(e) => setSelectedDistrict(e.target.value)}
+                    required
+                  >
+                    {" "}
+                    {districts.map((district) => (
+                      <MenuItem key={district} value={district}>
+                        {district}{" "}
+                      </MenuItem>
+                    ))}{" "}
+                  </Select>{" "}
+                </FormControl>
+              </Grid>
+
               <Grid item size={1}>
                 <TextField
                   fullWidth

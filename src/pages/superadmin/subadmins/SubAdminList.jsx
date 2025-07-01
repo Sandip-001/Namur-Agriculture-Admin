@@ -56,6 +56,7 @@ const SubAdminList = () => {
         no: 1,
         subAdminName: "Amit Sharma",
         accessPages: ["Dashboard", "Orders", "Products"],
+        district: "Afzalpur",
         email: "amit.sharma@example.com",
         password: "Amit@1234",
       },
@@ -63,6 +64,7 @@ const SubAdminList = () => {
         no: 2,
         subAdminName: "Priya Verma",
         accessPages: ["Users", "Reports"],
+        district: "Bengalore",
         email: "priya.verma@example.com",
         password: "Priya@4567",
       },
@@ -70,6 +72,7 @@ const SubAdminList = () => {
         no: 3,
         subAdminName: "Ravi Mehta",
         accessPages: ["Dashboard", "Settings"],
+        district: "Vijaypura",
         email: "ravi.mehta@example.com",
         password: "Ravi@7890",
       },
@@ -77,6 +80,7 @@ const SubAdminList = () => {
         no: 4,
         subAdminName: "Sneha Kapoor",
         accessPages: ["Orders", "Reports", "Settings"],
+        district: "Ballari",
         email: "sneha.kapoor@example.com",
         password: "Sneha@2345",
       },
@@ -152,6 +156,7 @@ const SubAdminList = () => {
                   <th>NO</th>
                   <th>NAME</th>
                   <th>EMAIL ID</th>
+                  <th>DISTRICT</th>
                   <th>ACCESS PAGES</th>
                   <th>ACTION</th>
                 </tr>
@@ -163,6 +168,7 @@ const SubAdminList = () => {
                       <td># {item.no}</td>
                       <td>{item.subAdminName}</td>
                       <td>{item.email}</td>
+                      <td>{item.district}</td>
                       <td>
                         <div className="d-flex flex-wrap gap-2 justify-content-center">
                           {item.accessPages.map((page, i) => (
@@ -242,6 +248,7 @@ const SubAdminList = () => {
 
           <TextField
             fullWidth
+            type="email"
             label="Email"
             margin="normal"
             value={editedEmail}

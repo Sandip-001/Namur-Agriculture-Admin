@@ -4,10 +4,12 @@ import { MdDelete, MdShoppingBag } from "react-icons/md";
 import { GiStarsStack } from "react-icons/gi";
 import { HiDotsVertical } from "react-icons/hi";
 import { MyContext } from "../../../App";
+import { Select } from "@mui/material";
 import onion from "../../../assets/onion.png";
 import goat from "../../../assets/goat.png";
 import cow from "../../../assets/cow.png";
 import { Chart } from "react-google-charts";
+import { Line } from "react-chartjs-2";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -44,9 +46,37 @@ export const options = {
   chartArea: { width: "100%", height: "100%" },
 };
 
+const userJoinData = {
+  daily: [
+    { date: "2025-06-18", count: 5 },
+    { date: "2025-06-19", count: 8 },
+    { date: "2025-06-20", count: 3 },
+    { date: "2025-06-21", count: 6 },
+    { date: "2025-06-22", count: 7 },
+    { date: "2025-06-23", count: 2 },
+    { date: "2025-06-24", count: 9 },
+  ],
+  weekly: [
+    { week: "Week 1", count: 40 },
+    { week: "Week 2", count: 35 },
+    { week: "Week 3", count: 48 },
+    { week: "Week 4", count: 52 },
+  ],
+  monthly: [
+    { month: "Jan", count: 120 },
+    { month: "Feb", count: 140 },
+    { month: "Mar", count: 160 },
+    { month: "Apr", count: 180 },
+    { month: "May", count: 200 },
+    { month: "Jun", count: 170 },
+  ],
+};
+
 const Dashboard = () => {
   const { setProgress, setAlertBox, setIsHideSidebarAndHeader } =
     useContext(MyContext);
+
+  const [view, setView] = useState("daily");
 
   useEffect(() => {
     setIsHideSidebarAndHeader(false);
@@ -161,6 +191,35 @@ const Dashboard = () => {
 
   const dummyData = getDummyOrders();
 
+  const chartData = {
+    labels: userJoinData[view].map((entry) =>
+      view === "daily"
+        ? entry.date
+        : view === "weekly"
+        ? entry.week
+        : entry.month
+    ),
+    datasets: [
+      {
+        label: "Users Joined",
+        data: userJoinData[view].map((entry) => entry.count),
+        fill: true,
+        backgroundColor: "rgba(13,103,171,0.1)",
+        borderColor: "#0d67ab",
+        tension: 0.4,
+      },
+    ],
+  };
+
+  const chartOptions = {
+    responsive: true,
+    plugins: {
+      legend: {
+        display: false, // disables the box/legend
+      },
+    },
+  };
+
   return (
     <div className="right-content w-100">
       <div className="row dashboardBoxWrapperRow">
@@ -172,6 +231,7 @@ const Dashboard = () => {
               grow={true}
               name={"Users"}
               length={20}
+              path="/users"
             />
             <DashboardBox
               color={["#c012e2", "#eb64fe"]}
@@ -179,6 +239,7 @@ const Dashboard = () => {
               grow={false}
               name={"Products"}
               length={22}
+              path="/product-list"
             />
             <DashboardBox
               color={["#2c78e5", "#60aff5"]}
@@ -186,13 +247,15 @@ const Dashboard = () => {
               grow={true}
               name={"Orders"}
               length={24}
+              path="/orders"
             />
             <DashboardBox
               color={["#e1950e", "#f3cd29"]}
               icon={<GiStarsStack />}
               grow={false}
-              name={"Sellers"}
+              name={"News"}
               length={34}
+              path="/news-list"
             />
           </div>
         </div>
@@ -281,6 +344,41 @@ const Dashboard = () => {
                 </li>
               ))}
             </ul>
+          </div>
+        </div>
+      </div>
+
+      <div className="row">
+        <div className="col-md-12 col-12 mb-4">
+          <div className="p-3 shadow rounded-4 bg-white">
+            <div className="d-flex justify-content-between align-items-center mb-3">
+              <h6 className="fw-bold mb-0">User Join Insights</h6>
+
+              <div>
+                <Select
+                  value={view}
+                  size="small"
+                  onChange={(e) => setView(e.target.value)}
+                  displayEmpty
+                  sx={{
+                    backgroundColor: "#f5f5f5",
+                    borderRadius: "12px",
+                    "& .MuiSelect-select": {
+                      padding: "6px 16px",
+                    },
+                    "& fieldset": {
+                      border: "none",
+                    },
+                  }}
+                >
+                  <MenuItem value="daily">Daily</MenuItem>
+                  <MenuItem value="weekly">Weekly</MenuItem>
+                  <MenuItem value="monthly">Monthly</MenuItem>
+                </Select>
+              </div>
+            </div>
+
+            <Line data={chartData} options={chartOptions} />
           </div>
         </div>
       </div>

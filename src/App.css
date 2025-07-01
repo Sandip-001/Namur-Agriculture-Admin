@@ -945,6 +945,17 @@ body.dark .css-1bug3cd-MuiButtonBase-root-MuiPaginationItem-root:hover{
   background-color: #425069 !important;
 }
 
+.tableRow {
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.tableRow:hover {
+  background-color: #fef3eb;
+  transform: scale(1.005);
+  box-shadow: 0 2px 8px rgba(240, 136, 61, 0.2);
+}
+
 
 /*Login Page design*/
 

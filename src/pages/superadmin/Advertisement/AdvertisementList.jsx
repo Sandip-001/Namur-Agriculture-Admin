@@ -10,12 +10,20 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  Button,
   TextField,
+  Button,
   IconButton,
-  useMediaQuery,
-  useTheme,
+  MenuItem,
+  Switch,
+  FormControlLabel,
 } from "@mui/material";
+import {
+  LocalizationProvider,
+  DatePicker,
+  TimePicker,
+} from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import dayjs from "dayjs";
 import { IoCloseSharp } from "react-icons/io5";
 
 const AdvertisementList = () => {
@@ -27,10 +35,17 @@ const AdvertisementList = () => {
 
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [selectedAdvertisement, setSelectedAdvertisement] = useState(null);
-  const [editedTitle, setEditedTitle] = useState("");
-  const [editedNumber, setEditedNumber] = useState("");
-  const [editedDescription, setEditedDescription] = useState("");
-  const [editedImage, setEditedImage] = useState(null);
+
+  // New fields
+  const [product, setProduct] = useState("");
+  const [productName, setProductName] = useState("");
+  const [unit, setUnit] = useState("");
+  const [quantity, setQuantity] = useState("");
+  const [price, setPrice] = useState("");
+  const [description, setDescription] = useState("");
+  const [image, setImage] = useState(null);
+  const [postType, setPostType] = useState("postnow"); // or 'schedule'
+  const [scheduledAt, setScheduledAt] = useState("Now"); // default
 
   /*const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));*/
@@ -53,39 +68,58 @@ const AdvertisementList = () => {
     return [
       {
         no: 1,
-        title: "High-Quality Organic Fertilizer for Sale",
-        contact: "9876543210",
+        product: "Onion",
+        productName: "Fresh Red Onion",
+        unit: "kg",
+        quantity: 100,
+        price: 20,
         description:
-          "Boost your crop yield naturally with our certified organic fertilizers. Safe for all soil types.",
+          "Farm-fresh red onions directly from our organic farm. Ideal for cooking and storing.",
         image:
-          "https://media.istockphoto.com/id/671712984/photo/farmer-hand-giving-chemical-fertilizer-to-young-tree.jpg?s=612x612&w=0&k=20&c=42be5akioApJsOaNNQLqGZSM-KWldlgI_pZcYdlafss=",
+          "https://acsinternationalexim.com/wp-content/uploads/2023/11/l-intro-1644158494.jpg",
+        postType: "postnow",
+        scheduledAt: "Now",
       },
       {
         no: 2,
-        title: "Affordable Tractor Rental Service",
-        contact: "9123456789",
+        product: "Milk",
+        productName: "Organic Cow Milk",
+        unit: "litre",
+        quantity: 50,
+        price: 45,
         description:
-          "Rent powerful tractors and farming equipment at low rates. Available across multiple districts.",
-        image:
-          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTc1blRopq3BJNCFW-Rd9qCmVWz5m9iVEgikg&s",
+          "Pure cow milk from grass-fed cows. No additives, fresh and healthy.",
+        image: "https://static.toiimg.com/photo/113458714.cms",
+        postType: "schedule",
+        scheduledAt: "2025-07-03 10:00",
       },
       {
         no: 3,
-        title: "Premium Dairy Cattle for Sale",
-        contact: "9988776655",
+        product: "Tomato",
+        productName: "Desi Tomatoes",
+        unit: "kg",
+        quantity: 70,
+        price: 25,
         description:
-          "Well-bred, high-yield dairy cows available with proper health records and vaccination.",
+          "Home-grown desi tomatoes. Perfect for salads and cooking, pesticide-free.",
         image:
-          "https://media.istockphoto.com/id/1319467946/photo/young-black-and-white-cow-heifer-in-a-meadow-looking-in-the-camera.jpg?s=612x612&w=0&k=20&c=Z1maGtrEMrbAEVw6ZTJwyvq2_rkolky9LJX34mSZ6Kg=",
+          "https://img.etimg.com/thumb/width-1200,height-900,imgsize-56196,resizemode-75,msid-95423774/magazines/panache/5-reasons-why-tomatoes-should-be-your-favourite-fruit-this-year.jpg",
+        postType: "postnow",
+        scheduledAt: "Now",
       },
       {
         no: 4,
-        title: "Natural Pest Control Solutions",
-        contact: "9090909090",
+        product: "Eggs",
+        productName: "Country Chicken Eggs",
+        unit: "pieces",
+        quantity: 200,
+        price: 7,
         description:
-          "Eco-friendly pest control products for sustainable farming. No harmful chemicals.",
+          "Farm-fresh country chicken eggs. Rich in nutrition and chemical-free.",
         image:
-          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcShqU65fEvVwXrNt3RNMkmeOALXBkX0kfOWnw&s",
+          "https://media.post.rvohealth.io/wp-content/uploads/2020/12/duck-chicken-egg-eggs-732x549-thumbnail-732x549.jpg",
+        postType: "schedule",
+        scheduledAt: "2025-07-02 08:30",
       },
     ];
   };
@@ -94,37 +128,82 @@ const AdvertisementList = () => {
 
   const handleEditClick = (ad) => {
     setSelectedAdvertisement(ad);
-    setEditedTitle(ad.title);
-    setEditedNumber(ad.contact);
-    setEditedDescription(ad.description);
-    setEditedImage(ad.image);
+    setProduct(ad.product || "");
+    setProductName(ad.productName || "");
+    setUnit(ad.unit || "");
+    setQuantity(ad.quantity || "");
+    setPrice(ad.price || "");
+    setDescription(ad.description || "");
+    setImage(ad.image || null);
+    setPostType(ad.postType || "postnow");
+    setScheduledAt(ad.scheduledAt || "Now");
     setEditModalOpen(true);
   };
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setEditedImage(file);
+      setImage(file);
     }
   };
 
   const handleModalClose = () => {
     setEditModalOpen(false);
     setSelectedAdvertisement(null);
-    setEditedTitle("");
-    setEditedNumber("");
-    setEditedDescription("");
-    setEditedImage(null);
+    setProduct("");
+    setProductName("");
+    setUnit("");
+    setQuantity("");
+    setPrice("");
+    setDescription("");
+    setImage(null);
+    setPostType("postnow");
+    setScheduledAt("Now");
   };
 
-  const handleSaveChanges = () => {
-    // You can send API call here
-    setAlertBox({
-      open: true,
-      msg: "Advertisement updated successfully!",
-      error: false,
-    });
-    setEditModalOpen(false);
+  const handleSaveChanges = async () => {
+    if (!selectedAdvertisement) return;
+
+    const updatedData = {
+      product,
+      productName,
+      unit,
+      quantity,
+      price,
+      description,
+      postType,
+      scheduledAt:
+        postType === "schedule"
+          ? dayjs(scheduledAt).format("YYYY-MM-DD HH:mm")
+          : "Now",
+    };
+
+    try {
+      const formData = new FormData();
+      for (const key in updatedData) {
+        formData.append(key, updatedData[key]);
+      }
+      if (image && typeof image !== "string") {
+        formData.append("image", image);
+      } 
+
+      //api integration here
+
+      setAlertBox({
+        open: true,
+        msg: "Advertisement updated successfully!",
+        error: false,
+      });
+
+      handleModalClose(); // close modal and reset states
+    } catch (error) {
+      console.error("Update error:", error);
+      setAlertBox({
+        open: true,
+        msg: "Advertisement update failed!",
+        error: true,
+      });
+    }
   };
 
   const handleDeleteClick = async (catId) => {
@@ -152,7 +231,7 @@ const AdvertisementList = () => {
     <>
       <div className="right-content w-100">
         <div className="card shadow border-0 w-100 flex-row p-4">
-          <h5 className="mb-0">Advertisement List</h5>
+          <h5 className="mb-0">Admin Advertisement List</h5>
           <div className="ms-auto d-flex align-items-center">
             <Link to={"/add-advertisement"}>
               <Button className="btn-blue ms-3 ps-3 pe-3">
@@ -169,9 +248,11 @@ const AdvertisementList = () => {
                 <tr>
                   <th>NO</th>
                   <th>IMAGE</th>
-                  <th>TITLE</th>
-                  <th>CONTACT NUMBER</th>
+                  <th>PRODUCT NAME</th>
+                  <th>QUANTITY</th>
+                  <th>PRICE</th>
                   <th>DESCRIPTION</th>
+                  <th>POST TYPE</th>
                   <th>ACTION</th>
                 </tr>
               </thead>
@@ -202,14 +283,20 @@ const AdvertisementList = () => {
                         </a>
                       </td>
 
-                      <td>{item.title}</td>
+                      <td>{item.productName}</td>
 
-                      <td>{item.contact}</td>
+                      <td>
+                        {item.quantity} {item.unit}
+                      </td>
+
+                      <td>{item.price}</td>
 
                       <td>
                         {item.description.split(" ").slice(0, 8).join(" ") +
                           (item.description.split(" ").length > 8 ? "..." : "")}
                       </td>
+
+                      <td>{item.postType}</td>
 
                       <td>
                         <div className="d-flex gap-2 align-item-center justify-content-center">
@@ -249,66 +336,136 @@ const AdvertisementList = () => {
       </div>
 
       {/* Edit Modal */}
-      <Dialog
-        open={editModalOpen}
-        onClose={handleModalClose}
-        fullWidth
-        //fullScreen={fullScreen}
-      >
+      <Dialog open={editModalOpen} onClose={handleModalClose} fullWidth>
         <DialogTitle className="d-flex justify-content-between align-items-center">
-          Edit News
+          Edit Advertisement
           <IconButton onClick={handleModalClose}>
             <IoCloseSharp />
           </IconButton>
         </DialogTitle>
 
         <DialogContent dividers>
+          {/* Product Dropdown */}
           <TextField
-            label="Title"
+            label="Product"
+            select
             fullWidth
             margin="normal"
-            value={editedTitle}
-            onChange={(e) => setEditedTitle(e.target.value)}
+            value={product}
+            onChange={(e) => setProduct(e.target.value)}
+          >
+            {["Onion", "Milk", "Tomato", "Eggs"].map((option) => (
+              <MenuItem key={option} value={option}>
+                {option}
+              </MenuItem>
+            ))}
+          </TextField>
+
+          <TextField
+            label="Product Name"
+            fullWidth
+            margin="normal"
+            value={productName}
+            onChange={(e) => setProductName(e.target.value)}
           />
 
           <TextField
-            label="Contact Number"
+            label="Unit"
+            select
             fullWidth
-            inputMode="numeric"
-            maxLength="10"
             margin="normal"
-            value={editedNumber}
-            onChange={(e) => {
-              const numericValue = e.target.value.replace(/\D/g, ""); // Remove non-numeric characters
-              setEditedNumber(numericValue.slice(0, 10)); // Limit to 10 digits
-            }}
+            value={unit}
+            onChange={(e) => setUnit(e.target.value)}
+          >
+            {["kg", "gm", "litre", "pieces"].map((u) => (
+              <MenuItem key={u} value={u}>
+                {u}
+              </MenuItem>
+            ))}
+          </TextField>
+
+          <TextField
+            label="Quantity"
+            type="number"
+            fullWidth
+            margin="normal"
+            value={quantity}
+            onChange={(e) => setQuantity(e.target.value)}
+          />
+
+          <TextField
+            label="Price"
+            type="number"
+            fullWidth
+            margin="normal"
+            value={price}
+            onChange={(e) => setPrice(e.target.value)}
           />
 
           <TextField
             label="Description"
             multiline
-            rows={5}
+            rows={4}
             fullWidth
             margin="normal"
-            value={editedDescription}
-            onChange={(e) => setEditedDescription(e.target.value)}
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
           />
 
+          <FormControlLabel
+            control={
+              <Switch
+                checked={postType === "schedule"}
+                onChange={(e) => {
+                  const type = e.target.checked ? "schedule" : "postnow";
+                  setPostType(type);
+                  setScheduledAt(type === "postnow" ? "Now" : scheduledAt);
+                }}
+              />
+            }
+            label={postType === "schedule" ? "Scheduled Post" : "Post Now"}
+          />
+
+          {postType === "schedule" && (
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DatePicker
+                label="Scheduled Date"
+                value={dayjs(scheduledAt)}
+                onChange={(date) => {
+                  const updatedDate = dayjs(date)
+                    .hour(dayjs(scheduledAt).hour())
+                    .minute(dayjs(scheduledAt).minute());
+                  setScheduledAt(updatedDate);
+                }}
+                sx={{ mt: 2, width: "100%" }}
+              />
+              <TimePicker
+                label="Scheduled Time"
+                value={dayjs(scheduledAt)}
+                onChange={(time) => {
+                  const updatedTime = dayjs(scheduledAt)
+                    .hour(dayjs(time).hour())
+                    .minute(dayjs(time).minute());
+                  setScheduledAt(updatedTime);
+                }}
+                sx={{ mt: 2, width: "100%" }}
+              />
+            </LocalizationProvider>
+          )}
+
+          {/* Image upload */}
           <div className="mt-3">
-            <label>Update Image:</label>
+            <label>Update Product Image:</label>
             <input
               type="file"
               accept="image/*"
               onChange={handleImageChange}
               className="form-control mt-2"
             />
-
-            {editedImage && (
+            {image && (
               <img
                 src={
-                  typeof editedImage === "string"
-                    ? editedImage
-                    : URL.createObjectURL(editedImage)
+                  typeof image === "string" ? image : URL.createObjectURL(image)
                 }
                 alt="Preview"
                 className="mt-3 rounded"

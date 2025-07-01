@@ -28,6 +28,11 @@ import AddAdvertisement from "./pages/superadmin/Advertisement/AddAdvertisement"
 import AdvertisementList from "./pages/superadmin/Advertisement/AdvertisementList";
 import AddSubAdmin from "./pages/superadmin/subadmins/AddSubAdmin";
 import SubAdminList from "./pages/superadmin/subadmins/SubAdminList";
+import CreateNotification from "./pages/superadmin/Notification/CreateNotification";
+import UserAdvertisementList from "./pages/superadmin/Advertisement/UserAdvertisementList";
+import AdsLogPage from "./pages/superadmin/History/AdsHistory";
+import NewsLogs from "./pages/superadmin/History/NewsHistory";
+import NotificationLogs from "./pages/superadmin/History/NotificationHistory";
 
 
 const MyContext = createContext();
@@ -149,9 +154,14 @@ function App() {
             <Route exact path="/add-news" element={<PrivateRoute element={<AddNews />} allowedRoles={["superadmin"]} />} />
             <Route exact path="/news-list" element={<PrivateRoute element={<NewsList />} allowedRoles={["superadmin"]} />} />
             <Route exact path="/add-advertisement" element={<PrivateRoute element={<AddAdvertisement />} allowedRoles={["superadmin"]} />} />
-            <Route exact path="/advertisement-list" element={<PrivateRoute element={<AdvertisementList />} allowedRoles={["superadmin"]} />} />
+            <Route exact path="/admin-advertisement-list" element={<PrivateRoute element={<AdvertisementList />} allowedRoles={["superadmin"]} />} />
+            <Route exact path="/user-advertisement-list" element={<PrivateRoute element={<UserAdvertisementList />} allowedRoles={["superadmin"]} />} />
             <Route exact path="/add-subadmin" element={<PrivateRoute element={<AddSubAdmin />} allowedRoles={["superadmin"]} />} />
             <Route exact path="/subadmin-list" element={<PrivateRoute element={<SubAdminList />} allowedRoles={["superadmin"]} />} />
+            <Route exact path="/create-notification" element={<PrivateRoute element={<CreateNotification />} allowedRoles={["superadmin"]} />} />
+            <Route exact path="/ads-logs" element={<PrivateRoute element={<AdsLogPage />} allowedRoles={["superadmin"]} />} />
+            <Route exact path="/news-logs" element={<PrivateRoute element={<NewsLogs />} allowedRoles={["superadmin"]} />} />
+            <Route exact path="/notification-logs" element={<PrivateRoute element={<NotificationLogs />} allowedRoles={["superadmin"]} />} />
           </Routes>
         </div>
       </div>

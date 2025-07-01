@@ -6,8 +6,8 @@ import { MdDashboard } from 'react-icons/md'
 import { SiCoursera, SiProducthunt } from "react-icons/si";
 import { Link, useNavigate } from 'react-router-dom'
 import { MyContext } from '../App'
-import { IoNewspaper } from 'react-icons/io5'
-import { RiAdminFill, RiAdvertisementFill } from "react-icons/ri";
+import { IoNewspaper, IoNotifications } from 'react-icons/io5'
+import { RiAdminFill, RiAdvertisementFill, RiHistoryFill } from "react-icons/ri";
 
 const Sidebar = () => {
     const [activeTab, setActiveTab] = useState(0);
@@ -28,7 +28,7 @@ const Sidebar = () => {
 
     const navigate = useNavigate();
 
-    const logout = () => {
+    /*const logout = () => {
         localStorage.clear();
         setAlertBox({
             msg: 'Logout Successfully!',
@@ -36,7 +36,7 @@ const Sidebar = () => {
             error: false
         });
         navigate("/login");
-    };
+    };*/
 
     //const role = localStorage.getItem("role");
 
@@ -62,25 +62,18 @@ const Sidebar = () => {
                                 </Button>
                                 <div className={`submenuWrapper ${activeTab === 1 && isToggleSubmenu === true ? 'colapse' : 'colapsed'}`}>
                                     <ul className='submenu'>
-                                        <li><Link to='/add-category' onClick={handleCloseSidebarOnMobile}>Add Category</Link></li>
                                         <li><Link to='/category-list' onClick={handleCloseSidebarOnMobile}>CategoryList</Link></li>
-                                        <li><Link to='/add-subCategory' onClick={handleCloseSidebarOnMobile}>Add Sub-Category</Link></li>
                                         <li><Link to='/subCategory-list' onClick={handleCloseSidebarOnMobile}>Sub-CategoryList</Link></li>
                                     </ul>
                                 </div>
                             </li>
                             <li>
-                                <Button className={`w-100 ${activeTab === 2 && isToggleSubmenu === true ? 'active' : ''}`} onClick={() => isOpenSubmenu(2)}>
-                                    <span className='icon'><SiProducthunt /></span>
-                                    Product
-                                    <span className='arrow'><FaAngleRight /></span>
-                                </Button>
-                                <div className={`submenuWrapper ${activeTab === 2 && isToggleSubmenu === true ? 'colapse' : 'colapsed'}`}>
-                                    <ul className='submenu'>
-                                        <li><Link to='/add-product' onClick={handleCloseSidebarOnMobile}>Add Product</Link></li>
-                                        <li><Link to='/product-list' onClick={handleCloseSidebarOnMobile}>Product List</Link></li>
-                                    </ul>
-                                </div>
+                                <Link to='/product-list' onClick={handleCloseSidebarOnMobile}>
+                                    <Button className={`w-100 ${activeTab === 2 ? 'active' : ''}`} onClick={() => isOpenSubmenu(2)}>
+                                        <span className='icon'><SiProducthunt /></span>
+                                        Product
+                                    </Button>
+                                </Link>
                             </li>
                             <li>
                                 <Link to='/orders' onClick={handleCloseSidebarOnMobile}>
@@ -99,17 +92,12 @@ const Sidebar = () => {
                                 </Link>
                             </li>
                             <li>
-                                <Button className={`w-100 ${activeTab === 5 && isToggleSubmenu === true ? 'active' : ''}`} onClick={() => isOpenSubmenu(5)}>
-                                    <span className='icon'><IoNewspaper /></span>
-                                    News
-                                    <span className='arrow'><FaAngleRight /></span>
-                                </Button>
-                                <div className={`submenuWrapper ${activeTab === 5 && isToggleSubmenu === true ? 'colapse' : 'colapsed'}`}>
-                                    <ul className='submenu'>
-                                        <li><Link to='/add-news' onClick={handleCloseSidebarOnMobile}>Add News</Link></li>
-                                        <li><Link to='/news-list' onClick={handleCloseSidebarOnMobile}>News List</Link></li>
-                                    </ul>
-                                </div>
+                                <Link to='/news-list' onClick={handleCloseSidebarOnMobile}>
+                                    <Button className={`w-100 ${activeTab === 5 ? 'active' : ''}`} onClick={() => isOpenSubmenu(5)}>
+                                        <span className='icon'><IoNewspaper /></span>
+                                        News
+                                    </Button>
+                                </Link>
                             </li>
                             <li>
                                 <Button className={`w-100 ${activeTab === 6 && isToggleSubmenu === true ? 'active' : ''}`} onClick={() => isOpenSubmenu(6)}>
@@ -119,21 +107,38 @@ const Sidebar = () => {
                                 </Button>
                                 <div className={`submenuWrapper ${activeTab === 6 && isToggleSubmenu === true ? 'colapse' : 'colapsed'}`}>
                                     <ul className='submenu'>
-                                        <li><Link to='/add-advertisement' onClick={handleCloseSidebarOnMobile}>Add Advertisement</Link></li>
-                                        <li><Link to='/advertisement-list' onClick={handleCloseSidebarOnMobile}>Advertisement List</Link></li>
+                                        <li><Link to='/admin-advertisement-list' onClick={handleCloseSidebarOnMobile}>Adds By Admin</Link></li>
+                                        <li><Link to='/user-advertisement-list' onClick={handleCloseSidebarOnMobile}>Adds By User</Link></li>
                                     </ul>
                                 </div>
                             </li>
                             <li>
-                                <Button className={`w-100 ${activeTab === 7 && isToggleSubmenu === true ? 'active' : ''}`} onClick={() => isOpenSubmenu(7)}>
-                                    <span className='icon'><RiAdminFill /></span>
-                                    SubAdmin
+                                <Link to='/subadmin-list' onClick={handleCloseSidebarOnMobile}>
+                                    <Button className={`w-100 ${activeTab === 7 ? 'active' : ''}`} onClick={() => isOpenSubmenu(7)}>
+                                        <span className='icon'><RiAdminFill /></span>
+                                        SubAdmin
+                                    </Button>
+                                </Link>
+                            </li>
+                            <li>
+                                <Link to='/create-notification' onClick={handleCloseSidebarOnMobile}>
+                                    <Button className={`w-100 ${activeTab === 8 ? 'active' : ''}`} onClick={() => isOpenSubmenu(8)}>
+                                        <span className='icon'><IoNotifications /></span>
+                                        Notification
+                                    </Button>
+                                </Link>
+                            </li>
+                            <li>
+                                <Button className={`w-100 ${activeTab === 9 && isToggleSubmenu === true ? 'active' : ''}`} onClick={() => isOpenSubmenu(9)}>
+                                    <span className='icon'><RiHistoryFill /></span>
+                                    History
                                     <span className='arrow'><FaAngleRight /></span>
                                 </Button>
-                                <div className={`submenuWrapper ${activeTab === 7 && isToggleSubmenu === true ? 'colapse' : 'colapsed'}`}>
+                                <div className={`submenuWrapper ${activeTab === 9 && isToggleSubmenu === true ? 'colapse' : 'colapsed'}`}>
                                     <ul className='submenu'>
-                                        <li><Link to='/add-subadmin' onClick={handleCloseSidebarOnMobile}>Add SubAdmin</Link></li>
-                                        <li><Link to='/subadmin-list' onClick={handleCloseSidebarOnMobile}>SubAdmin List</Link></li>
+                                        <li><Link to='/ads-logs' onClick={handleCloseSidebarOnMobile}>Adds Logs</Link></li>
+                                        <li><Link to='/news-logs' onClick={handleCloseSidebarOnMobile}>News Logs</Link></li>
+                                        <li><Link to='/notification-logs' onClick={handleCloseSidebarOnMobile}>Notification Logs</Link></li>
                                     </ul>
                                 </div>
                             </li>
@@ -141,13 +146,6 @@ const Sidebar = () => {
 
                     </>
 
-                <br />
-
-                <div className='logoutWrapper'>
-                    <div className='logoutBox'>
-                        <Button variant='contained' onClick={logout}><IoMdLogOut /> Logout</Button>
-                    </div>
-                </div>
             </div>
         </>
     )

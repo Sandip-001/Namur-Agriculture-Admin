@@ -1,17 +1,24 @@
 import { useContext, useEffect, useState } from "react";
-import { FaPencilAlt } from "react-icons/fa";
-import { MdDelete } from "react-icons/md";
-import { Button, Avatar, Stack } from "@mui/material";
+import {
+  Button,
+  Avatar,
+  Stack,
+  TextField,
+  InputAdornment,
+} from "@mui/material";
 import { Link } from "react-router-dom";
-import PersonIcon from "@mui/icons-material/Person";
+import { useNavigate } from "react-router-dom";
 import StorefrontIcon from "@mui/icons-material/Storefront";
+import SearchIcon from "@mui/icons-material/Search";
 import man1 from "../../../assets/man1.png";
 import man2 from "../../../assets/man2.png";
 import { MyContext } from "../../../App";
 import ResponsivePagination from "../../../components/Pagination";
 
 const Users = () => {
+  const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
+
   const totalPages = 10; // or calculate based on data length
 
   const { setProgress, setAlertBox, setIsHideSidebarAndHeader } =
@@ -39,6 +46,8 @@ const Users = () => {
         name: "Sandip Chowdhury",
         contactNumber: "9876543210",
         email: "chowdhurysandip2016@gmail.com",
+        district: "Bengaluru Urban",
+        taluk: "Bangalore South",
       },
       {
         no: 2,
@@ -46,6 +55,8 @@ const Users = () => {
         name: "Anjali Sharma",
         contactNumber: "9123456789",
         email: "anjali@brightfuture.com",
+        district: "Mysuru",
+        taluk: "Mysore",
       },
       {
         no: 3,
@@ -53,6 +64,8 @@ const Users = () => {
         name: "Sandip Chowdhury",
         contactNumber: "9876543210",
         email: "chowdhurysandip2016@gmail.com",
+        district: "Dakshina Kannada",
+        taluk: "Mangalore",
       },
       {
         no: 4,
@@ -60,17 +73,60 @@ const Users = () => {
         name: "Anjali Sharma",
         contactNumber: "9123456789",
         email: "anjali@brightfuture.com",
+        district: "Belagavi",
+        taluk: "Belgaum",
       },
     ];
   };
 
-  const dummyData = getDummyUsers();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filteredUsers, setFilteredUsers] = useState(getDummyUsers());
+
+  useEffect(() => {
+    const results = getDummyUsers().filter(
+      (user) =>
+        user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        user.contactNumber.includes(searchQuery)
+    );
+    setFilteredUsers(results);
+  }, [searchQuery]);
 
   return (
     <>
       <div className="right-content w-100">
-        <div className="card shadow border-0 w-100 flex-row p-4">
+        <div className="d-flex justify-content-between align-items-center gap-3 mb-3 card shadow border-0 w-100 flex-row p-4">
           <h5 className="mb-0">All Users</h5>
+
+          <TextField
+            variant="outlined"
+            placeholder="Search user..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            size="small"
+            sx={{
+              width: { xs: "100%", sm: "300px" },
+              backgroundColor: "#fff",
+              borderRadius: 2,
+              "& .MuiOutlinedInput-root": {
+                "& fieldset": {
+                  borderColor: "#ccc",
+                },
+                "&:hover fieldset": {
+                  borderColor: "#f0883d",
+                },
+                "&.Mui-focused fieldset": {
+                  borderColor: "#f0883d",
+                },
+              },
+            }}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon sx={{ color: "#f0883d" }} />
+                </InputAdornment>
+              ),
+            }}
+          />
         </div>
 
         <div className="card shadow border-0 p-3 mt-4">
@@ -81,15 +137,18 @@ const Users = () => {
                   <th>NO</th>
                   <th>NAME</th>
                   <th>CONTACT NUMBER</th>
-                  <th>EMAIL ID</th>
-                  <th>PROFILE DETAILS</th>
+                  <th>ADDRESS</th>
                   <th>SELLING PRODUCTS</th>
                 </tr>
               </thead>
               <tbody className="text-center">
-                {dummyData.length > 0 ? (
-                  dummyData.map((item, index) => (
-                    <tr key={index}>
+                {filteredUsers.length > 0 ? (
+                  filteredUsers.map((item, index) => (
+                    <tr
+                      key={index}
+                      className="tableRow"
+                      onClick={() => navigate(`/user-profile/${item.no}`)}
+                    >
                       <td># {item.no}</td>
                       <td>
                         <div className="d-flex align-items-center gap-2">
@@ -100,25 +159,11 @@ const Users = () => {
                         </div>
                       </td>
                       <td>{item.contactNumber}</td>
-                      <td>{item.email}</td>
                       <td>
-                        <Button
-                          component={Link}
-                          to={`/user-profile/${item.no}`}
-                          variant="contained"
-                          startIcon={<PersonIcon />}
-                          sx={{
-                            backgroundColor: "#0d67ab",
-                            borderRadius: 3,
-                            textTransform: "none",
-                            fontWeight: 600,
-                            ":hover": {
-                              backgroundColor: "#094f82",
-                            },
-                          }}
-                        >
-                          View Profile
-                        </Button>
+                        <div>
+                          <div className="fw-semibold">{item.taluk}</div>
+                          <div className="text-muted">{item.district}</div>
+                        </div>
                       </td>
 
                       <td>
@@ -126,20 +171,20 @@ const Users = () => {
                           component={Link}
                           to={`/user-products/${item.no}`}
                           variant="outlined"
-                          startIcon={<StorefrontIcon />}
                           sx={{
                             color: "#f0883d",
                             borderColor: "#f0883d",
                             borderRadius: 3,
-                            textTransform: "none",
-                            fontWeight: 600,
+                            minWidth: 40,
+                            padding: "6px",
                             ":hover": {
                               backgroundColor: "#fef3eb",
                               borderColor: "#f0883d",
                             },
                           }}
+                          onClick={(e) => e.stopPropagation()} // Prevent row click on icon
                         >
-                          Selling Products
+                          <StorefrontIcon />
                         </Button>
                       </td>
                     </tr>
