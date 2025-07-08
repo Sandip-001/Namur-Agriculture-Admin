@@ -1,12 +1,12 @@
 import React from "react";
 import "./App.css";
-import "./responsive.css"
+import "./responsive.css";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import { createContext, useEffect, useState } from "react";
 import LoadingBar from "react-top-loading-bar";
 
-import Snackbar from '@mui/material/Snackbar';
-import Alert from '@mui/material/Alert';
+import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
 import Header from "./components/Header";
 import Sidebar from "./components/Sidebar";
 import Dashboard from "./pages/superadmin/Dashboard/Dashboard";
@@ -34,141 +34,366 @@ import AdsLogPage from "./pages/superadmin/History/AdsHistory";
 import NewsLogs from "./pages/superadmin/History/NewsHistory";
 import NotificationLogs from "./pages/superadmin/History/NotificationHistory";
 
-
 const MyContext = createContext();
 
 function App() {
-
-  const [isToggleSidebar, setIsToggleSidebar] = useState(false)
-  const [isLogin, setIsLogin] = useState(false)
-  const [isHideSidebarAndHeader, setIsHideSidebarAndHeader] = useState(false)
-  const [isOpenNav, setIsOpenNav] =useState(false)
-  const [windowWidth, setWindowWidth] = useState(window.innerWidth)
+  const [isToggleSidebar, setIsToggleSidebar] = useState(false);
+  const [isLogin, setIsLogin] = useState(false);
+  const [isHideSidebarAndHeader, setIsHideSidebarAndHeader] = useState(false);
+  const [isOpenNav, setIsOpenNav] = useState(false);
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  const [districts, setDistricts] = useState([]);
 
   const [progress, setProgress] = useState(0);
 
   const [alertBox, setAlertBox] = useState({
-      open:false,
-      error:false,
-      msg:''
-    })
+    open: false,
+    error: false,
+    msg: "",
+  });
 
-  const handleClose = (event, reason) =>{
-    if(reason === 'clickaway'){
+  const handleClose = (event, reason) => {
+    if (reason === "clickaway") {
       return;
     }
 
     setAlertBox({
-      open:false
-    })
-  }
+      open: false,
+    });
+  };
 
-  useEffect(()=>{
-    const handleResize = ()=>{
-      setWindowWidth(window.innerWidth)
+  useEffect(() => {
+    fetch("https://api.countrystatecity.in/v1/countries/IN/states/KA/cities", {
+      headers: {
+        "X-CSCAPI-KEY":
+          "dHFLWG1XQ3J0OUtTMlRmVTlZUGptRHlUSUxmaHhtUlB0NFMxc1gzaA==",
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        //console.log("Raw API response:", data);
+        const cityNames = data.map((city) => city.name);
+        //console.log("Mapped city names:", cityNames);
+        setDistricts(cityNames);
+      })
+      .catch((err) => console.error("Failed to fetch cities", err));
+  }, []);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
     };
 
-    window.addEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
 
     return () => {
-      window.removeEventListener('resize', handleResize)
-    }
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
 
-  },[])
+  const openNav = () => {
+    setIsOpenNav(true);
+  };
 
-  const openNav=()=>{
-    setIsOpenNav(true)
-  }
-
-  
-
-  const values={
+  const values = {
     isToggleSidebar,
     setIsToggleSidebar,
     isLogin,
     setIsLogin,
     isHideSidebarAndHeader,
     setIsHideSidebarAndHeader,
-    windowWidth, 
+    windowWidth,
     setWindowWidth,
     isOpenNav,
-    openNav, 
+    openNav,
     setIsOpenNav,
     setProgress,
     alertBox,
-    setAlertBox
-  }
-
+    setAlertBox,
+    districts,
+    setDistricts,
+  };
 
   return (
     <Router>
       <MyContext.Provider value={values}>
-      <LoadingBar
-        color="#f11946"
-        progress={progress}
-        onLoaderFinished={() => setProgress(0)}
-        className="topLoadingBar"
-      />
+        <LoadingBar
+          color="#f11946"
+          progress={progress}
+          onLoaderFinished={() => setProgress(0)}
+          className="topLoadingBar"
+        />
 
-      <Snackbar open={alertBox.open} autoHideDuration={4000} onClose={handleClose}>
-        <Alert
+        <Snackbar
+          open={alertBox.open}
+          autoHideDuration={4000}
           onClose={handleClose}
-          severity={alertBox.error===false?'success' : 'error'}
-          variant="filled"
-          sx={{ width: '100%' }}
         >
-          {alertBox.msg}
-        </Alert>
-      </Snackbar>
-        {
-          isHideSidebarAndHeader !== true && <Header/>
-        }
-    
-      <div className="main d-flex">
+          <Alert
+            onClose={handleClose}
+            severity={alertBox.error === false ? "success" : "error"}
+            variant="filled"
+            sx={{ width: "100%" }}
+          >
+            {alertBox.msg}
+          </Alert>
+        </Snackbar>
+        {isHideSidebarAndHeader !== true && <Header />}
 
-        {
-          isHideSidebarAndHeader !== true &&
-          <>
-          <div className={`sidebarOverlay d-none ${isOpenNav===true && 'show'}`} onClick={()=>setIsOpenNav(false)}></div>
-          <div className={`sidebarWrapper ${isToggleSidebar === true ? 'toggle':''} ${isOpenNav === true ? 'open': ''}`}>
-            <Sidebar/>
+        <div className="main d-flex">
+          {isHideSidebarAndHeader !== true && (
+            <>
+              <div
+                className={`sidebarOverlay d-none ${
+                  isOpenNav === true && "show"
+                }`}
+                onClick={() => setIsOpenNav(false)}
+              ></div>
+              <div
+                className={`sidebarWrapper ${
+                  isToggleSidebar === true ? "toggle" : ""
+                } ${isOpenNav === true ? "open" : ""}`}
+              >
+                <Sidebar />
+              </div>
+            </>
+          )}
+
+          <div
+            className={`content ${isHideSidebarAndHeader === true && "full"} ${
+              isToggleSidebar === true ? "toggle" : ""
+            }`}
+          >
+            <Routes>
+              <Route exact path="/login" element={<Login />} />
+              <Route
+                exact
+                path="/"
+                element={
+                  <PrivateRoute
+                    element={<Dashboard />}
+                    allowedRoles={["superadmin"]}
+                  />
+                }
+              />
+              <Route
+                exact
+                path="/add-category"
+                element={
+                  <PrivateRoute
+                    element={<AddCategory />}
+                    allowedRoles={["superadmin"]}
+                  />
+                }
+              />
+              <Route
+                exact
+                path="/category-list"
+                element={
+                  <PrivateRoute
+                    element={<CategoryList />}
+                    allowedRoles={["superadmin"]}
+                  />
+                }
+              />
+              <Route
+                exact
+                path="/add-subCategory"
+                element={
+                  <PrivateRoute
+                    element={<AddSubCategory />}
+                    allowedRoles={["superadmin"]}
+                  />
+                }
+              />
+              <Route
+                exact
+                path="/subCategory-list"
+                element={
+                  <PrivateRoute
+                    element={<SubCategoryList />}
+                    allowedRoles={["superadmin"]}
+                  />
+                }
+              />
+              <Route
+                exact
+                path="/add-product"
+                element={
+                  <PrivateRoute
+                    element={<AddProduct />}
+                    allowedRoles={["superadmin"]}
+                  />
+                }
+              />
+              <Route
+                exact
+                path="/product-list"
+                element={
+                  <PrivateRoute
+                    element={<ProductList />}
+                    allowedRoles={["superadmin"]}
+                  />
+                }
+              />
+              <Route
+                exact
+                path="/orders"
+                element={
+                  <PrivateRoute
+                    element={<OrderList />}
+                    allowedRoles={["superadmin"]}
+                  />
+                }
+              />
+              <Route
+                exact
+                path="/user-profile/:id"
+                element={
+                  <PrivateRoute
+                    element={<SellerProfile />}
+                    allowedRoles={["superadmin"]}
+                  />
+                }
+              />
+              <Route
+                exact
+                path="/user-products/:id"
+                element={
+                  <PrivateRoute
+                    element={<SellerProductList />}
+                    allowedRoles={["superadmin"]}
+                  />
+                }
+              />
+              <Route
+                exact
+                path="/users"
+                element={
+                  <PrivateRoute
+                    element={<Users />}
+                    allowedRoles={["superadmin"]}
+                  />
+                }
+              />
+              <Route
+                exact
+                path="/add-news"
+                element={
+                  <PrivateRoute
+                    element={<AddNews />}
+                    allowedRoles={["superadmin"]}
+                  />
+                }
+              />
+              <Route
+                exact
+                path="/news-list"
+                element={
+                  <PrivateRoute
+                    element={<NewsList />}
+                    allowedRoles={["superadmin"]}
+                  />
+                }
+              />
+              <Route
+                exact
+                path="/add-advertisement"
+                element={
+                  <PrivateRoute
+                    element={<AddAdvertisement />}
+                    allowedRoles={["superadmin"]}
+                  />
+                }
+              />
+              <Route
+                exact
+                path="/admin-advertisement-list"
+                element={
+                  <PrivateRoute
+                    element={<AdvertisementList />}
+                    allowedRoles={["superadmin"]}
+                  />
+                }
+              />
+              <Route
+                exact
+                path="/user-advertisement-list"
+                element={
+                  <PrivateRoute
+                    element={<UserAdvertisementList />}
+                    allowedRoles={["superadmin"]}
+                  />
+                }
+              />
+              <Route
+                exact
+                path="/add-subadmin"
+                element={
+                  <PrivateRoute
+                    element={<AddSubAdmin />}
+                    allowedRoles={["superadmin"]}
+                  />
+                }
+              />
+              <Route
+                exact
+                path="/subadmin-list"
+                element={
+                  <PrivateRoute
+                    element={<SubAdminList />}
+                    allowedRoles={["superadmin"]}
+                  />
+                }
+              />
+              <Route
+                exact
+                path="/create-notification"
+                element={
+                  <PrivateRoute
+                    element={<CreateNotification />}
+                    allowedRoles={["superadmin"]}
+                  />
+                }
+              />
+              <Route
+                exact
+                path="/ads-logs"
+                element={
+                  <PrivateRoute
+                    element={<AdsLogPage />}
+                    allowedRoles={["superadmin"]}
+                  />
+                }
+              />
+              <Route
+                exact
+                path="/news-logs"
+                element={
+                  <PrivateRoute
+                    element={<NewsLogs />}
+                    allowedRoles={["superadmin"]}
+                  />
+                }
+              />
+              <Route
+                exact
+                path="/notification-logs"
+                element={
+                  <PrivateRoute
+                    element={<NotificationLogs />}
+                    allowedRoles={["superadmin"]}
+                  />
+                }
+              />
+
+            </Routes>
           </div>
-          </>
-        }
-        
-
-        <div className={`content ${isHideSidebarAndHeader === true && 'full'} ${isToggleSidebar === true ? 'toggle':''}`}>
-          <Routes>
-            <Route exact path="/login" element={<Login/>} />
-            <Route exact path="/" element={<PrivateRoute element={<Dashboard />} allowedRoles={["superadmin"]} />} />
-            <Route exact path="/add-category" element={<PrivateRoute element={<AddCategory />} allowedRoles={["superadmin"]} />} />
-            <Route exact path="/category-list" element={<PrivateRoute element={<CategoryList />} allowedRoles={["superadmin"]} />} />
-            <Route exact path="/add-subCategory" element={<PrivateRoute element={<AddSubCategory />} allowedRoles={["superadmin"]} />} />
-            <Route exact path="/subCategory-list" element={<PrivateRoute element={<SubCategoryList />} allowedRoles={["superadmin"]} />} />
-            <Route exact path="/add-product" element={<PrivateRoute element={<AddProduct />} allowedRoles={["superadmin"]} />} />
-            <Route exact path="/product-list" element={<PrivateRoute element={<ProductList />} allowedRoles={["superadmin"]} />} />
-            <Route exact path="/orders" element={<PrivateRoute element={<OrderList />} allowedRoles={["superadmin"]} />} />
-            <Route exact path="/user-profile/:id" element={<PrivateRoute element={<SellerProfile />} allowedRoles={["superadmin"]} />} />
-            <Route exact path="/user-products/:id" element={<PrivateRoute element={<SellerProductList />} allowedRoles={["superadmin"]} />} />
-            <Route exact path="/users" element={<PrivateRoute element={<Users />} allowedRoles={["superadmin"]} />} />
-            <Route exact path="/add-news" element={<PrivateRoute element={<AddNews />} allowedRoles={["superadmin"]} />} />
-            <Route exact path="/news-list" element={<PrivateRoute element={<NewsList />} allowedRoles={["superadmin"]} />} />
-            <Route exact path="/add-advertisement" element={<PrivateRoute element={<AddAdvertisement />} allowedRoles={["superadmin"]} />} />
-            <Route exact path="/admin-advertisement-list" element={<PrivateRoute element={<AdvertisementList />} allowedRoles={["superadmin"]} />} />
-            <Route exact path="/user-advertisement-list" element={<PrivateRoute element={<UserAdvertisementList />} allowedRoles={["superadmin"]} />} />
-            <Route exact path="/add-subadmin" element={<PrivateRoute element={<AddSubAdmin />} allowedRoles={["superadmin"]} />} />
-            <Route exact path="/subadmin-list" element={<PrivateRoute element={<SubAdminList />} allowedRoles={["superadmin"]} />} />
-            <Route exact path="/create-notification" element={<PrivateRoute element={<CreateNotification />} allowedRoles={["superadmin"]} />} />
-            <Route exact path="/ads-logs" element={<PrivateRoute element={<AdsLogPage />} allowedRoles={["superadmin"]} />} />
-            <Route exact path="/news-logs" element={<PrivateRoute element={<NewsLogs />} allowedRoles={["superadmin"]} />} />
-            <Route exact path="/notification-logs" element={<PrivateRoute element={<NotificationLogs />} allowedRoles={["superadmin"]} />} />
-          </Routes>
         </div>
-      </div>
       </MyContext.Provider>
     </Router>
   );
 }
 
 export default App;
-export {MyContext};
+export { MyContext };

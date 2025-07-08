@@ -86,7 +86,9 @@ const Users = () => {
     const results = getDummyUsers().filter(
       (user) =>
         user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        user.contactNumber.includes(searchQuery)
+        user.contactNumber.includes(searchQuery) ||
+        user.district.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        user.taluk.toLowerCase().includes(searchQuery.toLowerCase())
     );
     setFilteredUsers(results);
   }, [searchQuery]);
@@ -161,8 +163,8 @@ const Users = () => {
                       <td>{item.contactNumber}</td>
                       <td>
                         <div>
-                          <div className="fw-semibold">{item.taluk}</div>
                           <div className="text-muted">{item.district}</div>
+                          <div className="fw-semibold">{item.taluk}</div>
                         </div>
                       </td>
 

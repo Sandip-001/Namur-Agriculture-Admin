@@ -116,6 +116,14 @@ const Dashboard = () => {
     },
   ];
 
+  const distActivity = [
+    { district: "Bagalkot", users: 50, ads: 10, news: 5 },
+    { district: "Bengaluru Urban", users: 30, ads: 10, news: 5 },
+    { district: "Bengaluru Rural", users: 20, ads: 10, news: 7 },
+    { district: "Belagavi", users: 30, ads: 10, news: 9 },
+    { district: "Ballari", users: 18, ads: 32, news: 6 },
+  ];
+
   const getDummyOrders = () => {
     return [
       {
@@ -189,6 +197,92 @@ const Dashboard = () => {
     ];
   };
 
+  const getDummyAdvertisements = () => {
+    return [
+      {
+        no: 1,
+        product: "Onion",
+        subcategory: "Vegetables",
+        productName: "Fresh Red Onion",
+        unit: "kg",
+        quantity: 100,
+        price: 20,
+        description:
+          "Farm-fresh red onions directly from our organic farm. Ideal for cooking and storing.",
+        image:
+          "https://acsinternationalexim.com/wp-content/uploads/2023/11/l-intro-1644158494.jpg",
+        forSale: "rent",
+        postType: "postnow",
+        scheduledDate: "Now",
+        status: "Active",
+        postedBy: "Sudhendu Mondal",
+        contactNumber: "8637824327",
+        districts: ["Mandya"],
+      },
+      {
+        no: 2,
+        product: "Milk",
+        subcategory: "Dairy Products",
+        productName: "Organic Cow Milk",
+        unit: "litre",
+        quantity: 50,
+        price: 45,
+        description:
+          "Pure cow milk from grass-fed cows. No additives, fresh and healthy.",
+        image: "https://static.toiimg.com/photo/113458714.cms",
+        forSale: "sale",
+        postType: "postnow",
+        scheduledDate: "Now",
+        status: "Active",
+        postedBy: "Sandip Chowdhury",
+        contactNumber: "9876543210",
+        districts: ["Mandya"],
+      },
+      {
+        no: 3,
+        product: "Tomato",
+        subcategory: "Fruits & Veggies",
+        productName: "Desi Tomatoes",
+        unit: "kg",
+        quantity: 70,
+        price: 25,
+        description:
+          "Home-grown desi tomatoes. Perfect for salads and cooking, pesticide-free.",
+        image:
+          "https://img.etimg.com/thumb/width-1200,height-900,imgsize-56196,resizemode-75,msid-95423774/magazines/panache/5-reasons-why-tomatoes-should-be-your-favourite-fruit-this-year.jpg",
+        forSale: "sale",
+        postType: "postnow",
+        scheduledDate: "Now",
+        status: "Active",
+        postedBy: "Anjali Sharma",
+        contactNumber: "9123456789",
+        districts: ["Mysuru"],
+      },
+      {
+        no: 4,
+        product: "Eggs",
+        subcategory: "Poultry",
+        productName: "Country Chicken Eggs",
+        unit: "pieces",
+        quantity: 200,
+        price: 7,
+        description:
+          "Farm-fresh country chicken eggs. Rich in nutrition and chemical-free.",
+        image:
+          "https://media.post.rvohealth.io/wp-content/uploads/2020/12/duck-chicken-egg-eggs-732x549-thumbnail-732x549.jpg",
+        forSale: "rent",
+        postType: "postnow",
+        scheduledDate: "Now",
+        status: "Active",
+        postedBy: "Sandip Chowdhury",
+        contactNumber: "9876543210",
+        districts: ["Bengaluru Rural"],
+      },
+    ];
+  };
+
+  const dummyAdsData = getDummyAdvertisements();
+
   const dummyData = getDummyOrders();
 
   const chartData = {
@@ -224,39 +318,105 @@ const Dashboard = () => {
     <div className="right-content w-100">
       <div className="row dashboardBoxWrapperRow">
         <div className="col-md-12">
-          <div className="dashboardBoxWrapper d-flex">
-            <DashboardBox
-              color={["#1da256", "#48d483"]}
-              icon={<FaUserCircle />}
-              grow={true}
-              name={"Users"}
-              length={20}
-              path="/users"
-            />
-            <DashboardBox
-              color={["#c012e2", "#eb64fe"]}
-              icon={<IoMdCart />}
-              grow={false}
-              name={"Products"}
-              length={22}
-              path="/product-list"
-            />
-            <DashboardBox
-              color={["#2c78e5", "#60aff5"]}
-              icon={<MdShoppingBag />}
-              grow={true}
-              name={"Orders"}
-              length={24}
-              path="/orders"
-            />
-            <DashboardBox
-              color={["#e1950e", "#f3cd29"]}
-              icon={<GiStarsStack />}
-              grow={false}
-              name={"News"}
-              length={34}
-              path="/news-list"
-            />
+          <DashboardBox />
+        </div>
+      </div>
+
+      <div className="row mt-2">
+        {/* Application Logs */}
+        <div className="col-md-6 mb-4">
+          <div className="card shadow-sm h-100">
+            <div className="card-body">
+              <h5 className="card-title text-primary fw-bold">
+                🕒 Application Logs
+              </h5>
+              <ul className="list-unstyled mb-0">
+                <li>
+                  • Admin approved an ad for "New Holland Tractor" –{" "}
+                  <strong>5 mins ago</strong>
+                </li>
+                <li>
+                  • User "farmer.john" deleted his mobile listing –{" "}
+                  <strong>12 mins ago</strong>
+                </li>
+                <li>
+                  • New user "greenfield_88" registered –{" "}
+                  <strong>20 mins ago</strong>
+                </li>
+                <li>
+                  • Admin created a news post: “Rain Forecast for Next Week” –{" "}
+                  <strong>35 mins ago</strong>
+                </li>
+                <li>
+                  • User "MeeraAgro" posted a new ad for "Organic Fertilizer
+                  Combo Pack" – <strong>1 hour ago</strong>
+                </li>
+                <li>
+                  • User "TechGrow" edited product info for “Smart Drip
+                  Irrigation Kit” – <strong>2 hours ago</strong>
+                </li>
+                <li>
+                  • Notification sent to all users about “Mid-Year Sale” –{" "}
+                  <strong>3 hours ago</strong>
+                </li>
+                <li>
+                  • Admin blocked user "spamDealer2025" –{" "}
+                  <strong>4 hours ago</strong>
+                </li>
+                <li>
+                  • Product "Diesel Pump Set" marked as featured –{" "}
+                  <strong>Yesterday</strong>
+                </li>
+                <li>
+                  • 3 new ads approved by admin – <strong>Yesterday</strong>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        {/* Recent Comments */}
+        <div className="col-md-6 mb-4">
+          <div className="card shadow-sm h-100">
+            <div className="card-body">
+              <h5 className="card-title text-success fw-bold">
+                💬 Recent Comments
+              </h5>
+              <ul className="list-unstyled mb-0">
+                <li>
+                  <strong>RameshK:</strong> This tractor is in excellent
+                  condition. I’ve already contacted the seller!
+                </li>
+                <li>
+                  <strong>Sunita88:</strong> The irrigation kit is a great deal.
+                  Highly recommend checking this out.
+                </li>
+                <li>
+                  <strong>KrishnFarm:</strong> The user interface is very smooth
+                  and easy to post ads. Good job team!
+                </li>
+                <li>
+                  <strong>Vijay_Agro:</strong> I sold my crop sprayer in just 2
+                  days. This platform is amazing!
+                </li>
+                <li>
+                  <strong>EcoFarms:</strong> Can you add an option for bulk
+                  uploads? Managing individual products takes time.
+                </li>
+                <li>
+                  <strong>Neha_R:</strong> Love the new UI! Much better than the
+                  previous version 👏
+                </li>
+                <li>
+                  <strong>AjayDeals:</strong> Product visibility has improved a
+                  lot after using premium ads.
+                </li>
+                <li>
+                  <strong>FarmNetUser:</strong> Please improve the image upload
+                  speed. It takes a bit too long sometimes.
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
       </div>
@@ -348,10 +508,51 @@ const Dashboard = () => {
         </div>
       </div>
 
-      <div className="row">
-        <div className="col-md-12 col-12 mb-4">
-          <div className="p-3 shadow rounded-4 bg-white">
-            <div className="d-flex justify-content-between align-items-center mb-3">
+      <div className="row mt-2">
+        <div className="col-md-6 col-12 mb-4">
+          <div className="shadow border-0 p-3 h-100">
+            <h3 className="mb-3">District Activity</h3>
+
+            <div className="table-responsive">
+              <table className="table table-bordered table-striped align-middle text-nowrap">
+                <thead
+                  className="text-white text-uppercase text-center"
+                  style={{ backgroundColor: "green" }}
+                >
+                  <tr>
+                    <th>No</th>
+                    <th>District</th>
+                    <th>Users</th>
+                    <th>Ads</th>
+                    <th>News</th>
+                  </tr>
+                </thead>
+                <tbody className="text-center">
+                  {distActivity.length > 0 ? (
+                    distActivity.map((item, index) => (
+                      <tr key={index}>
+                        <td>{index + 1}</td>
+                        <td>{item.district}</td>
+                        <td>{item.users}</td>
+                        <td>{item.ads}</td>
+                        <td>{item.news}</td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="15" className="text-center">
+                        No Dist Activity Found
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div className="col-md-6 col-12 mb-4">
+          <div className="p-3 shadow rounded-4 bg-white h-100">
+            <div className="d-flex justify-content-between align-items-center mb-1">
               <h6 className="fw-bold mb-0">User Join Insights</h6>
 
               <div>
@@ -384,7 +585,7 @@ const Dashboard = () => {
       </div>
 
       <div className="card shadow border-0 p-3 mt-3">
-        <h3 className="hd mb-3">Order Details </h3>
+        <h3 className="hd mb-3">Recent Order Details </h3>
 
         <div className="table-responsive">
           <table className="table table-bordered table-striped align-middle text-nowrap">
@@ -453,6 +654,115 @@ const Dashboard = () => {
                 <tr>
                   <td colSpan="15" className="text-center">
                     No Orders Found
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div className="card shadow border-0 p-3 mt-4">
+        <h3 className="hd mb-3">Recent Ads</h3>
+
+        <div className="table-responsive">
+          <table className="table table-bordered table-striped align-middle text-nowrap">
+            <thead className="table-primary text-white text-uppercase text-center">
+              <tr>
+                <th>NO</th>
+                <th>IMAGE</th>
+                <th>PRODUCT NAME</th>
+                <th>QUANTITY</th>
+                <th>PRICE</th>
+                <th>FOR</th>
+                <th>STATUS</th>
+                <th>ADD BY</th>
+                <th>MOBILE NUMBER</th>
+                <th>DISTRICTS</th>
+              </tr>
+            </thead>
+            <tbody className="text-center">
+              {dummyAdsData.length > 0 ? (
+                dummyAdsData.map((item, index) => (
+                  <tr key={index}>
+                    <td># {item.no}</td>
+
+                    <td>
+                      <a
+                        href={item.image}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        title="Open full image"
+                      >
+                        <img
+                          src={item.image}
+                          alt={item.productName}
+                          width={100}
+                          height={100}
+                          style={{
+                            objectFit: "cover",
+                            borderRadius: "6px",
+                            cursor: "pointer",
+                          }}
+                        />
+                      </a>
+                    </td>
+
+                    <td>
+                      <div className="fw-bold">{item.productName}</div>
+                      <small className="text-muted">{item.subcategory}</small>
+                    </td>
+
+                    <td>
+                      {item.quantity} {item.unit}
+                    </td>
+
+                    <td>₹ {item.price}</td>
+
+                    <td>
+                      <span
+                        className={`badge bg-${
+                          item.forSale === "sale" ? "success" : "info"
+                        }`}
+                      >
+                        {item.forSale.toUpperCase()}
+                      </span>
+                    </td>
+
+                    <td>
+                      <span
+                        className={`badge rounded-pill bg-${
+                          item.status === "Active" ? "success" : "secondary"
+                        }`}
+                      >
+                        {item.status}
+                      </span>
+                    </td>
+
+                    <td>
+                      <span className="fw-semibold">{item.postedBy}</span>
+                    </td>
+
+                    <td>{item.contactNumber}</td>
+
+                    <td>
+                      <div className="d-flex flex-wrap gap-1 justify-content-center">
+                        {item.districts.map((dist, idx) => (
+                          <span
+                            key={idx}
+                            className="badge bg-light text-dark border"
+                          >
+                            {dist}
+                          </span>
+                        ))}
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="12" className="text-center text-muted">
+                    No advertisements found.
                   </td>
                 </tr>
               )}

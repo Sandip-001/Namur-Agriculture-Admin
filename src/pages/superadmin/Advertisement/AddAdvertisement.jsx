@@ -1,5 +1,12 @@
 import React, { useContext, useEffect, useState } from "react";
-import { CircularProgress } from "@mui/material";
+import {
+  Checkbox,
+  CircularProgress,
+  FormControlLabel,
+  ListItemText,
+  OutlinedInput,
+  Switch,
+} from "@mui/material";
 import { FaCloudUploadAlt, FaRegImages } from "react-icons/fa";
 import { IoCloseSharp } from "react-icons/io5";
 import { MyContext } from "../../../App";
@@ -32,12 +39,14 @@ const units = ["Kg", "Gram", "Piece"];
 
 const AddAdvertisement = () => {
   const context = useContext(MyContext);
-  const { setIsHideSidebarAndHeader, setAlertBox } = context;
+  const { setIsHideSidebarAndHeader, setAlertBox, districts } = context;
 
   useEffect(() => {
     setIsHideSidebarAndHeader(false);
     window.scrollTo(0, 0);
   }, []);
+
+  const today = new Date();
 
   const [subCategory, setSubCategory] = useState("");
   const [product, setProduct] = useState("");
@@ -46,9 +55,11 @@ const AddAdvertisement = () => {
   const [quantity, setQuantity] = useState("");
   const [price, setPrice] = useState("");
   const [description, setDescription] = useState("");
+  const [selectedDistricts, setSelectedDistricts] = useState([]);
   const [postType, setPostType] = useState("now");
   const [scheduledDate, setScheduledDate] = useState(null);
-  const [scheduledTime, setScheduledTime] = useState(null);
+  const [expiryDate, setExpiryDate] = useState(null);
+  const [forSale, setForSale] = useState(true); // true = For Sale, false = For Rent
   const [isLoading, setIsLoading] = useState(false);
   const [advertisementImage, setAdvertisementImage] = useState(null);
 
@@ -70,14 +81,18 @@ const AddAdvertisement = () => {
     setAdvertisementImage(null);
   };
 
+  const handledistChange = (event) => {
+    const {
+      target: { value },
+    } = event;
+    setSelectedDistricts(typeof value === "string" ? value.split(",") : value);
+  };
+
   const handleSubmit = () => {
-    // Merge selected date and time into one DateTime (24-hour format)
+    // Set scheduled time to 12:00 AM automatically
     const mergedScheduledDateTime =
       postType === "schedule"
-        ? dayjs(scheduledDate)
-            .hour(dayjs(scheduledTime).hour())
-            .minute(dayjs(scheduledTime).minute())
-            .second(0)
+        ? dayjs(scheduledDate).hour(0).minute(0).second(0)
         : null;
 
     const adData = {
@@ -88,11 +103,17 @@ const AddAdvertisement = () => {
       quantity,
       price,
       description,
+      selectedDistricts,
       postType,
       scheduledAt:
         postType === "schedule"
           ? mergedScheduledDateTime.format("YYYY-MM-DD HH:mm")
           : "Now",
+      expiryDate:
+        postType === "schedule" && expiryDate
+          ? dayjs(expiryDate).format("YYYY-MM-DD")
+          : null,
+      adType: forSale ? "sale" : "rent",
     };
 
     console.log("Ad Posted:", adData);
@@ -103,7 +124,7 @@ const AddAdvertisement = () => {
       <div className="right-content w-100">
         <Paper elevation={4} sx={{ p: 4, borderRadius: 4 }}>
           <Typography variant="h5" mb={3} fontWeight={600} gutterBottom>
-            Post New Advertisement
+            Create Advertisement
           </Typography>
 
           <Grid container spacing={3} columns={{ xs: 1, sm: 2 }}>
@@ -146,7 +167,7 @@ const AddAdvertisement = () => {
 
             <Grid item size={1}>
               <TextField
-                label="Product Name"
+                label="Title"
                 fullWidth
                 value={productName}
                 onChange={(e) => setProductName(e.target.value)}
@@ -212,6 +233,39 @@ const AddAdvertisement = () => {
               />
             </Grid>
 
+            <Grid item size={1}>
+              <FormControl fullWidth>
+                <InputLabel>Select District</InputLabel>
+                <Select
+                  multiple
+                  value={selectedDistricts}
+                  onChange={handledistChange}
+                  input={<OutlinedInput label="District" />}
+                  renderValue={(selected) => selected.join(", ")}
+                >
+                  {districts.map((dist) => (
+                    <MenuItem key={dist} value={dist}>
+                      <Checkbox checked={selectedDistricts.includes(dist)} />
+                      <ListItemText primary={dist} />
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+
+            <Grid item size={1}>
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={forSale}
+                    onChange={() => setForSale((prev) => !prev)}
+                    color="primary"
+                  />
+                }
+                label={forSale ? "Ad Type: For Sale" : "Ad Type: For Rent"}
+              />
+            </Grid>
+
             <Grid item size={2}>
               <Typography variant="subtitle1" fontWeight={600} gutterBottom>
                 Choose Posting Type
@@ -231,17 +285,19 @@ const AddAdvertisement = () => {
               <>
                 <Grid item size={1}>
                   <DatePicker
-                    label="Select Date"
+                    label="Scheduled Date"
+                    minDate={today}
                     value={scheduledDate}
                     onChange={setScheduledDate}
                     slotProps={{ textField: { fullWidth: true } }}
                   />
                 </Grid>
                 <Grid item size={1}>
-                  <TimePicker
-                    label="Select Time"
-                    value={scheduledTime}
-                    onChange={setScheduledTime}
+                  <DatePicker
+                    label="Expiry Date"
+                    minDate={scheduledDate || today}
+                    value={expiryDate}
+                    onChange={setExpiryDate}
                     slotProps={{ textField: { fullWidth: true } }}
                   />
                 </Grid>
@@ -249,10 +305,6 @@ const AddAdvertisement = () => {
             )}
 
             <div className="imageUploadSec">
-              <h5 className="mb-4 fw-bold text-primary">
-                Upload Advertisement Image
-              </h5>
-
               <div className="imgUploadBox d-flex flex-wrap gap-3">
                 {advertisementImage ? (
                   <div className="uploadBox position-relative">

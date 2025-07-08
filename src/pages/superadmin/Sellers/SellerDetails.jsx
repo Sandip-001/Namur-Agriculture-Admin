@@ -63,11 +63,18 @@ const sellerProfile = {
   },
   lands: [
     {
+      district: "Mandya",
+      taluk: "Srirangapatna",
+      village: "Palahalli",
       landName: "Land A",
       areaName: "Green Valley",
-      surveyNo: "123/1",
+      surveyNo: "123 1",
       areaAcres: 2.5,
       crops: [
+        { name: "Onion", image: onion, acres: 1.2 },
+        { name: "Corn", image: corn, acres: 1.3 },
+        { name: "Onion", image: onion, acres: 1.2 },
+        { name: "Corn", image: corn, acres: 1.3 },
         { name: "Onion", image: onion, acres: 1.2 },
         { name: "Corn", image: corn, acres: 1.3 },
       ],
@@ -81,9 +88,12 @@ const sellerProfile = {
       ],
     },
     {
+      district: "Belagavi",
+      taluk: "Chikodi",
+      village: "Kankanwadi",
       landName: "Land B",
       areaName: "Sunset Field",
-      surveyNo: "456/2",
+      surveyNo: "456 2",
       areaAcres: 1.8,
       crops: [{ name: "Corn", image: corn, acres: 1.8 }],
       machines: [{ name: "Plough", image: plow }],
@@ -115,6 +125,10 @@ const SellerProfile = () => {
 
   // land editing state
   const currentLand = sellerProfile.lands[landIndex];
+
+  const [district, setDistrict] = useState(currentLand.district);
+  const [taluk, setTaluk] = useState(currentLand.taluk);
+  const [village, setVillage] = useState(currentLand.village);
   const [landName, setLandName] = useState(currentLand.landName);
   const [areaName, setAreaName] = useState(currentLand.areaName);
   const [surveyNo, setSurveyNo] = useState(currentLand.surveyNo);
@@ -128,6 +142,46 @@ const SellerProfile = () => {
   const [animalSelect, setAnimalSelect] = useState("");
   const [animalQty, setAnimalQty] = useState("");
 
+  const districtOptions = [
+    { label: "Bengaluru Urban", value: "Bengaluru Urban" },
+    { label: "Mysuru", value: "Mysuru" },
+    { label: "Belagavi", value: "Belagavi" },
+    { label: "Mandya", value: "Mandya" },
+    { label: "Dharwad", value: "Dharwad" },
+    { label: "Tumakuru", value: "Tumakuru" },
+    { label: "Kalaburagi", value: "Kalaburagi" },
+    { label: "Shivamogga", value: "Shivamogga" },
+  ];
+
+  const talukOptions = [
+    {
+      district: "Bengaluru Urban",
+      label: "Bengaluru North",
+      value: "Bengaluru North",
+    },
+    { district: "Bengaluru Urban", label: "Yelahanka", value: "Yelahanka" },
+    { district: "Mysuru", label: "Nanjangud", value: "Nanjangud" },
+    { district: "Mysuru", label: "Mysuru", value: "Mysuru" },
+    { district: "Belagavi", label: "Chikodi", value: "Chikodi" },
+    { district: "Mandya", label: "Srirangapatna", value: "Srirangapatna" },
+    { district: "Dharwad", label: "Hubli", value: "Hubli" },
+    { district: "Tumakuru", label: "Kunigal", value: "Kunigal" },
+  ];
+
+  const villageOptions = [
+    { taluk: "Bengaluru North", label: "Hebbal", value: "Hebbal" },
+    { taluk: "Yelahanka", label: "Jakkur", value: "Jakkur" },
+    { taluk: "Nanjangud", label: "Kadakola", value: "Kadakola" },
+    { taluk: "Mysuru", label: "Srirampura", value: "Srirampura" },
+    { taluk: "Chikodi", label: "Kankanwadi", value: "Kankanwadi" },
+    { taluk: "Srirangapatna", label: "Palahalli", value: "Palahalli" },
+    { taluk: "Hubli", label: "Amargol", value: "Amargol" },
+    { taluk: "Kunigal", label: "Bellur", value: "Bellur" },
+  ];
+
+  const filteredTaluks = talukOptions.filter((t) => t.district === district);
+  const filteredVillages = villageOptions.filter((v) => v.taluk === taluk);
+
   const cropOptions = ["Onion", "Corn", "Wheat"];
   const machineOptions = [
     { name: "Tractor", image: "tractor.png" },
@@ -139,6 +193,9 @@ const SellerProfile = () => {
   useEffect(() => {
     const currentLand = sellerProfile.lands[landIndex];
 
+    setDistrict(currentLand.district);
+    setTaluk(currentLand.taluk);
+    setVillage(currentLand.village);
     setLandName(currentLand.landName);
     setAreaName(currentLand.areaName);
     setSurveyNo(currentLand.surveyNo);
@@ -176,10 +233,12 @@ const SellerProfile = () => {
           <CardContent>
             <Grid container spacing={3} alignItems="center">
               {/* Toggle Switch */}
-              <Box sx={{ position: "absolute", top: 293, right: 37 }}>
-                {/*<Typography variant="body2" fontWeight={600} gutterBottom>
-                  Edit Mode
-                </Typography>*/}
+              <Box sx={{ position: "absolute", top: 86, right: 37 }}>
+                {
+                  <Typography variant="body2" fontWeight={600} gutterBottom>
+                    {editMode ? "Edit Mode" : "Disabled"}
+                  </Typography>
+                }
                 <Switch
                   checked={editMode}
                   onChange={(e) => setEditMode(e.target.checked)}
@@ -188,7 +247,7 @@ const SellerProfile = () => {
               </Box>
 
               {/* Edit Button (disabled when toggle is off) */}
-              <Box sx={{ position: "absolute", top: 110, right: 42 }}>
+              <Box sx={{ position: "absolute", top: 290, right: 42 }}>
                 <Tooltip
                   title={editMode ? "Edit Profile" : "Edit Disabled"}
                   arrow
@@ -300,6 +359,9 @@ const SellerProfile = () => {
             </Typography>
             <Grid container spacing={2}>
               <Grid item xs={12} sm={4}>
+                <strong>District:</strong> {selectedLand.district}
+              </Grid>
+              <Grid item xs={12} sm={4}>
                 <strong>Area Name:</strong> {selectedLand.areaName}
               </Grid>
               <Grid item xs={12} sm={4}>
@@ -381,20 +443,6 @@ const SellerProfile = () => {
       <Modal open={profileModal} onClose={() => openProfileModal(false)}>
         <Box sx={modalStyle}>
           <Typography variant="h6">Edit Profile</Typography>
-          <TextField
-            fullWidth
-            label="Name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            sx={{ mt: 2 }}
-          />
-          <TextField
-            fullWidth
-            label="Phone"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            sx={{ mt: 2 }}
-          />
           {["district", "taluk", "gramPanchayat", "village", "pincode"].map(
             (field) => (
               <TextField
@@ -424,7 +472,63 @@ const SellerProfile = () => {
       {/* Land Edit Modal */}
       <Modal open={landModal} onClose={() => openLandModal(false)}>
         <Box sx={modalStyle}>
-          <Typography variant="h6">Edit Land Details</Typography>
+          <Typography variant="h6" className="mb-3">
+            Edit Land Details
+          </Typography>
+          <FormControl fullWidth>
+            <InputLabel>District</InputLabel>
+            <Select
+              value={district}
+              label="District"
+              onChange={(e) => {
+                setDistrict(e.target.value);
+                setTaluk(""); // reset dependent fields
+                setVillage("");
+              }}
+              required
+            >
+              {districtOptions.map((district) => (
+                <MenuItem key={district.value} value={district.value}>
+                  {district.label}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+
+          <FormControl fullWidth className="mt-3" disabled={!district}>
+            <InputLabel>Taluk</InputLabel>
+            <Select
+              value={taluk}
+              label="Taluk"
+              onChange={(e) => {
+                setTaluk(e.target.value);
+                setVillage("");
+              }}
+              required
+            >
+              {filteredTaluks.map((taluk) => (
+                <MenuItem key={taluk.value} value={taluk.value}>
+                  {taluk.label}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+
+          <FormControl fullWidth className="mt-3" disabled={!taluk}>
+            <InputLabel>Village</InputLabel>
+            <Select
+              value={village}
+              label="Village"
+              onChange={(e) => setVillage(e.target.value)}
+              required
+            >
+              {filteredVillages.map((village) => (
+                <MenuItem key={village.value} value={village.value}>
+                  {village.label}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
           {[
             // basic land fields
             { label: "Land Name", value: landName, setter: setLandName },

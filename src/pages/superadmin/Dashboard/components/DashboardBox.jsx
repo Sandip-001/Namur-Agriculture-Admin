@@ -1,48 +1,100 @@
-import React, { useState } from "react";
-import { Button } from "@mui/material";
-import TrendingUpIcon from "@mui/icons-material/TrendingUp";
-import TrendingDownIcon from "@mui/icons-material/TrendingDown";
-import { useNavigate } from "react-router-dom";
+import React from "react";
+import {
+  Box,
+  Grid,
+  Typography,
+  Card,
+  CardContent,
+  useTheme,
+} from "@mui/material";
 
-const DashboardBox = (props) => {
-  const navigate = useNavigate();
-  const [anchorEl, setAnchorEl] = useState(null);
+const DashboardBox = () => {
+  const theme = useTheme();
 
-  const handleClick = () => {
-    if (props.path) {
-      navigate(props.path);
-    }
-  };
+  const infoCards = [
+    {
+      title: "Total Users",
+      data: [
+        ["1000", "Total users"],
+        ["5", "Currently online"],
+        ["20", "Today installs"],
+        ["50", "Last week installs"],
+        ["75", "Last month installs"],
+      ],
+      color: "#b2dfdb",
+    },
+    {
+      title: "Total Products",
+      data: [
+        ["50", "Total products"],
+        ["Cow", "Most ads"],
+        ["Tractor", "Most viewed"],
+        ["Toys", "Least viewed"],
+        ["Mobile", "Least ads"],
+      ],
+      color: "#f8bbd0",
+    },
+    {
+      title: "Total Ads",
+      data: [
+        ["1000", "Total ads"],
+        ["75", "Active ads"],
+        ["10", "Today’s ads"],
+        ["5000", "Total views"],
+        ["60", "User ads"],
+      ],
+      color: "#bbdefb",
+    },
+    {
+      title: "Total News",
+      data: [
+        ["1000", "Total news"],
+        ["50", "Active news"],
+        ["20", "Today news"],
+        ["#5556", "Mostr viewed"],
+        ["500", "Most viewed"],
+      ],
+      color: "#ffe082",
+    },
+  ];
 
   return (
-    <Button
-      onClick={handleClick}
-      className="dashboardBox"
-      style={{
-        backgroundImage: `linear-gradient(to right, ${props.color[0]}, ${props.color[1]})`,
-      }}
-    >
-      {props.grow === true ? (
-        <span className="chart">
-          <TrendingUpIcon />
-        </span>
-      ) : (
-        <span className="chart">
-          <TrendingDownIcon />
-        </span>
-      )}
-
-      <div className="d-flex w-100">
-        <div className="col1">
-          <h4 className="text-white mb-0">{props.name}</h4>
-          <span className="text-white">{props.length}</span>
-        </div>
-
-        <div className="ms-auto">
-          {props.icon ? <span className="icon">{props.icon}</span> : ""}
-        </div>
-      </div>
-    </Button>
+    <Box sx={{ overflowX: "auto", pb: 1 }}>
+      <Box
+        sx={{
+          display: "flex",
+          gap: 3, // increases spacing between cards
+          flexWrap: "nowrap",
+          minWidth: "100%",
+        }}
+      >
+        {infoCards.map((card, index) => (
+          <Card
+            key={index}
+            sx={{
+              backgroundColor: card.color,
+              minWidth: 270,
+              flexShrink: 0, // prevent shrinking in scroll
+              //cursor: "pointer"
+            }}
+          >
+            <CardContent>
+              <Typography variant="h6" fontWeight={600} gutterBottom>
+                {card.title}
+              </Typography>
+              {card.data.map((row, idx) => (
+                <Box key={idx} display="flex" justifyContent="space-between">
+                  <Typography variant="body1">{row[0]}</Typography>
+                  <Typography variant="body2" color="textSecondary">
+                    {row[1]}
+                  </Typography>
+                </Box>
+              ))}
+            </CardContent>
+          </Card>
+        ))}
+      </Box>
+    </Box>
   );
 };
 

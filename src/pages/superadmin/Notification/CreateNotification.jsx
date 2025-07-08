@@ -13,6 +13,9 @@ import {
   Select,
   InputLabel,
   Switch,
+  ListItemText,
+  Checkbox,
+  OutlinedInput,
 } from "@mui/material";
 import { DatePicker, TimePicker } from "@mui/x-date-pickers";
 import { useEffect, useState } from "react";
@@ -23,14 +26,13 @@ import dayjs from "dayjs";
 const CreateNotification = () => {
   const [targetType, setTargetType] = useState("all");
   const [districts, setDistricts] = useState([]);
-  const [selectedDistrict, setSelectedDistrict] = useState("");
+  const [selectedDistricts, setSelectedDistricts] = useState([]);
 
   const [title, setTitle] = useState("");
   const [message, setMessage] = useState("");
   const [schedule, setSchedule] = useState(false);
   const [scheduleDate, setScheduleDate] = useState(dayjs());
   const [scheduleTime, setScheduleTime] = useState(dayjs());
-
 
   useEffect(() => {
     fetch("https://api.countrystatecity.in/v1/countries/IN/states/KA/cities", {
@@ -49,6 +51,14 @@ const CreateNotification = () => {
       .catch((err) => console.error("Failed to fetch cities", err));
   }, []);
 
+
+  const handledistChange = (event) => {
+    const {
+      target: { value },
+    } = event;
+    setSelectedDistricts(typeof value === "string" ? value.split(",") : value);
+  };
+
   const handleSubmit = () => {
     const scheduleDateTime = schedule
       ? dayjs(
@@ -60,7 +70,7 @@ const CreateNotification = () => {
 
     const payload = {
       targetType,
-      district: selectedDistrict,
+      districts: selectedDistricts,
       title,
       message,
       sendNow: !schedule,
@@ -111,16 +121,19 @@ const CreateNotification = () => {
           </FormControl>
 
           {targetType === "district" && (
-            <FormControl fullWidth margin="normal">
+            <FormControl fullWidth>
               <InputLabel>Select District</InputLabel>
               <Select
-                value={selectedDistrict}
-                onChange={(e) => setSelectedDistrict(e.target.value)}
-                label="Select District"
+                multiple
+                value={selectedDistricts}
+                onChange={handledistChange}
+                input={<OutlinedInput label="District" />}
+                renderValue={(selected) => selected.join(", ")}
               >
-                {districts.map((dist, i) => (
-                  <MenuItem key={i} value={dist}>
-                    {dist}
+                {districts.map((dist) => (
+                  <MenuItem key={dist} value={dist}>
+                    <Checkbox checked={selectedDistricts.includes(dist)} />
+                    <ListItemText primary={dist} />
                   </MenuItem>
                 ))}
               </Select>
