@@ -987,7 +987,7 @@ body.dark .css-1bug3cd-MuiButtonBase-root-MuiPaginationItem-root:hover{
   padding: 40px 30px;
   width: 100%;
   max-width: 400px;
-  color: white;
+  color: rgb(0, 0, 0);
   position: relative;
 }
 
@@ -1020,11 +1020,11 @@ body.dark .css-1bug3cd-MuiButtonBase-root-MuiPaginationItem-root:hover{
   outline: none;
   font-size: 1rem;
   background: rgba(255, 255, 255, 0.15);
-  color: white;
+  color: rgb(0, 0, 0);
 }
 
 .login-page .form-group input::placeholder {
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(0, 0, 0, 0.4);
 }
 
 .login-page .forgot-password {
