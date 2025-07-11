@@ -27,6 +27,7 @@ import { DatePicker, TimePicker } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import dayjs from "dayjs";
+import karnatakaData from "../../../data/karnataka_districts_taluks_villages.json";
 
 const subCategories = ["Fruits", "Vegetables", "Dairy"];
 const productsMap = {
@@ -80,6 +81,11 @@ const AddAdvertisement = () => {
     e.preventDefault();
     setAdvertisementImage(null);
   };
+
+  const districtOptions = Object.keys(karnatakaData).map((d) => ({
+    label: d,
+    value: d,
+  }));
 
   const handledistChange = (event) => {
     const {
@@ -240,13 +246,15 @@ const AddAdvertisement = () => {
                   multiple
                   value={selectedDistricts}
                   onChange={handledistChange}
-                  input={<OutlinedInput label="District" />}
+                  input={<OutlinedInput label="Select District" />}
                   renderValue={(selected) => selected.join(", ")}
                 >
-                  {districts.map((dist) => (
-                    <MenuItem key={dist} value={dist}>
-                      <Checkbox checked={selectedDistricts.includes(dist)} />
-                      <ListItemText primary={dist} />
+                  {districtOptions.map((dist) => (
+                    <MenuItem key={dist.value} value={dist.value}>
+                      <Checkbox
+                        checked={selectedDistricts.includes(dist.value)}
+                      />
+                      <ListItemText primary={dist.label} />
                     </MenuItem>
                   ))}
                 </Select>

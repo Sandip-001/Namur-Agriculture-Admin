@@ -14,6 +14,8 @@ import man1 from "../../../assets/man1.png";
 import man2 from "../../../assets/man2.png";
 import { MyContext } from "../../../App";
 import ResponsivePagination from "../../../components/Pagination";
+import { Modal, Box, IconButton, Tooltip } from "@mui/material";
+import RoomIcon from "@mui/icons-material/Room"; // Google Map icon
 
 const Users = () => {
   const navigate = useNavigate();
@@ -38,6 +40,19 @@ const Users = () => {
     setPage(value);
   };
 
+  const [openMapModal, setOpenMapModal] = useState(false);
+  const [selectedLocation, setSelectedLocation] = useState(null);
+
+  const handleOpenMap = (lat, lng) => {
+    setSelectedLocation({ lat, lng });
+    setOpenMapModal(true);
+  };
+
+  const handleCloseMap = () => {
+    setOpenMapModal(false);
+    setSelectedLocation(null);
+  };
+
   const getDummyUsers = () => {
     return [
       {
@@ -48,6 +63,8 @@ const Users = () => {
         email: "chowdhurysandip2016@gmail.com",
         district: "Bengaluru Urban",
         taluk: "Bangalore South",
+        latitude: 12.9716,
+        longitude: 77.5946,
       },
       {
         no: 2,
@@ -57,6 +74,8 @@ const Users = () => {
         email: "anjali@brightfuture.com",
         district: "Mysuru",
         taluk: "Mysore",
+        latitude: 12.2958,
+        longitude: 76.6394,
       },
       {
         no: 3,
@@ -66,6 +85,8 @@ const Users = () => {
         email: "chowdhurysandip2016@gmail.com",
         district: "Dakshina Kannada",
         taluk: "Mangalore",
+        latitude: 12.9141,
+        longitude: 74.8560,
       },
       {
         no: 4,
@@ -75,6 +96,8 @@ const Users = () => {
         email: "anjali@brightfuture.com",
         district: "Belagavi",
         taluk: "Belgaum",
+        latitude: 23.949530,
+        longitude: 88.031780,
       },
     ];
   };
@@ -141,6 +164,7 @@ const Users = () => {
                   <th>CONTACT NUMBER</th>
                   <th>ADDRESS</th>
                   <th>SELLING PRODUCTS</th>
+                  <th>LOCATION</th>
                 </tr>
               </thead>
               <tbody className="text-center">
@@ -189,6 +213,19 @@ const Users = () => {
                           <StorefrontIcon />
                         </Button>
                       </td>
+                      <td>
+                        <Tooltip title="View on Map">
+                          <IconButton
+                            color="primary"
+                            onClick={(e) => {
+                              e.stopPropagation(); // prevents parent click
+                              handleOpenMap(item.latitude, item.longitude);
+                            }}
+                          >
+                            <RoomIcon />
+                          </IconButton>
+                        </Tooltip>
+                      </td>
                     </tr>
                   ))
                 ) : (
@@ -209,6 +246,35 @@ const Users = () => {
           onChange={(event, value) => setCurrentPage(value)}
         />
       </div>
+
+      <Modal open={openMapModal} onClose={handleCloseMap}>
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: "80%",
+            height: "500px",
+            bgcolor: "background.paper",
+            borderRadius: 2,
+            boxShadow: 24,
+            p: 2,
+          }}
+        >
+          {selectedLocation && (
+            <iframe
+              width="100%"
+              height="100%"
+              frameBorder="0"
+              style={{ border: 0, borderRadius: 8 }}
+              src={`https://www.google.com/maps?q=${selectedLocation.lat},${selectedLocation.lng}&hl=es;z=14&output=embed`}
+              allowFullScreen
+              loading="lazy"
+            />
+          )}
+        </Box>
+      </Modal>
     </>
   );
 };

@@ -73,12 +73,10 @@ const AddSubCategory = () => {
           <div className="row">
             <div className="col-md-12">
               <div className="card p-4">
-                <h5 className="mb-4">Basic Information</h5>
 
                 <div className="row">
                   <div className="col-md-6 col-sm-12">
                     <div className="form-group">
-                      <h6>CATEGORY</h6>
                       <Select
                         value={catName}
                         onChange={(e) => setCatName(e.target.value)}
@@ -101,7 +99,6 @@ const AddSubCategory = () => {
 
                   <div className="col-md-6 col-sm-12">
                     <div className="form-group">
-                      <h6>SUB-CATEGORY</h6>
                       <input
                         type="text"
                         value={subCatName}
@@ -115,11 +112,14 @@ const AddSubCategory = () => {
 
                 <Button
                   type="submit"
-                  className="btn-blue btn-lg btn-big w-100 productSubmit"
+                  className="btn-blue btn-lg w-40 gap-2 mt-2 d-flex"
+                  style={{
+                    margin: "auto",
+                  }}
                 >
                   <FaCloudUploadAlt />
-                  {isLoading === true ? (
-                    <CircularProgress color="inherit" className="loader" />
+                  {isLoading ? (
+                    <CircularProgress color="inherit" size={20} />
                   ) : (
                     "PUBLISH AND VIEW"
                   )}

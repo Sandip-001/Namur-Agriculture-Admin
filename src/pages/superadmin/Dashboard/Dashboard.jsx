@@ -21,8 +21,8 @@ import {
 } from "chart.js";
 import { Avatar, Button, Menu, MenuItem } from "@mui/material";
 import { IoIosTimer, IoMdCart } from "react-icons/io";
-import { FaPencilAlt, FaUserCircle } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import { RxCrossCircled } from "react-icons/rx";
 
 ChartJS.register(
   CategoryScale,
@@ -285,6 +285,46 @@ const Dashboard = () => {
 
   const dummyData = getDummyOrders();
 
+  const [comments, setComments] = useState([
+    {
+      name: "RameshK",
+      comment:
+        "This tractor is in excellent condition. I’ve already contacted the seller!",
+    },
+    {
+      name: "Sunita88",
+      comment:
+        "The irrigation kit is a great deal. Highly recommend checking this out.",
+    },
+    {
+      name: "KrishnFarm",
+      comment:
+        "The user interface is very smooth and easy to post ads. Good job team!",
+    },
+    {
+      name: "Vijay_Agro",
+      comment:
+        "I sold my crop sprayer in just 2 days. This platform is amazing!",
+    },
+    {
+      name: "EcoFarms",
+      comment:
+        "Can you add an option for bulk uploads? Managing individual products takes time.",
+    },
+    {
+      name: "Neha_R",
+      comment: "Love the new UI! Much better than the previous version 👏",
+    },
+    {
+      name: "AjayDeals",
+      comment: "Product visibility has improved a lot after using premium ads.",
+    },
+  ]);
+
+  const removeComment = (index) => {
+    setComments((prev) => prev.filter((_, i) => i !== index));
+  };
+
   const chartData = {
     labels: userJoinData[view].map((entry) =>
       view === "daily"
@@ -383,38 +423,23 @@ const Dashboard = () => {
                 💬 Recent Comments
               </h5>
               <ul className="list-unstyled mb-0">
-                <li>
-                  <strong>RameshK:</strong> This tractor is in excellent
-                  condition. I’ve already contacted the seller!
-                </li>
-                <li>
-                  <strong>Sunita88:</strong> The irrigation kit is a great deal.
-                  Highly recommend checking this out.
-                </li>
-                <li>
-                  <strong>KrishnFarm:</strong> The user interface is very smooth
-                  and easy to post ads. Good job team!
-                </li>
-                <li>
-                  <strong>Vijay_Agro:</strong> I sold my crop sprayer in just 2
-                  days. This platform is amazing!
-                </li>
-                <li>
-                  <strong>EcoFarms:</strong> Can you add an option for bulk
-                  uploads? Managing individual products takes time.
-                </li>
-                <li>
-                  <strong>Neha_R:</strong> Love the new UI! Much better than the
-                  previous version 👏
-                </li>
-                <li>
-                  <strong>AjayDeals:</strong> Product visibility has improved a
-                  lot after using premium ads.
-                </li>
-                <li>
-                  <strong>FarmNetUser:</strong> Please improve the image upload
-                  speed. It takes a bit too long sometimes.
-                </li>
+                {comments.map((item, index) => (
+                  <li
+                    key={index}
+                    className="d-flex justify-content-between align-items-start mb-2"
+                  >
+                    <div>
+                      <strong>{item.name}:</strong> {item.comment}
+                    </div>
+                    <button
+                      className="btn btn-sm btn-outline-danger ms-2"
+                      onClick={() => removeComment(index)}
+                      title="Remove comment"
+                    >
+                      <RxCrossCircled style={{fontSize:"20px"}}/>
+                    </button>
+                  </li>
+                ))}
               </ul>
             </div>
           </div>

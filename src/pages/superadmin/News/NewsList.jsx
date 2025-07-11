@@ -156,8 +156,6 @@ const NewsList = () => {
                 <tr>
                   <th>NO</th>
                   <th>IMAGE</th>
-                  <th>TITLE</th>
-                  <th>URL</th>
                   <th>ACTION</th>
                 </tr>
               </thead>
@@ -177,36 +175,14 @@ const NewsList = () => {
                           <img
                             src={item.image}
                             alt={item.title}
-                            width={100}
-                            height={100}
+                            width={70}
+                            height={70}
                             style={{
                               objectFit: "cover",
                               borderRadius: "6px",
                               cursor: "pointer",
                             }}
                           />
-                        </a>
-                      </td>
-
-                      <td>{item.title}</td>
-
-                      <td>
-                        <a
-                          href={item.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          style={{
-                            color: "#0d6efd",
-                            textDecoration: "none",
-                          }}
-                          onMouseEnter={(e) =>
-                            (e.target.style.textDecoration = "underline")
-                          }
-                          onMouseLeave={(e) =>
-                            (e.target.style.textDecoration = "none")
-                          }
-                        >
-                          {item.url}
                         </a>
                       </td>
 

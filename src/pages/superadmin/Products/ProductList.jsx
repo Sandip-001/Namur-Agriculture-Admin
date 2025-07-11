@@ -22,6 +22,7 @@ import {
   Select,
   MenuItem,
   FormControl,
+  Box,
 } from "@mui/material";
 import { IoCloseSharp } from "react-icons/io5";
 
@@ -32,13 +33,16 @@ const ProductList = () => {
   const { setProgress, setAlertBox, setIsHideSidebarAndHeader } =
     useContext(MyContext);
 
+  const [selectedSubCategory, setSelectedSubCategory] = useState("All");
+  const [filteredProducts, setFilteredProducts] = useState([]);
+
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [editedSubCategory, setEditedSubCategory] = useState("");
   const [editedName, setEditedName] = useState("");
   const [editedImage, setEditedImage] = useState(null);
 
-  const dummySubCategories = ["Animals", "Vegetables",  "Fruits", "Toys"];
+  const dummySubCategories = ["Animals", "Vegetables", "Fruits", "Toys"];
 
   useEffect(() => {
     setIsHideSidebarAndHeader(false);
@@ -89,7 +93,17 @@ const ProductList = () => {
     ];
   };
 
-  const dummyData = getDummyProducts();
+  const allProducts = getDummyProducts();
+
+  useEffect(() => {
+    if (selectedSubCategory === "All") {
+      setFilteredProducts(allProducts);
+    } else {
+      setFilteredProducts(
+        allProducts.filter((item) => item.subCatName === selectedSubCategory)
+      );
+    }
+  }, [selectedSubCategory]);
 
   const handleEditClick = (product) => {
     setSelectedProduct(product);
@@ -157,6 +171,24 @@ const ProductList = () => {
           </div>
         </div>
 
+        <Box display="flex" alignItems="center" gap={2} mb={2}>
+          <FormControl size="small" sx={{ width: "100%" }}>
+            <InputLabel>Filter by Sub-Category</InputLabel>
+            <Select
+              value={selectedSubCategory}
+              onChange={(e) => setSelectedSubCategory(e.target.value)}
+              label="Filter by Sub-Category"
+            >
+              <MenuItem value="All">All</MenuItem>
+              {dummySubCategories.map((subCat, index) => (
+                <MenuItem key={index} value={subCat}>
+                  {subCat}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Box>
+
         <div className="card shadow border-0 p-3 mt-4">
           <div className="table-responsive">
             <table className="table table-bordered table-striped align-middle text-nowrap">
@@ -170,8 +202,8 @@ const ProductList = () => {
                 </tr>
               </thead>
               <tbody className="text-center">
-                {dummyData.length > 0 ? (
-                  dummyData.map((item, index) => (
+                {filteredProducts.length > 0 ? (
+                  filteredProducts.map((item, index) => (
                     <tr key={index}>
                       <td>{item.no}</td>
                       <td>

@@ -93,7 +93,6 @@ const AddCategory = () => {
                 <div className="row">
                   <div className="col-md-6 col-sm-12">
                     <div className="form-group">
-                      <h6>Category Name</h6>
                       <input
                         type="text"
                         value={catName}
@@ -133,7 +132,6 @@ const AddCategory = () => {
                           />
                           <div className="info text-center">
                             <FaRegImages />
-                            <h6 className="mt-2">Upload Image</h6>
                           </div>
                         </label>
                       )}
@@ -143,7 +141,10 @@ const AddCategory = () => {
 
                     <Button
                       type="submit"
-                      className="btn-blue btn-lg w-100 d-flex justify-content-center align-items-center gap-2"
+                      className="btn-blue btn-lg w-40 gap-2 mt-2 d-flex"
+                      style={{
+                        margin: "auto",
+                      }}
                     >
                       <FaCloudUploadAlt />
                       {isLoading ? (

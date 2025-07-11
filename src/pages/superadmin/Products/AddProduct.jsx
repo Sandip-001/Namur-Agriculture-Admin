@@ -42,7 +42,7 @@ const AddProduct = () => {
   const subCategories = ["Animals", "Fruits", "Toys"];
 
   const [subCatName, setSubCatName] = useState("");
-  const [productName, setProductName] = useState("")
+  const [productName, setProductName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [productImage, setProductImage] = useState(null);
 
@@ -89,12 +89,9 @@ const AddProduct = () => {
           <div className="row">
             <div className="col-md-12">
               <div className="card p-4">
-                <h5 className="mb-4">Basic Information</h5>
-
                 <div className="row">
                   <div className="col-md-6 col-sm-12">
                     <div className="form-group">
-                      <h6>SUB-CATEGORY</h6>
                       <Select
                         value={subCatName}
                         onChange={(e) => setSubCatName(e.target.value)}
@@ -117,7 +114,6 @@ const AddProduct = () => {
 
                   <div className="col-md-6 col-sm-12">
                     <div className="form-group">
-                      <h6>Product Name</h6>
                       <input
                         type="text"
                         value={productName}
@@ -157,7 +153,6 @@ const AddProduct = () => {
                           />
                           <div className="info text-center">
                             <FaRegImages />
-                            <h6 className="mt-2">Upload Image</h6>
                           </div>
                         </label>
                       )}
@@ -167,7 +162,10 @@ const AddProduct = () => {
 
                     <Button
                       type="submit"
-                      className="btn-blue btn-lg w-100 d-flex justify-content-center align-items-center gap-2"
+                      className="btn-blue btn-lg w-40 gap-2 mt-2 d-flex"
+                      style={{
+                        margin: "auto",
+                      }}
                     >
                       <FaCloudUploadAlt />
                       {isLoading ? (

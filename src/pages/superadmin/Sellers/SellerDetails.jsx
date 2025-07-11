@@ -29,6 +29,8 @@ import tractor from "../../../assets/tractor.png";
 import plow from "../../../assets/plow.png";
 import corn from "../../../assets/corn.png";
 
+import karnatakaData from "../../../data/karnataka_districts_taluks_villages.json";
+
 const modalStyle = {
   position: "absolute",
   top: "50%",
@@ -63,9 +65,9 @@ const sellerProfile = {
   },
   lands: [
     {
-      district: "Mandya",
+      district: "mandya",
       taluk: "Srirangapatna",
-      village: "Palahalli",
+      village: "PALAHALLI",
       landName: "Land A",
       areaName: "Green Valley",
       surveyNo: "123 1",
@@ -88,9 +90,9 @@ const sellerProfile = {
       ],
     },
     {
-      district: "Belagavi",
-      taluk: "Chikodi",
-      village: "Kankanwadi",
+      district: "Raichur",
+      taluk: "Manvi",
+      village: "AROLI",
       landName: "Land B",
       areaName: "Sunset Field",
       surveyNo: "456 2",
@@ -142,45 +144,25 @@ const SellerProfile = () => {
   const [animalSelect, setAnimalSelect] = useState("");
   const [animalQty, setAnimalQty] = useState("");
 
-  const districtOptions = [
-    { label: "Bengaluru Urban", value: "Bengaluru Urban" },
-    { label: "Mysuru", value: "Mysuru" },
-    { label: "Belagavi", value: "Belagavi" },
-    { label: "Mandya", value: "Mandya" },
-    { label: "Dharwad", value: "Dharwad" },
-    { label: "Tumakuru", value: "Tumakuru" },
-    { label: "Kalaburagi", value: "Kalaburagi" },
-    { label: "Shivamogga", value: "Shivamogga" },
-  ];
+  const districtOptions = Object.keys(karnatakaData).map((d) => ({
+    label: d,
+    value: d,
+  }));
 
-  const talukOptions = [
-    {
-      district: "Bengaluru Urban",
-      label: "Bengaluru North",
-      value: "Bengaluru North",
-    },
-    { district: "Bengaluru Urban", label: "Yelahanka", value: "Yelahanka" },
-    { district: "Mysuru", label: "Nanjangud", value: "Nanjangud" },
-    { district: "Mysuru", label: "Mysuru", value: "Mysuru" },
-    { district: "Belagavi", label: "Chikodi", value: "Chikodi" },
-    { district: "Mandya", label: "Srirangapatna", value: "Srirangapatna" },
-    { district: "Dharwad", label: "Hubli", value: "Hubli" },
-    { district: "Tumakuru", label: "Kunigal", value: "Kunigal" },
-  ];
+  const talukOptions = district
+    ? Object.keys(karnatakaData[district] || {}).map((t) => ({
+        label: t,
+        value: t,
+      }))
+    : [];
 
-  const villageOptions = [
-    { taluk: "Bengaluru North", label: "Hebbal", value: "Hebbal" },
-    { taluk: "Yelahanka", label: "Jakkur", value: "Jakkur" },
-    { taluk: "Nanjangud", label: "Kadakola", value: "Kadakola" },
-    { taluk: "Mysuru", label: "Srirampura", value: "Srirampura" },
-    { taluk: "Chikodi", label: "Kankanwadi", value: "Kankanwadi" },
-    { taluk: "Srirangapatna", label: "Palahalli", value: "Palahalli" },
-    { taluk: "Hubli", label: "Amargol", value: "Amargol" },
-    { taluk: "Kunigal", label: "Bellur", value: "Bellur" },
-  ];
-
-  const filteredTaluks = talukOptions.filter((t) => t.district === district);
-  const filteredVillages = villageOptions.filter((v) => v.taluk === taluk);
+  const villageOptions =
+    district && taluk
+      ? (karnatakaData[district]?.[taluk] || []).map((v) => ({
+          label: v,
+          value: v,
+        }))
+      : [];
 
   const cropOptions = ["Onion", "Corn", "Wheat"];
   const machineOptions = [
@@ -506,7 +488,7 @@ const SellerProfile = () => {
               }}
               required
             >
-              {filteredTaluks.map((taluk) => (
+              {talukOptions.map((taluk) => (
                 <MenuItem key={taluk.value} value={taluk.value}>
                   {taluk.label}
                 </MenuItem>
@@ -522,7 +504,7 @@ const SellerProfile = () => {
               onChange={(e) => setVillage(e.target.value)}
               required
             >
-              {filteredVillages.map((village) => (
+              {villageOptions.map((village) => (
                 <MenuItem key={village.value} value={village.value}>
                   {village.label}
                 </MenuItem>

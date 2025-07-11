@@ -30,9 +30,10 @@ import AddSubAdmin from "./pages/superadmin/subadmins/AddSubAdmin";
 import SubAdminList from "./pages/superadmin/subadmins/SubAdminList";
 import CreateNotification from "./pages/superadmin/Notification/CreateNotification";
 import UserAdvertisementList from "./pages/superadmin/Advertisement/UserAdvertisementList";
-import AdsLogPage from "./pages/superadmin/History/AdsHistory";
-import NewsLogs from "./pages/superadmin/History/NewsHistory";
-import NotificationLogs from "./pages/superadmin/History/NotificationHistory";
+import History from "./pages/superadmin/History/History";
+import DistrictActivity from "./pages/superadmin/subadmins/DistrictActivity";
+import AddFpo from "./pages/superadmin/FPO/AddFpo";
+import FpoList from "./pages/superadmin/FPO/FpoList";
 
 const MyContext = createContext();
 
@@ -358,30 +359,43 @@ function App() {
               />
               <Route
                 exact
-                path="/ads-logs"
+                path="/logs"
                 element={
                   <PrivateRoute
-                    element={<AdsLogPage />}
+                    element={<History />}
                     allowedRoles={["superadmin"]}
                   />
                 }
               />
+
               <Route
                 exact
-                path="/news-logs"
+                path="/distActivity"
                 element={
                   <PrivateRoute
-                    element={<NewsLogs />}
+                    element={<DistrictActivity />}
                     allowedRoles={["superadmin"]}
                   />
                 }
               />
+
               <Route
                 exact
-                path="/notification-logs"
+                path="/add-FPO"
                 element={
                   <PrivateRoute
-                    element={<NotificationLogs />}
+                    element={<AddFpo />}
+                    allowedRoles={["superadmin"]}
+                  />
+                }
+              />
+
+              <Route
+                exact
+                path="/FPO-list"
+                element={
+                  <PrivateRoute
+                    element={<FpoList />}
                     allowedRoles={["superadmin"]}
                   />
                 }

@@ -48,28 +48,16 @@ const StyledBreadcrumb = styled(Chip)(({ theme }) => {
   };
 });
 
-const pages = [
-  "Dashboard",
-  "Category & Sub-Category",
-  "Orders",
-  "Products",
-  "Users",
-  "News",
-  "Advertisements",
-];
-
-const AddSubAdmin = () => {
+const AddFpo = () => {
   const { setAlertBox } = useContext(MyContext);
 
   const [name, setName] = useState("");
-  const [selectedPages, setSelectedPages] = useState([]);
-  const [email, setEmail] = useState("");
-  const [number, setNumber] = useState("");
-  const [qualification, setQualification] = useState("");
+  const [gstNo, setGstno] = useState("");
+  const [description, setDescription] = useState("");
   const [address, setAddress] = useState("");
-  const [password, setPassword] = useState("");
+  const [productInput, setProductInput] = useState("");
+  const [selectedProducts, setSelectedProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedDistricts, setSelectedDistricts] = useState([]);
   const [subAdminImage, setSubAdminImage] = useState(null);
 
   const handleImageUpload = (e) => {
@@ -90,87 +78,58 @@ const AddSubAdmin = () => {
     setSubAdminImage(null);
   };
 
-  const districtOptions = Object.keys(karnatakaData).map((d) => ({
-    label: d,
-    value: d,
-  }));
-
-  const handlePageChange = (event) => {
-    const {
-      target: { value },
-    } = event;
-    setSelectedPages(typeof value === "string" ? value.split(",") : value);
+  const handleAddProduct = () => {
+    if (
+      productInput.trim() &&
+      !selectedProducts.includes(productInput.trim())
+    ) {
+      setSelectedProducts([...selectedProducts, productInput.trim()]);
+      setProductInput("");
+    }
   };
 
-  const handledistChange = (event) => {
-    const {
-      target: { value },
-    } = event;
-    setSelectedDistricts(typeof value === "string" ? value.split(",") : value);
+  const handleRemoveProduct = (product) => {
+    setSelectedProducts(selectedProducts.filter((p) => p !== product));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log({
       name,
-      selectedPages,
-      email,
-      number,
-      qualification,
+      gstNo,
       address,
-      password,
-      selectedDistricts,
+      description,
+      selectedProducts,
     });
   };
 
   return (
     <div className="right-content w-100">
       <div className="card shadow border-0 w-100 flex-row p-4">
-        <h5 className="mb-0">Create SubAdmin</h5>
+        <h5 className="mb-0">Create FPO</h5>
         <Breadcrumbs aria-label="breadcrumb" className="ms-auto breadcrumbs_">
           <StyledBreadcrumb
             component="a"
             href="#"
-            label="SubAdmin"
+            label="Users"
             icon={<HomeIcon fontSize="small" />}
           />
-          <StyledBreadcrumb label="Add SubAdmin" component="a" href="#" />
+          <StyledBreadcrumb label="Add FPO" component="a" href="#" />
         </Breadcrumbs>
       </div>
 
       <Card sx={{ borderRadius: 3, boxShadow: 4 }}>
         <CardContent>
           <Typography variant="h5" fontWeight={700} align="center" gutterBottom>
-            Personal Info
+            Basic Info
           </Typography>
 
           <Box component="form" onSubmit={handleSubmit} mt={2}>
             <Grid container spacing={2} columns={{ xs: 1, sm: 2 }}>
               <Grid item size={1}>
-                {" "}
-                <FormControl fullWidth>
-                  <InputLabel>Select District</InputLabel>
-                  <Select
-                    multiple
-                    value={selectedDistricts}
-                    onChange={handledistChange}
-                    input={<OutlinedInput label="Select District" />}
-                    renderValue={(selected) => selected.join(", ")}
-                  >
-                    {districtOptions.map((dist) => (
-                      <MenuItem key={dist.value} value={dist.value}>
-                        <Checkbox checked={selectedDistricts.includes(dist.value)} />
-                        <ListItemText primary={dist.label} />
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Grid>
-
-              <Grid item size={1}>
                 <TextField
                   fullWidth
-                  label="Subadmin Name"
+                  label="FPO Name"
                   variant="outlined"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
@@ -179,60 +138,13 @@ const AddSubAdmin = () => {
               </Grid>
 
               <Grid item size={1}>
-                <FormControl fullWidth>
-                  <InputLabel>Page Access</InputLabel>
-                  <Select
-                    multiple
-                    value={selectedPages}
-                    onChange={handlePageChange}
-                    input={<OutlinedInput label="Page Access" />}
-                    renderValue={(selected) => selected.join(", ")}
-                  >
-                    {pages.map((page) => (
-                      <MenuItem key={page} value={page}>
-                        <Checkbox checked={selectedPages.includes(page)} />
-                        <ListItemText primary={page} />
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Grid>
-
-              <Grid item size={1}>
-                <TextField
-                  fullWidth
-                  type="email"
-                  label="Email"
-                  variant="outlined"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
-              </Grid>
-
-              <Grid item size={1}>
                 <TextField
                   fullWidth
                   type="text"
-                  label="Contact no"
+                  label="GST no"
                   variant="outlined"
-                  value={number}
-                  onChange={(e) => {
-                    const numericValue = e.target.value.replace(/\D/g, ""); // Remove non-numeric characters
-                    setNumber(numericValue.slice(0, 10)); // Limit to 10 digits
-                  }}
-                  required
-                />
-              </Grid>
-
-              <Grid item size={1}>
-                <TextField
-                  fullWidth
-                  type="text"
-                  label="Qualification"
-                  variant="outlined"
-                  value={qualification}
-                  onChange={(e) => setQualification(e.target.value)}
+                  value={gstNo}
+                  onChange={(e) => setGstno(e.target.value)}
                   required
                 />
               </Grid>
@@ -250,14 +162,40 @@ const AddSubAdmin = () => {
               </Grid>
 
               <Grid item size={1}>
+                <Box display="flex" gap={1}>
+                  <TextField
+                    fullWidth
+                    label="Product name"
+                    variant="outlined"
+                    value={productInput}
+                    onChange={(e) => setProductInput(e.target.value)}
+                  />
+                  <Button variant="contained" onClick={handleAddProduct}>
+                    Add
+                  </Button>
+                </Box>
+                <Box mt={1} display="flex" flexWrap="wrap" gap={1}>
+                  {selectedProducts.map((product, index) => (
+                    <Chip
+                      key={index}
+                      label={product}
+                      onDelete={() => handleRemoveProduct(product)}
+                      color="primary"
+                      variant="outlined"
+                    />
+                  ))}
+                </Box>
+              </Grid>
+
+              <Grid item size={2}>
                 <TextField
                   fullWidth
-                  type="password"
-                  label="Password"
-                  variant="outlined"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
+                  multiline
+                  rows={4}
+                  label="Description"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  margin="normal"
                 />
               </Grid>
 
@@ -287,7 +225,7 @@ const AddSubAdmin = () => {
                         />
                         <div className="info text-center">
                           <FaRegImages />
-                          <h6 className="mt-2">Upload Image</h6>
+                          <h6 className="mt-2">Upload Logo</h6>
                         </div>
                       </label>
                     )}
@@ -319,4 +257,4 @@ const AddSubAdmin = () => {
   );
 };
 
-export default AddSubAdmin;
+export default AddFpo;

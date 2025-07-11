@@ -19,6 +19,7 @@ import {
   Select,
   InputLabel,
   FormControl,
+  Box,
 } from "@mui/material";
 import { IoCloseSharp } from "react-icons/io5";
 
@@ -28,6 +29,9 @@ const SubCategoryList = () => {
 
   const { setProgress, setAlertBox, setIsHideSidebarAndHeader } =
     useContext(MyContext);
+
+  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [filteredSubCategories, setFilteredSubCategories] = useState([]);
 
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [selectedSubCategory, setSelectedSubCategory] = useState(null);
@@ -71,7 +75,17 @@ const SubCategoryList = () => {
     ];
   };
 
-  const dummyData = getDummySubCatData();
+  const allSubCategories = getDummySubCatData();
+
+  useEffect(() => {
+    if (selectedCategory === "All") {
+      setFilteredSubCategories(allSubCategories);
+    } else {
+      setFilteredSubCategories(
+        allSubCategories.filter((item) => item.catName === selectedCategory)
+      );
+    }
+  }, [selectedCategory]);
 
   const handleEditClick = (item) => {
     setSelectedSubCategory(item);
@@ -132,6 +146,24 @@ const SubCategoryList = () => {
           </div>
         </div>
 
+        <Box display="flex" alignItems="center" gap={2} mb={2}>
+          <FormControl size="small" sx={{ width:"100%" }}>
+            <InputLabel>Filter by Category</InputLabel>
+            <Select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              label="Filter by Category"
+            >
+              <MenuItem value="All">All</MenuItem>
+              {dummyCategories.map((cat, index) => (
+                <MenuItem key={index} value={cat}>
+                  {cat}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Box>
+
         <div className="card shadow border-0 p-3 mt-4">
           <div className="table-responsive">
             <table className="table table-bordered table-striped align-middle text-nowrap">
@@ -144,8 +176,8 @@ const SubCategoryList = () => {
                 </tr>
               </thead>
               <tbody className="text-center">
-                {dummyData.length > 0 ? (
-                  dummyData.map((item, index) => (
+                {filteredSubCategories.length > 0 ? (
+                  filteredSubCategories.map((item, index) => (
                     <tr key={index}>
                       <td># {item.no}</td>
                       <td>{item.subCatName}</td>
@@ -226,7 +258,11 @@ const SubCategoryList = () => {
           <Button onClick={handleModalClose} variant="outlined">
             Cancel
           </Button>
-          <Button onClick={handleSaveChanges} variant="contained" color="primary">
+          <Button
+            onClick={handleSaveChanges}
+            variant="contained"
+            color="primary"
+          >
             Save Changes
           </Button>
         </DialogActions>

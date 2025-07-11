@@ -21,36 +21,23 @@ import { DatePicker, TimePicker } from "@mui/x-date-pickers";
 import { useEffect, useState } from "react";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import dayjs from "dayjs";
+import karnatakaData from "../../../data/karnataka_districts_taluks_villages.json";
 
 const CreateNotification = () => {
   const [targetType, setTargetType] = useState("all");
-  const [districts, setDistricts] = useState([]);
   const [selectedDistricts, setSelectedDistricts] = useState([]);
+  const [selectSubCat, setSelectSubCat] = useState("");
+
+  const [selectFpo, setSelectFpo] = useState("");
 
   const [title, setTitle] = useState("");
   const [message, setMessage] = useState("");
-  const [schedule, setSchedule] = useState(false);
-  const [scheduleDate, setScheduleDate] = useState(dayjs());
-  const [scheduleTime, setScheduleTime] = useState(dayjs());
 
-  useEffect(() => {
-    fetch("https://api.countrystatecity.in/v1/countries/IN/states/KA/cities", {
-      headers: {
-        "X-CSCAPI-KEY":
-          "dHFLWG1XQ3J0OUtTMlRmVTlZUGptRHlUSUxmaHhtUlB0NFMxc1gzaA==",
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        //console.log("Raw API response:", data);
-        const cityNames = data.map((city) => city.name);
-        //console.log("Mapped city names:", cityNames);
-        setDistricts(cityNames);
-      })
-      .catch((err) => console.error("Failed to fetch cities", err));
-  }, []);
 
+  const districtOptions = Object.keys(karnatakaData).map((d) => ({
+    label: d,
+    value: d,
+  }));
 
   const handledistChange = (event) => {
     const {
@@ -60,21 +47,13 @@ const CreateNotification = () => {
   };
 
   const handleSubmit = () => {
-    const scheduleDateTime = schedule
-      ? dayjs(
-          `${dayjs(scheduleDate).format("YYYY-MM-DD")} ${dayjs(
-            scheduleTime
-          ).format("HH:mm")}`
-        )
-      : null;
-
     const payload = {
       targetType,
       districts: selectedDistricts,
+      subCategory: selectSubCat,
+      fpo: selectFpo,
       title,
       message,
-      sendNow: !schedule,
-      scheduleDateTime,
     };
     console.log("Sending Notification Payload:", payload);
     // Add Firebase push/send logic here
@@ -117,27 +96,83 @@ const CreateNotification = () => {
                 control={<Radio />}
                 label="District-wise"
               />
+
+              <FormControlLabel value="fpo" control={<Radio />} label="FPO" />
             </RadioGroup>
           </FormControl>
 
           {targetType === "district" && (
-            <FormControl fullWidth>
-              <InputLabel>Select District</InputLabel>
-              <Select
-                multiple
-                value={selectedDistricts}
-                onChange={handledistChange}
-                input={<OutlinedInput label="District" />}
-                renderValue={(selected) => selected.join(", ")}
-              >
-                {districts.map((dist) => (
-                  <MenuItem key={dist} value={dist}>
-                    <Checkbox checked={selectedDistricts.includes(dist)} />
-                    <ListItemText primary={dist} />
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
+            <>
+              <FormControl fullWidth>
+                <InputLabel>Select District</InputLabel>
+                <Select
+                  multiple
+                  value={selectedDistricts}
+                  onChange={handledistChange}
+                  input={<OutlinedInput label="Select District" />}
+                  renderValue={(selected) => selected.join(", ")}
+                >
+                  {districtOptions.map((dist) => (
+                    <MenuItem key={dist.value} value={dist.value}>
+                      <Checkbox
+                        checked={selectedDistricts.includes(dist.value)}
+                      />
+                      <ListItemText primary={dist.label} />
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+
+              <FormControl fullWidth className="mt-3">
+                <InputLabel>Select Sub-Category</InputLabel>
+                <Select
+                  value={selectSubCat}
+                  onChange={(e) => setSelectSubCat(e.target.value)}
+                  input={<OutlinedInput label="Select Sub-Category" />}
+                >
+                  {[
+                    "Animals",
+                    "Birds",
+                    "Vegetables",
+                    "Fruits",
+                    "Machine",
+                    "House Items",
+                  ].map((sub) => (
+                    <MenuItem key={sub} value={sub}>
+                      {sub}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </>
+          )}
+
+          {targetType === "fpo" && (
+            <>
+              <FormControl fullWidth>
+                <InputLabel>Select FPO</InputLabel>
+                <Select
+                  value={selectFpo}
+                  onChange={(e) => setSelectFpo(e.target.value)}
+                  input={<OutlinedInput label="Select FPO" />}
+                >
+                  {[
+                    "GreenHarvest FPO",
+                    "AgroUnited Farmers",
+                    "Kisan Jyoti Group",
+                    "Bhoomi Rakshak FPO",
+                    "Siri Farmers Collective",
+                    "Mitti Bandhu Producer Co.",
+                    "Krushi Vikas Farmers",
+                    "Annadata Farmer Group",
+                  ].map((fpo) => (
+                    <MenuItem key={fpo} value={fpo}>
+                      {fpo}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </>
           )}
 
           <TextField
@@ -158,38 +193,6 @@ const CreateNotification = () => {
             margin="normal"
           />
 
-          <FormControlLabel
-            control={
-              <Switch
-                checked={schedule}
-                onChange={(e) => setSchedule(e.target.checked)}
-              />
-            }
-            label="Schedule Notification"
-            sx={{ mt: 2 }}
-          />
-
-          {schedule && (
-            <Grid container spacing={2} mt={1}>
-              <Grid item xs={12} sm={6}>
-                <DatePicker
-                  label="Select Date"
-                  value={scheduleDate}
-                  onChange={(newDate) => setScheduleDate(newDate)}
-                  sx={{ width: "100%" }}
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TimePicker
-                  label="Select Time"
-                  value={scheduleTime}
-                  onChange={(newTime) => setScheduleTime(newTime)}
-                  sx={{ width: "100%" }}
-                />
-              </Grid>
-            </Grid>
-          )}
-
           <Box mt={4} display="flex" justifyContent="center">
             <Button
               variant="contained"
@@ -197,7 +200,7 @@ const CreateNotification = () => {
               size="large"
               onClick={handleSubmit}
             >
-              {schedule ? "Schedule Notification" : "Send Now"}
+              {"Send Now"}
             </Button>
           </Box>
         </Box>
