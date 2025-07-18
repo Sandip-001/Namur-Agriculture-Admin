@@ -32,7 +32,7 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import AdsHeaderSection from "../../../components/AdsHeaderSection";
 
-const AdvertisementList = () => {
+const FpoAdvertisementList = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const totalPages = 10; // or calculate based on data length
 
@@ -41,6 +41,9 @@ const AdvertisementList = () => {
 
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [selectedAdvertisement, setSelectedAdvertisement] = useState(null);
+
+  //create ads state
+  const [showcreateAds, setShowcreateAds] = useState(true)
 
   // New fields
   const [viewMode, setViewMode] = useState("list");
@@ -62,9 +65,6 @@ const AdvertisementList = () => {
   //Comment model state
   const [openCommentsModal, setOpenCommentsModal] = useState(false);
   const [comments, setComments] = useState([]);
-
-  //create ads state
-  const [showcreateAds, setShowcreateAds] = useState(true)
 
   const handleOpenComments = (commentsData) => {
     setComments(commentsData);
@@ -109,13 +109,12 @@ const AdvertisementList = () => {
           "https://png.pngtree.com/thumb_back/fw800/background/20230901/pngtree-garlic-onions-carrots-and-onions-in-a-burlap-sack-image_13167752.jpg",
         ],
         forSale: "rent",
-        postType: "schedule",
-        scheduledDate: "2025-07-02",
-        expiryDate: "2025-07-12",
-        status: "Pending",
-        postedBy: "Sira Admin",
+        postType: "postnow",
+        scheduledDate: "Now",
+        status: "Active",
+        postedBy: "Green Harvest Farmers Group",
         contactNumber: "8637824327",
-        districts: ["Mysuru", "Bangalore Urban", "Mandya"],
+        districts: ["Mandya"],
         createdDate: "2025-06-25 10:15 AM",
         comments: [
           {
@@ -151,9 +150,9 @@ const AdvertisementList = () => {
         postType: "postnow",
         scheduledDate: "Now",
         status: "Active",
-        postedBy: "Chikka Admin",
+        postedBy: "AgriRise Collective",
         contactNumber: "9876543210",
-        districts: ["Mandya", "Chikkaballapur",],
+        districts: ["Mandya"],
         createdDate: "2025-06-26 08:50 AM",
         comments: [
           {
@@ -189,13 +188,12 @@ const AdvertisementList = () => {
           "https://media.istockphoto.com/id/847335116/photo/tomatoes-on-the-vine.jpg?s=612x612&w=0&k=20&c=XspM2ySvUfqjnt7HL5qKyn0tyRb5qLsf1GAP6-3xQsw=",
         ],
         forSale: "sale",
-        postType: "schedule",
-        scheduledDate: "2025-07-03",
-        expiryDate: "2025-07-10",
-        status: "Pending",
-        postedBy: "Mysuru Admin",
+        postType: "postnow",
+        scheduledDate: "Now",
+        status: "Active",
+        postedBy: "ProsperAgro Farmers Society",
         contactNumber: "9123456789",
-        districts: ["Mysuru", "Tumakuru"],
+        districts: ["Mysuru"],
         createdDate: "2025-06-27 12:30 PM",
         comments: [
           {
@@ -231,9 +229,9 @@ const AdvertisementList = () => {
         postType: "postnow",
         scheduledDate: "Now",
         status: "Active",
-        postedBy: "Kolar Admin",
+        postedBy: "NatureBloom Producers",
         contactNumber: "9876543210",
-        districts: ["Bangalore Rural", "Kolar"],
+        districts: ["Bengaluru Rural"],
         createdDate: "2025-06-28 09:00 AM",
         comments: [
           {
@@ -405,9 +403,9 @@ const AdvertisementList = () => {
           searchQuery={searchQuery}
           viewMode={viewMode}
           setViewMode={setViewMode}
-          title={"Admin Advertisement List"}
+          title = {"FPO Advertisement List"}
           showCreateAdsButton = {showcreateAds}
-          url={"/add-advertisement"}
+          url={"/add-fpoadvertisement"}
         />
 
         {viewMode === "grid" ? (
@@ -461,28 +459,6 @@ const AdvertisementList = () => {
                       </div>
 
                       <div className="mt-2">
-                        <span
-                          className={`badge me-1 bg-${
-                            item.postType === "postnow"
-                              ? "primary"
-                              : "warning text-dark"
-                          }`}
-                        >
-                          {item.postType === "postnow"
-                            ? "Post Now"
-                            : "Scheduled"}
-                        </span>
-
-                        <span
-                          className={`badge bg-${
-                            item.status === "Active" ? "success" : "secondary"
-                          }`}
-                        >
-                          {item.status}
-                        </span>
-                      </div>
-
-                      <div className="mt-2">
                         <strong className="d-block small">
                           {item.postedBy}
                         </strong>
@@ -492,17 +468,14 @@ const AdvertisementList = () => {
                       </div>
 
                       <div className="d-flex justify-content-between align-items-center gap-1 mt-2">
-                        <span className="badge bg-light border text-dark d-flex align-items-center gap-1">
-                          {item.districts[0]}
-                          {item.districts.length > 1 && (
-                            <span
-                              className="fw-bold text-primary"
-                              style={{ fontSize: "0.75rem" }}
-                            >
-                              +{item.districts.length - 1}
-                            </span>
-                          )}
-                        </span>
+                        {item.districts.map((dist, idx) => (
+                          <span
+                            key={idx}
+                            className="badge bg-light border text-dark"
+                          >
+                            {dist}
+                          </span>
+                        ))}
 
                         <span
                           style={{ fontSize: "0.7rem" }}
@@ -551,7 +524,7 @@ const AdvertisementList = () => {
                     <th>IMAGE</th>
                     <th>ITEM </th>
                     <th>PRICE</th>
-                    <th>STATUS</th>
+                    <th>FOR</th>
                     <th>CONTACT</th>
                     <th>DISTRICTS</th>
                     <th>TIME</th>
@@ -595,32 +568,6 @@ const AdvertisementList = () => {
                               }`}
                             >
                               {item.forSale.toUpperCase()}
-                            </span>
-                          </h6>
-
-                          <h6>
-                            <span
-                              className={`badge bg-${
-                                item.postType === "postnow"
-                                  ? "primary"
-                                  : "warning text-dark"
-                              }`}
-                            >
-                              {item.postType === "postnow"
-                                ? "Post Now"
-                                : "Scheduled"}
-                            </span>
-                          </h6>
-
-                          <h6>
-                            <span
-                              className={`badge rounded-pill bg-${
-                                item.status === "Active"
-                                  ? "success"
-                                  : "secondary"
-                              }`}
-                            >
-                              {item.status}
                             </span>
                           </h6>
                         </td>
@@ -936,4 +883,4 @@ const AdvertisementList = () => {
   );
 };
 
-export default AdvertisementList;
+export default FpoAdvertisementList;

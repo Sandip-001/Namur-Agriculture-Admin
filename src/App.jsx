@@ -34,6 +34,8 @@ import History from "./pages/superadmin/History/History";
 import DistrictActivity from "./pages/superadmin/subadmins/DistrictActivity";
 import AddFpo from "./pages/superadmin/FPO/AddFpo";
 import FpoList from "./pages/superadmin/FPO/FpoList";
+import FpoAdvertisementList from "./pages/superadmin/Advertisement/FpoAdsList";
+import AddForFpo from "./pages/superadmin/Advertisement/AddForFpo";
 
 const MyContext = createContext();
 
@@ -309,6 +311,16 @@ function App() {
               />
               <Route
                 exact
+                path="/add-fpoadvertisement"
+                element={
+                  <PrivateRoute
+                    element={<AddForFpo />}
+                    allowedRoles={["superadmin"]}
+                  />
+                }
+              />
+              <Route
+                exact
                 path="/admin-advertisement-list"
                 element={
                   <PrivateRoute
@@ -323,6 +335,16 @@ function App() {
                 element={
                   <PrivateRoute
                     element={<UserAdvertisementList />}
+                    allowedRoles={["superadmin"]}
+                  />
+                }
+              />
+              <Route
+                exact
+                path="/fpo-advertisement-list"
+                element={
+                  <PrivateRoute
+                    element={<FpoAdvertisementList />}
                     allowedRoles={["superadmin"]}
                   />
                 }

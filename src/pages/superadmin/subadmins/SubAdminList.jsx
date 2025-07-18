@@ -148,9 +148,9 @@ const SubAdminList = () => {
   const handleSaveChanges = () => {
     const editData = {
       selectedDistricts,
-      editedPageAccess
-    }
-    console.log(editData)
+      editedPageAccess,
+    };
+    console.log(editData);
     setAlertBox({
       open: true,
       msg: "Sub-admin details updated successfully!",
@@ -198,7 +198,6 @@ const SubAdminList = () => {
                 <tr>
                   <th>NO</th>
                   <th>NAME</th>
-                  <th>MOBILE NO</th>
                   <th>DISTRICTS</th>
                   <th>ACCESS PAGES</th>
                   <th>ACTION</th>
@@ -207,10 +206,16 @@ const SubAdminList = () => {
               <tbody className="text-center">
                 {dummyData.length > 0 ? (
                   dummyData.map((item, index) => (
-                    <tr key={index}>
+                    <tr
+                      key={index}
+                      className="tableRow"
+                      onClick={() => handleEditClick(item)}
+                    >
                       <td># {item.no}</td>
-                      <td>{item.subAdminName}</td>
-                      <td>{item.number}</td>
+                      <td>
+                        <div className="fw-semibold">{item.subAdminName}</div>
+                        <span className="text-muted">{item.number}</span>
+                      </td>
                       <td>
                         <div className="d-flex flex-wrap gap-1 justify-content-center">
                           {item.districts.map((dist, idx) => (
@@ -239,14 +244,11 @@ const SubAdminList = () => {
                       <td>
                         <div className="d-flex gap-2 align-item-center justify-content-center">
                           <button
-                            className="btn btn-sm btn-success"
-                            onClick={() => handleEditClick(item)}
-                          >
-                            <FaPencilAlt />
-                          </button>
-                          <button
                             className="btn btn-sm btn-danger"
-                            onClick={() => handleDeleteClick(item.no)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDeleteClick(item.no);
+                            }}
                           >
                             <MdDelete />
                           </button>

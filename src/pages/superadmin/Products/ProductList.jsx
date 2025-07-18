@@ -204,7 +204,11 @@ const ProductList = () => {
               <tbody className="text-center">
                 {filteredProducts.length > 0 ? (
                   filteredProducts.map((item, index) => (
-                    <tr key={index}>
+                    <tr
+                      key={index}
+                      className="tableRow"
+                      onClick={() => handleEditClick(item)}
+                    >
                       <td>{item.no}</td>
                       <td>
                         <img
@@ -220,15 +224,11 @@ const ProductList = () => {
                       <td>
                         <div className="d-flex gap-2 align-item-center justify-content-center">
                           <button
-                            className="btn btn-sm btn-success"
-                            onClick={() => handleEditClick(item)}
-                          >
-                            <FaPencilAlt />
-                          </button>
-
-                          <button
                             className="btn btn-sm btn-danger"
-                            onClick={() => handleDeleteClick(item.no)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDeleteClick(item.no);
+                            }}
                           >
                             <MdDelete />
                           </button>

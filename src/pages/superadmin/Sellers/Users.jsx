@@ -61,6 +61,7 @@ const Users = () => {
         name: "Sandip Chowdhury",
         contactNumber: "9876543210",
         email: "chowdhurysandip2016@gmail.com",
+        lands: 3,
         district: "Bengaluru Urban",
         taluk: "Bangalore South",
         latitude: 12.9716,
@@ -72,6 +73,7 @@ const Users = () => {
         name: "Anjali Sharma",
         contactNumber: "9123456789",
         email: "anjali@brightfuture.com",
+        lands:2,
         district: "Mysuru",
         taluk: "Mysore",
         latitude: 12.2958,
@@ -83,6 +85,7 @@ const Users = () => {
         name: "Sandip Chowdhury",
         contactNumber: "9876543210",
         email: "chowdhurysandip2016@gmail.com",
+        lands:4,
         district: "Dakshina Kannada",
         taluk: "Mangalore",
         latitude: 12.9141,
@@ -94,6 +97,7 @@ const Users = () => {
         name: "Anjali Sharma",
         contactNumber: "9123456789",
         email: "anjali@brightfuture.com",
+        lands:2,
         district: "Belagavi",
         taluk: "Belgaum",
         latitude: 23.949530,
@@ -161,7 +165,7 @@ const Users = () => {
                 <tr>
                   <th>NO</th>
                   <th>NAME</th>
-                  <th>CONTACT NUMBER</th>
+                  <th>LAND</th>
                   <th>ADDRESS</th>
                   <th>SELLING PRODUCTS</th>
                   <th>LOCATION</th>
@@ -179,12 +183,15 @@ const Users = () => {
                       <td>
                         <div className="d-flex align-items-center gap-2">
                           <Avatar src={item.image} alt={item.name} />
-                          <div>
+                          <div className="d-flex flex-column justify-content-start align-items-start">
                             <div className="fw-semibold">{item.name}</div>
+                            <div className="text-muted">{item.contactNumber}</div>
                           </div>
                         </div>
                       </td>
-                      <td>{item.contactNumber}</td>
+
+                      <td>{item.lands}</td>
+
                       <td>
                         <div>
                           <div className="text-muted">{item.district}</div>
@@ -254,7 +261,7 @@ const Users = () => {
             top: "50%",
             left: "50%",
             transform: "translate(-50%, -50%)",
-            width: "80%",
+            width: "40%",
             height: "500px",
             bgcolor: "background.paper",
             borderRadius: 2,

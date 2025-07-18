@@ -313,7 +313,7 @@ const Dashboard = () => {
     },
     {
       name: "Neha_R",
-      comment: "Love the new UI! Much better than the previous version 👏",
+      comment: "Love the new UI! Much better than the previous version grater than previous one 👏",
     },
     {
       name: "AjayDeals",
@@ -367,50 +367,61 @@ const Dashboard = () => {
         <div className="col-md-6 mb-4">
           <div className="card shadow-sm h-100">
             <div className="card-body">
-              <h5 className="card-title text-primary fw-bold">
+              <h5 className="card-title fw-bold mb-4 text-primary">
                 🕒 Application Logs
               </h5>
-              <ul className="list-unstyled mb-0">
-                <li>
-                  • Admin approved an ad for "New Holland Tractor" –{" "}
-                  <strong>5 mins ago</strong>
-                </li>
-                <li>
-                  • User "farmer.john" deleted his mobile listing –{" "}
-                  <strong>12 mins ago</strong>
-                </li>
-                <li>
-                  • New user "greenfield_88" registered –{" "}
-                  <strong>20 mins ago</strong>
-                </li>
-                <li>
-                  • Admin created a news post: “Rain Forecast for Next Week” –{" "}
-                  <strong>35 mins ago</strong>
-                </li>
-                <li>
-                  • User "MeeraAgro" posted a new ad for "Organic Fertilizer
-                  Combo Pack" – <strong>1 hour ago</strong>
-                </li>
-                <li>
-                  • User "TechGrow" edited product info for “Smart Drip
-                  Irrigation Kit” – <strong>2 hours ago</strong>
-                </li>
-                <li>
-                  • Notification sent to all users about “Mid-Year Sale” –{" "}
-                  <strong>3 hours ago</strong>
-                </li>
-                <li>
-                  • Admin blocked user "spamDealer2025" –{" "}
-                  <strong>4 hours ago</strong>
-                </li>
-                <li>
-                  • Product "Diesel Pump Set" marked as featured –{" "}
-                  <strong>Yesterday</strong>
-                </li>
-                <li>
-                  • 3 new ads approved by admin – <strong>Yesterday</strong>
-                </li>
-              </ul>
+              <div className="timeline">
+                <div className="timeline-item mb-4 d-flex align-items-start">
+                  <span className="timeline-dot bg-danger me-3"></span>
+                  <div>
+                    <h6 className="fw-bold mb-1">
+                      Admin approved an ad for "New Holland Tractor"
+                    </h6>
+                    <small className="text-muted">5 mins ago</small>
+                  </div>
+                </div>
+
+                <div className="timeline-item mb-4 d-flex align-items-start">
+                  <span className="timeline-dot bg-success me-3"></span>
+                  <div>
+                    <h6 className="fw-bold mb-1">
+                      User "farmer.john" deleted his mobile listing
+                    </h6>
+                    <small className="text-muted">12 mins ago</small>
+                  </div>
+                </div>
+
+                <div className="timeline-item mb-4 d-flex align-items-start">
+                  <span className="timeline-dot bg-warning me-3"></span>
+                  <div>
+                    <h6 className="fw-bold mb-1">
+                      New user "greenfield_88" registered
+                    </h6>
+                    <small className="text-muted">20 mins ago</small>
+                  </div>
+                </div>
+
+                <div className="timeline-item mb-4 d-flex align-items-start">
+                  <span className="timeline-dot bg-info me-3"></span>
+                  <div>
+                    <h6 className="fw-bold mb-1">
+                      Admin created a news post: “Rain Forecast for Next Week”
+                    </h6>
+                    <small className="text-muted">35 mins ago</small>
+                  </div>
+                </div>
+
+                <div className="timeline-item mb-4 d-flex align-items-start">
+                  <span className="timeline-dot bg-primary me-3"></span>
+                  <div>
+                    <h6 className="fw-bold mb-1">
+                      User "MeeraAgro" posted a new ad for "Organic Fertilizer
+                      Combo Pack"
+                    </h6>
+                    <small className="text-muted">1 hour ago</small>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -436,7 +447,7 @@ const Dashboard = () => {
                       onClick={() => removeComment(index)}
                       title="Remove comment"
                     >
-                      <RxCrossCircled style={{fontSize:"20px"}}/>
+                      <RxCrossCircled style={{ fontSize: "20px" }} />
                     </button>
                   </li>
                 ))}

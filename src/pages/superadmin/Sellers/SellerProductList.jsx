@@ -1,5 +1,5 @@
-import React from "react";
-import { Card, CardContent, Typography, Grid, Box } from "@mui/material";
+import React, { useState } from "react";
+import { Card, CardContent, Typography, Grid, Box, Switch, FormControlLabel } from "@mui/material";
 import { styled } from "@mui/system";
 import corn from "../../../assets/corn.png";
 import onion from "../../../assets/onion.png";
@@ -69,6 +69,8 @@ const SellerProductCard = ({
 };
 
 const SellerProductList = () => {
+  const [toggle, setToggle] = useState(true);
+
   const products = [
     {
       image: corn,
@@ -128,9 +130,32 @@ const SellerProductList = () => {
 
   return (
     <div className="right-content w-100">
-      <Typography variant="h5" fontWeight={700} mb={3} textAlign="center">
-        Sandip's Selling Products
-      </Typography>
+      <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
+        <Typography variant="h5" fontWeight={700}>Sandip's Selling Products</Typography>
+        <FormControlLabel
+          control={
+            <Switch
+              checked={toggle}
+              onChange={() => setToggle(!toggle)}
+              sx={{
+                '& .MuiSwitch-switchBase': {
+                  transform: 'scale(1.4)',
+                },
+                '& .MuiSwitch-thumb': {
+                  backgroundColor: '#05a415',
+                },
+                '& .MuiSwitch-track': {
+                  backgroundColor: toggle ? '#099216' : '#ccc',
+                  opacity: 1,
+                }
+              }}
+            />
+          }
+          label={<Typography fontWeight={600}>Block Ads</Typography>}
+          labelPlacement="start"
+        />
+      </Box>
+
       <Grid container spacing={3} columns={{ xs: 1, sm: 2, md: 3 }}>
         {products.map((product, index) => (
           <Grid item key={index} size={1}>

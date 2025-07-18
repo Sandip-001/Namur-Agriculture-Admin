@@ -111,7 +111,7 @@ const SubCategoryList = () => {
     setEditModalOpen(false);
   };
 
-  const handleDeleteClick = async (courseId) => {
+  const handleDeleteClick = async (itemId) => {
     const result = await Swal.fire({
       title: "Are you sure?",
       text: "Do you really want to delete this Sub-Category?",
@@ -147,7 +147,7 @@ const SubCategoryList = () => {
         </div>
 
         <Box display="flex" alignItems="center" gap={2} mb={2}>
-          <FormControl size="small" sx={{ width:"100%" }}>
+          <FormControl size="small" sx={{ width: "100%" }}>
             <InputLabel>Filter by Category</InputLabel>
             <Select
               value={selectedCategory}
@@ -178,22 +178,22 @@ const SubCategoryList = () => {
               <tbody className="text-center">
                 {filteredSubCategories.length > 0 ? (
                   filteredSubCategories.map((item, index) => (
-                    <tr key={index}>
+                    <tr
+                      key={index}
+                      className="tableRow"
+                      onClick={() => handleEditClick(item)}
+                    >
                       <td># {item.no}</td>
                       <td>{item.subCatName}</td>
                       <td>{item.catName}</td>
                       <td>
                         <div className="d-flex gap-2 align-item-center justify-content-center">
                           <button
-                            className="btn btn-sm btn-success"
-                            onClick={() => handleEditClick(item)}
-                          >
-                            <FaPencilAlt />
-                          </button>
-
-                          <button
                             className="btn btn-sm btn-danger"
-                            onClick={() => handleDeleteClick(item.no)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDeleteClick(item.no);
+                            }}
                           >
                             <MdDelete />
                           </button>

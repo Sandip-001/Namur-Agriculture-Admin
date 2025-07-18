@@ -27,6 +27,7 @@ const CreateNotification = () => {
   const [targetType, setTargetType] = useState("all");
   const [selectedDistricts, setSelectedDistricts] = useState([]);
   const [selectSubCat, setSelectSubCat] = useState("");
+  const [selectedProduct, setSelectedProduct] = useState("")
 
   const [selectFpo, setSelectFpo] = useState("");
 
@@ -51,6 +52,7 @@ const CreateNotification = () => {
       targetType,
       districts: selectedDistricts,
       subCategory: selectSubCat,
+      product: selectedProduct,
       fpo: selectFpo,
       title,
       message,
@@ -144,6 +146,30 @@ const CreateNotification = () => {
                   ))}
                 </Select>
               </FormControl>
+
+              <FormControl fullWidth className="mt-3">
+                <InputLabel>Select Product</InputLabel>
+                <Select
+                  value={selectedProduct}
+                  onChange={(e) => setSelectedProduct(e.target.value)}
+                  input={<OutlinedInput label="Select Product" />}
+                >
+                  {[
+                    "Cow",
+                    "Goat",
+                    "Parrot",
+                    "Milk",
+                    "Egg",
+                    "Tractor",
+                    "Harvester",
+                    "Onion",
+                  ].map((product) => (
+                    <MenuItem key={product} value={product}>
+                      {product}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
             </>
           )}
 
@@ -181,6 +207,10 @@ const CreateNotification = () => {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             margin="normal"
+            style={{
+              marginTop: "3rem",
+              backgroundColor: "#a9ffa9"
+            }}
           />
 
           <TextField
@@ -191,6 +221,9 @@ const CreateNotification = () => {
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             margin="normal"
+            style={{
+              backgroundColor: "#a9ffa9",
+            }}
           />
 
           <Box mt={4} display="flex" justifyContent="center">

@@ -17,6 +17,7 @@ import {
   useTheme,
 } from "@mui/material";
 import { IoCloseSharp } from "react-icons/io5";
+import { format } from "date-fns";
 
 const NewsList = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -56,6 +57,7 @@ const NewsList = () => {
         url: "https://www.example.com/news/agriculture-policy-2025",
         image:
           "https://www.shutterstock.com/image-photo/farmer-happy-woman-tablet-greenhouse-260nw-2353782951.jpg",
+        createdDate: "2025-06-25 10:15 AM",
       },
       {
         no: 2,
@@ -63,6 +65,7 @@ const NewsList = () => {
         url: "https://www.example.com/news/organic-farming-trend",
         image:
           "https://bsmedia.business-standard.com/_media/bs/img/article/2024-07/17/full/1721190621-2022.jpg",
+        createdDate: "2025-06-26 08:50 AM",
       },
       {
         no: 3,
@@ -70,6 +73,7 @@ const NewsList = () => {
         url: "https://www.example.com/news/new-cattle-breed",
         image:
           "https://www.shutterstock.com/image-photo/blurred-image-farmers-use-tablets-600nw-2328625639.jpg",
+        createdDate: "2025-06-27 12:30 PM",
       },
       {
         no: 4,
@@ -77,6 +81,7 @@ const NewsList = () => {
         url: "https://www.example.com/news/vegetable-export-growth",
         image:
           "https://t4.ftcdn.net/jpg/05/95/55/89/360_F_595558921_z1JnF4ieH75XlWoDPuh1Os97QkPnb4dx.jpg",
+        createdDate: "2025-06-28 09:00 AM",
       },
     ];
   };
@@ -156,13 +161,19 @@ const NewsList = () => {
                 <tr>
                   <th>NO</th>
                   <th>IMAGE</th>
+                  <th>TITLE</th>
+                  <th>TIME</th>
                   <th>ACTION</th>
                 </tr>
               </thead>
               <tbody className="text-center">
                 {dummyData.length > 0 ? (
                   dummyData.map((item, index) => (
-                    <tr key={index}>
+                    <tr
+                      key={index}
+                      className="tableRow"
+                      onClick={() => handleEditClick(item)}
+                    >
                       <td># {item.no}</td>
 
                       <td>
@@ -186,17 +197,23 @@ const NewsList = () => {
                         </a>
                       </td>
 
+                      <td>{item.title}</td>
+
+                      <td>
+                        {format(
+                          new Date(item.createdDate),
+                          "do MMMM yyyy, hh:mm a"
+                        )}
+                      </td>
+
                       <td>
                         <div className="d-flex gap-2 align-item-center justify-content-center">
                           <button
-                            className="btn btn-sm btn-success"
-                            onClick={() => handleEditClick(item)}
-                          >
-                            <FaPencilAlt />
-                          </button>
-                          <button
                             className="btn btn-sm btn-danger"
-                            onClick={() => handleDeleteClick(item.no)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDeleteClick(item.no);
+                            }}
                           >
                             <MdDelete />
                           </button>

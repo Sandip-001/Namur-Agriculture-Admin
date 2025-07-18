@@ -1409,6 +1409,8 @@ body.dark .form em{
   margin-bottom: 0px !important;
 }
 
+/*image upload box*/
+
 .imgUploadBox {
   width: 100%;
   display: flex;
@@ -1611,4 +1613,120 @@ body.dark .css-16wblaj-MuiInputBase-input-MuiOutlinedInput-input{
     justify-content: center;
     margin-top: 5px;
   }
+}
+
+
+
+/*ads slider*/
+.group {
+  position: relative;
+}
+
+.group .slider-overlay {
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+  pointer-events: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100px;
+  height: 100px;
+}
+
+.group:hover .slider-overlay {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.group:hover .main-img {
+  opacity: 0;
+}
+
+.group .slick-prev,
+.group .slick-next {
+  display: none !important;
+}
+
+.group:hover .slick-prev,
+.group:hover .slick-next {
+  display: block !important;
+}
+
+/* Arrow button positioning */
+.group .slick-prev {
+  left: 0px;
+  z-index: 2;
+}
+.group .slick-next {
+  right: 0px;
+  z-index: 2;
+}
+
+/* Make arrows visible on hover only */
+.group:hover .slick-prev, 
+.group:hover .slick-next {
+  opacity: 1;
+}
+
+/* Prevent distortion */
+.slick-slide img {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+
+/* Adjust slick arrows inside the card means grid views*/
+.card .slick-prev,
+.card .slick-next {
+  z-index: 1;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 25px;
+  height: 25px;
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  border-radius: 50%;
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
+}
+
+.card .slick-prev {
+  left: 5px;
+}
+
+.card .slick-next {
+  right: 5px;
+}
+
+
+
+/*application logs section design*/
+.timeline {
+  position: relative;
+  margin-left: 10px;
+  padding-left: 10px;
+}
+
+.timeline-item {
+  position: relative;
+}
+
+.timeline-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-top: 5px;
+  flex-shrink: 0;
+}
+
+.timeline-item h6 {
+  margin-bottom: 4px;
+}
+
+.card-title {
+  font-size: 1.2rem;
 }

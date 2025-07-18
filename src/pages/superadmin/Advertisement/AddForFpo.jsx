@@ -38,7 +38,25 @@ const productsMap = {
 
 const units = ["Kg", "Gram", "Piece"];
 
-const AddAdvertisement = () => {
+const fpoNames = [
+  "Green Harvest Farmers Group",
+  "Golden Fields Producer Company",
+  "AgriRise Collective",
+  "Fresh Roots FPO",
+  "ProsperAgro Farmers Society",
+  "NatureBloom Producers",
+  "VillageCrop Growers Association",
+  "EcoHarvest Producer Group",
+  "Sunrise Agri Collective",
+  "Unity Farmers Federation",
+  "AgroTrust Farmers Group",
+  "Evergreen Fields FPO",
+  "FarmNest Producers",
+  "HappyHarvest Collective",
+  "AgriUnity Farmers Co-op"
+];
+
+const AddForFpo = () => {
   const context = useContext(MyContext);
   const { setIsHideSidebarAndHeader, setAlertBox, districts } = context;
 
@@ -57,6 +75,7 @@ const AddAdvertisement = () => {
   const [price, setPrice] = useState("");
   const [description, setDescription] = useState("");
   const [selectedDistricts, setSelectedDistricts] = useState([]);
+  const [selectedFpo, setSelectedFpo] = useState("")
   const [postType, setPostType] = useState("now");
   const [scheduledDate, setScheduledDate] = useState(null);
   const [expiryDate, setExpiryDate] = useState(null);
@@ -104,6 +123,7 @@ const AddAdvertisement = () => {
       price,
       description,
       selectedDistricts,
+      selectedFpo,
       postType,
       scheduledAt:
         postType === "schedule"
@@ -124,7 +144,7 @@ const AddAdvertisement = () => {
       <div className="right-content w-100">
         <Paper elevation={4} sx={{ p: 4, borderRadius: 4 }}>
           <Typography variant="h5" mb={3} fontWeight={600} gutterBottom>
-            Create Advertisement
+            Create Advertisement For FPO
           </Typography>
 
           <Grid container spacing={3} columns={{ xs: 1, sm: 2 }}>
@@ -221,16 +241,23 @@ const AddAdvertisement = () => {
               />
             </Grid>
 
-            <Grid item size={2}>
-              <TextField
-                label="Description"
-                multiline
-                rows={5}
-                fullWidth
-                margin="normal"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-              />
+            <Grid item size={1}>
+              <FormControl fullWidth>
+                <InputLabel>Select FPO</InputLabel>
+                <Select
+                  value={selectedFpo}
+                  label="Select FPO"
+                  onChange={(e) => {
+                    setSelectedFpo(e.target.value);
+                  }}
+                >
+                  {fpoNames.map((fpo, idx) => (
+                    <MenuItem key={idx} value={fpo}>
+                      {fpo}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
             </Grid>
 
             <Grid item size={1}>
@@ -255,7 +282,19 @@ const AddAdvertisement = () => {
               </FormControl>
             </Grid>
 
-            <Grid item size={1}>
+            <Grid item size={2}>
+              <TextField
+                label="Description"
+                multiline
+                rows={5}
+                fullWidth
+                margin="normal"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+              />
+            </Grid>
+
+            <Grid item size={2}>
               <FormControlLabel
                 control={
                   <Switch
@@ -281,7 +320,7 @@ const AddAdvertisement = () => {
               />
             </Grid>
 
-            <Grid item size={2}>
+            {/*<Grid item size={2}>
               <Typography variant="subtitle1" fontWeight={600} gutterBottom>
                 Choose Posting Type
               </Typography>
@@ -317,7 +356,7 @@ const AddAdvertisement = () => {
                   />
                 </Grid>
               </>
-            )}
+            )} */}
 
             <div className="imageUploadSec">
               <div className="imgUploadBox d-flex flex-wrap gap-3">
@@ -373,4 +412,4 @@ const AddAdvertisement = () => {
   );
 };
 
-export default AddAdvertisement;
+export default AddForFpo

@@ -154,7 +154,11 @@ const CategoryList = () => {
               <tbody className="text-center">
                 {dummyData.length > 0 ? (
                   dummyData.map((item, index) => (
-                    <tr key={index}>
+                    <tr
+                      key={index}
+                      className="tableRow"
+                      onClick={() => handleEditClick(item)}
+                    >
                       <td># {item.no}</td>
                       <td>
                         <img
@@ -169,15 +173,11 @@ const CategoryList = () => {
                       <td>
                         <div className="d-flex gap-2 align-item-center justify-content-center">
                           <button
-                            className="btn btn-sm btn-success"
-                            onClick={() => handleEditClick(item)}
-                          >
-                            <FaPencilAlt />
-                          </button>
-
-                          <button
                             className="btn btn-sm btn-danger"
-                            onClick={() => handleDeleteClick(item.no)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDeleteClick(item.no);
+                            }}
                           >
                             <MdDelete />
                           </button>
@@ -255,7 +255,11 @@ const CategoryList = () => {
           <Button onClick={handleModalClose} variant="outlined">
             Cancel
           </Button>
-          <Button onClick={handleSaveChanges} variant="contained" color="primary">
+          <Button
+            onClick={handleSaveChanges}
+            variant="contained"
+            color="primary"
+          >
             Save Changes
           </Button>
         </DialogActions>

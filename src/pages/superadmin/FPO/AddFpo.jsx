@@ -22,7 +22,6 @@ import Breadcrumbs from "@mui/material/Breadcrumbs";
 import Chip from "@mui/material/Chip";
 import HomeIcon from "@mui/icons-material/Home";
 import { FaCloudUploadAlt, FaRegImages } from "react-icons/fa";
-import { data } from "react-router-dom";
 import { IoCloseSharp } from "react-icons/io5";
 import { MyContext } from "../../../App";
 import karnatakaData from "../../../data/karnataka_districts_taluks_villages.json";
@@ -55,6 +54,9 @@ const AddFpo = () => {
   const [gstNo, setGstno] = useState("");
   const [description, setDescription] = useState("");
   const [address, setAddress] = useState("");
+  const [district, setDistrict] = useState("");
+  const [taluk, setTaluk] = useState("");
+  const [village, setVillage] = useState("");
   const [productInput, setProductInput] = useState("");
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -78,6 +80,26 @@ const AddFpo = () => {
     setSubAdminImage(null);
   };
 
+  const districtOptions = Object.keys(karnatakaData).map((d) => ({
+    label: d,
+    value: d,
+  }));
+
+  const talukOptions = district
+    ? Object.keys(karnatakaData[district] || {}).map((t) => ({
+        label: t,
+        value: t,
+      }))
+    : [];
+
+  const villageOptions =
+    district && taluk
+      ? (karnatakaData[district]?.[taluk] || []).map((v) => ({
+          label: v,
+          value: v,
+        }))
+      : [];
+
   const handleAddProduct = () => {
     if (
       productInput.trim() &&
@@ -98,6 +120,9 @@ const AddFpo = () => {
       name,
       gstNo,
       address,
+      district,
+      taluk,
+      village,
       description,
       selectedProducts,
     });
@@ -150,15 +175,64 @@ const AddFpo = () => {
               </Grid>
 
               <Grid item size={1}>
-                <TextField
-                  fullWidth
-                  type="text"
-                  label="Address"
-                  variant="outlined"
-                  value={address}
-                  onChange={(e) => setAddress(e.target.value)}
-                  required
-                />
+                <FormControl fullWidth>
+                  <InputLabel>District</InputLabel>
+                  <Select
+                    value={district}
+                    label="District"
+                    onChange={(e) => {
+                      setDistrict(e.target.value);
+                      setTaluk(""); // reset dependent fields
+                      setVillage("");
+                    }}
+                    required
+                  >
+                    {districtOptions.map((district) => (
+                      <MenuItem key={district.value} value={district.value}>
+                        {district.label}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+
+              <Grid item size={1}>
+                <FormControl fullWidth disabled={!district}>
+                  <InputLabel>Taluk</InputLabel>
+                  <Select
+                    value={taluk}
+                    label="Taluk"
+                    onChange={(e) => {
+                      setTaluk(e.target.value);
+                      setVillage("");
+                    }}
+                    required
+                  >
+                    {talukOptions.map((taluk) => (
+                      <MenuItem key={taluk.value} value={taluk.value}>
+                        {taluk.label}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+
+              <Grid item size={1}>
+                <FormControl fullWidth disabled={!taluk}>
+                  <InputLabel>Village</InputLabel>
+                  <Select
+                    value={village}
+                    label="Village"
+                    onChange={(e) => setVillage(e.target.value)}
+                    required
+                  >
+                    {villageOptions.map((village) => (
+                      <MenuItem key={village.value} value={village.value}>
+                        {village.label}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
               </Grid>
 
               <Grid item size={1}>

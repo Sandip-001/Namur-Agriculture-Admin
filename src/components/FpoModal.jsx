@@ -10,8 +10,14 @@ import {
   Avatar,
   IconButton,
   Stack,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
+
+import karnatakaData from "../data/karnataka_districts_taluks_villages.json";
 
 const style = {
   position: "absolute",
@@ -28,21 +34,45 @@ const style = {
   overflowY: "auto",
 };
 
-const FpoModal = ({ open, handleClose, fpoData}) => {
+const FpoModal = ({ open, handleClose, fpoData }) => {
   // Separate state for each field
   const [fpoName, setFpoName] = useState("");
   const [gstNo, setGstNo] = useState("");
-  const [address, setAddress] = useState("");
+  const [district, setDistrict] = useState("");
+  const [taluk, setTaluk] = useState("");
+  const [village, setVillage] = useState("");
   const [description, setDescription] = useState("");
   const [products, setProducts] = useState([]);
   const [logo, setLogo] = useState(""); // base64 or image URL
   const [newProduct, setNewProduct] = useState("");
 
+  const districtOptions = Object.keys(karnatakaData).map((d) => ({
+    label: d,
+    value: d,
+  }));
+
+  const talukOptions = district
+    ? Object.keys(karnatakaData[district] || {}).map((t) => ({
+        label: t,
+        value: t,
+      }))
+    : [];
+
+  const villageOptions =
+    district && taluk
+      ? (karnatakaData[district]?.[taluk] || []).map((v) => ({
+          label: v,
+          value: v,
+        }))
+      : [];
+
   useEffect(() => {
     if (fpoData) {
       setFpoName(fpoData.fpoName || "");
       setGstNo(fpoData.gstNo || "");
-      setAddress(fpoData.address || "");
+      setDistrict(fpoData.district || "");
+      setTaluk(fpoData.taluk || "");
+      setVillage(fpoData.village || "");
       setDescription(fpoData.description || "");
       setProducts(fpoData.products || []);
       setLogo(fpoData.image || "");
@@ -90,7 +120,11 @@ const FpoModal = ({ open, handleClose, fpoData}) => {
   return (
     <Modal open={open} onClose={handleClose}>
       <Box sx={style}>
-        <Stack direction="row" justifyContent="space-between" alignItems="center">
+        <Stack
+          direction="row"
+          justifyContent="space-between"
+          alignItems="center"
+        >
           <Typography variant="h6" fontWeight="bold">
             Edit FPO Details
           </Typography>
@@ -139,13 +173,61 @@ const FpoModal = ({ open, handleClose, fpoData}) => {
             onChange={(e) => setGstNo(e.target.value)}
             margin="normal"
           />
-          <TextField
-            fullWidth
-            label="Address"
-            value={address}
-            onChange={(e) => setAddress(e.target.value)}
-            margin="normal"
-          />
+          <FormControl fullWidth className="mt-3">
+            <InputLabel>District</InputLabel>
+            <Select
+              value={district}
+              label="District"
+              onChange={(e) => {
+                setDistrict(e.target.value);
+                setTaluk(""); // reset dependent fields
+                setVillage("");
+              }}
+              required
+            >
+              {districtOptions.map((district) => (
+                <MenuItem key={district.value} value={district.value}>
+                  {district.label}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+
+          <FormControl fullWidth className="mt-3" disabled={!district}>
+            <InputLabel>Taluk</InputLabel>
+            <Select
+              value={taluk}
+              label="Taluk"
+              onChange={(e) => {
+                setTaluk(e.target.value);
+                setVillage("");
+              }}
+              required
+            >
+              {talukOptions.map((taluk) => (
+                <MenuItem key={taluk.value} value={taluk.value}>
+                  {taluk.label}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+
+          <FormControl fullWidth className="mt-3" disabled={!taluk}>
+            <InputLabel>Village</InputLabel>
+            <Select
+              value={village}
+              label="Village"
+              onChange={(e) => setVillage(e.target.value)}
+              required
+            >
+              {villageOptions.map((village) => (
+                <MenuItem key={village.value} value={village.value}>
+                  {village.label}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+
           <TextField
             fullWidth
             label="Description"

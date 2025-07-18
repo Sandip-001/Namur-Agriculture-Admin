@@ -51,6 +51,24 @@ const StyledCard = styled(Card)(({ theme }) => ({
   marginBottom: theme.spacing(4),
 }));
 
+const fpoNames = [
+  "Green Harvest Farmers Group",
+  "Golden Fields Producer Company",
+  "AgriRise Collective",
+  "Fresh Roots FPO",
+  "ProsperAgro Farmers Society",
+  "NatureBloom Producers",
+  "VillageCrop Growers Association",
+  "EcoHarvest Producer Group",
+  "Sunrise Agri Collective",
+  "Unity Farmers Federation",
+  "AgroTrust Farmers Group",
+  "Evergreen Fields FPO",
+  "FarmNest Producers",
+  "HappyHarvest Collective",
+  "AgriUnity Farmers Co-op",
+];
+
 const sellerProfile = {
   name: "Ramesh Yadav",
   email: "ramesh@example.com",
@@ -63,6 +81,7 @@ const sellerProfile = {
     village: "Lavale",
     pincode: "411042",
   },
+  fpoGroup: "VillageCrop Growers Association",
   lands: [
     {
       district: "mandya",
@@ -70,7 +89,8 @@ const sellerProfile = {
       village: "PALAHALLI",
       landName: "Land A",
       areaName: "Green Valley",
-      surveyNo: "123 1",
+      surveyNo: 132,
+      hissaNo: 1,
       areaAcres: 2.5,
       crops: [
         { name: "Onion", image: onion, acres: 1.2 },
@@ -95,7 +115,8 @@ const sellerProfile = {
       village: "AROLI",
       landName: "Land B",
       areaName: "Sunset Field",
-      surveyNo: "456 2",
+      surveyNo: 456,
+      hissaNo: 2,
       areaAcres: 1.8,
       crops: [{ name: "Corn", image: corn, acres: 1.8 }],
       machines: [{ name: "Plough", image: plow }],
@@ -124,6 +145,7 @@ const SellerProfile = () => {
   const [name, setName] = useState(sellerProfile.name);
   const [phone, setPhone] = useState(sellerProfile.phone);
   const [address, setAddress] = useState({ ...sellerProfile.address });
+  const [fpo, setFpo] = useState(sellerProfile.fpoGroup);
 
   // land editing state
   const currentLand = sellerProfile.lands[landIndex];
@@ -134,6 +156,7 @@ const SellerProfile = () => {
   const [landName, setLandName] = useState(currentLand.landName);
   const [areaName, setAreaName] = useState(currentLand.areaName);
   const [surveyNo, setSurveyNo] = useState(currentLand.surveyNo);
+  const [hissaNo, setHissaNo] = useState(currentLand.hissaNo);
   const [areaAcres, setAreaAcres] = useState(currentLand.areaAcres);
   const [crops, setCrops] = useState([...currentLand.crops]);
   const [cropSelect, setCropSelect] = useState("");
@@ -181,6 +204,7 @@ const SellerProfile = () => {
     setLandName(currentLand.landName);
     setAreaName(currentLand.areaName);
     setSurveyNo(currentLand.surveyNo);
+    setHissaNo(currentLand.hissaNo);
     setAreaAcres(currentLand.areaAcres);
     setCrops([...currentLand.crops]);
     setMachines([...currentLand.machines]);
@@ -218,7 +242,7 @@ const SellerProfile = () => {
               <Box sx={{ position: "absolute", top: 86, right: 37 }}>
                 {
                   <Typography variant="body2" fontWeight={600} gutterBottom>
-                    {editMode ? "Edit Mode" : "Disabled"}
+                    {editMode ? "Block User" : "Unblock User"}
                   </Typography>
                 }
                 <Switch
@@ -266,6 +290,9 @@ const SellerProfile = () => {
                 </Typography>
                 <Typography color="textSecondary">
                   {sellerProfile.phone}
+                </Typography>
+                <Typography color="textSecondary">
+                  {sellerProfile.fpoGroup}
                 </Typography>
               </Grid>
             </Grid>
@@ -439,6 +466,25 @@ const SellerProfile = () => {
               />
             )
           )}
+
+          <FormControl fullWidth sx={{ mt: 2 }}>
+            <InputLabel>Select FPO Group</InputLabel>
+            <Select
+              value={fpo}
+              label="Select FPO Group"
+              onChange={(e) => {
+                setFpo(e.target.value);
+              }}
+              required
+            >
+              {fpoNames.map((fpoName) => (
+                <MenuItem key={fpoName} value={fpoName}>
+                  {fpoName}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+
           <Button
             variant="contained"
             color="primary"
@@ -457,78 +503,134 @@ const SellerProfile = () => {
           <Typography variant="h6" className="mb-3">
             Edit Land Details
           </Typography>
-          <FormControl fullWidth>
-            <InputLabel>District</InputLabel>
-            <Select
-              value={district}
-              label="District"
-              onChange={(e) => {
-                setDistrict(e.target.value);
-                setTaluk(""); // reset dependent fields
-                setVillage("");
-              }}
-              required
-            >
-              {districtOptions.map((district) => (
-                <MenuItem key={district.value} value={district.value}>
-                  {district.label}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
 
-          <FormControl fullWidth className="mt-3" disabled={!district}>
-            <InputLabel>Taluk</InputLabel>
-            <Select
-              value={taluk}
-              label="Taluk"
-              onChange={(e) => {
-                setTaluk(e.target.value);
-                setVillage("");
-              }}
-              required
-            >
-              {talukOptions.map((taluk) => (
-                <MenuItem key={taluk.value} value={taluk.value}>
-                  {taluk.label}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+          <Grid container spacing={2}>
+            <Grid item xs={6}>
+              <FormControl fullWidth>
+                <InputLabel>District</InputLabel>
+                <Select
+                  value={district}
+                  label="District"
+                  onChange={(e) => {
+                    setDistrict(e.target.value);
+                    setTaluk("");
+                    setVillage("");
+                  }}
+                  required
+                >
+                  {districtOptions.map((district) => (
+                    <MenuItem key={district.value} value={district.value}>
+                      {district.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
 
-          <FormControl fullWidth className="mt-3" disabled={!taluk}>
-            <InputLabel>Village</InputLabel>
-            <Select
-              value={village}
-              label="Village"
-              onChange={(e) => setVillage(e.target.value)}
-              required
-            >
-              {villageOptions.map((village) => (
-                <MenuItem key={village.value} value={village.value}>
-                  {village.label}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-          {[
-            // basic land fields
-            { label: "Land Name", value: landName, setter: setLandName },
-            { label: "Area Name", value: areaName, setter: setAreaName },
-            { label: "Survey No", value: surveyNo, setter: setSurveyNo },
-            { label: "Area (Acres)", value: areaAcres, setter: setAreaAcres },
-          ].map(({ label, value, setter }) => (
-            <TextField
-              key={label}
-              fullWidth
-              label={label}
-              value={value}
-              onChange={(e) => setter(e.target.value)}
-              sx={{ mt: 2 }}
-            />
-          ))}
+            <Grid item xs={6}>
+              <FormControl fullWidth disabled={!district}>
+                <InputLabel>Taluk</InputLabel>
+                <Select
+                  value={taluk}
+                  label="Taluk"
+                  onChange={(e) => {
+                    setTaluk(e.target.value);
+                    setVillage("");
+                  }}
+                  required
+                >
+                  {talukOptions.map((taluk) => (
+                    <MenuItem key={taluk.value} value={taluk.value}>
+                      {taluk.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
 
-          {/* Add Crop */}
+            <Grid item xs={12}>
+              <FormControl fullWidth disabled={!taluk}>
+                <InputLabel>Village</InputLabel>
+                <Select
+                  value={village}
+                  label="Village"
+                  onChange={(e) => setVillage(e.target.value)}
+                  required
+                >
+                  {villageOptions.map((village) => (
+                    <MenuItem key={village.value} value={village.value}>
+                      {village.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+
+            {/* Two fields per row */}
+            <Grid item xs={6}>
+              <TextField
+                label="Land Name"
+                fullWidth
+                value={landName}
+                onChange={(e) => setLandName(e.target.value)}
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <TextField
+                label="Area Name"
+                fullWidth
+                value={areaName}
+                onChange={(e) => setAreaName(e.target.value)}
+              />
+            </Grid>
+
+            <Grid item xs={6}>
+              <TextField
+                label="Survey No"
+                fullWidth
+                type="number"
+                value={surveyNo}
+                onChange={(e) => {
+                  const value = parseFloat(e.target.value);
+                  if (value > 0 || e.target.value === "")
+                    setSurveyNo(e.target.value);
+                }}
+                inputProps={{ min: 1 }}
+              />
+            </Grid>
+
+            <Grid item xs={6}>
+              <TextField
+                label="Hissa No"
+                fullWidth
+                type="number"
+                value={hissaNo}
+                onChange={(e) => {
+                  const value = parseFloat(e.target.value);
+                  if (value > 0 || e.target.value === "")
+                    setHissaNo(e.target.value);
+                }}
+                inputProps={{ min: 1 }}
+              />
+            </Grid>
+
+            <Grid item xs={12}>
+              <TextField
+                label="Area (Acres)"
+                fullWidth
+                type="number"
+                value={areaAcres}
+                onChange={(e) => {
+                  const value = parseFloat(e.target.value);
+                  if (value > 0 || e.target.value === "")
+                    setAreaAcres(e.target.value);
+                }}
+                inputProps={{ min: 0.01 }}
+              />
+            </Grid>
+          </Grid>
+
+          {/* Crop Section */}
           <Box sx={{ mt: 3, display: "flex", gap: 2 }}>
             <Autocomplete
               options={cropOptions.filter(
@@ -541,10 +643,16 @@ const SellerProfile = () => {
             />
             <TextField
               label="Acres"
-              value={cropAcres}
               type="number"
-              onChange={(e) => setCropAcres(e.target.value)}
+              value={cropAcres}
+              onChange={(e) => {
+                const value = parseFloat(e.target.value);
+                if (value > 0 || e.target.value === "")
+                  setCropAcres(e.target.value);
+              }}
+              //onChange={(e) => setCropAcres(e.target.value)}
               sx={{ width: 100 }}
+              inputProps={{ min: 0.01 }}
             />
             <Button
               variant="outlined"
@@ -562,7 +670,7 @@ const SellerProfile = () => {
               Add
             </Button>
           </Box>
-          {/* Display crops */}
+
           {crops.map((crop, index) => (
             <Box key={index} display="flex" alignItems="center" gap={1}>
               <Typography variant="body2">
@@ -580,8 +688,7 @@ const SellerProfile = () => {
             options={machineOptions}
             value={machineSelect}
             onChange={(e, newValue) => setMachineSelect(newValue)}
-            getOptionLabel={(option) => option.name} // use name as label
-            isOptionEqualToValue={(option, value) => option.name === value.name}
+            getOptionLabel={(o) => o.name}
             renderInput={(params) => (
               <TextField {...params} label="Machines" sx={{ mt: 3 }} />
             )}
@@ -602,8 +709,14 @@ const SellerProfile = () => {
               label="Qty"
               type="number"
               value={animalQty}
-              onChange={(e) => setAnimalQty(e.target.value)}
+              onChange={(e) => {
+                const value = parseFloat(e.target.value);
+                if (value > 0 || e.target.value === "")
+                  setAnimalQty(e.target.value);
+              }}
+              //onChange={(e) => setAnimalQty(e.target.value)}
               sx={{ width: 100 }}
+              inputProps={{ min: 1 }}
             />
             <Button
               variant="outlined"
@@ -621,6 +734,7 @@ const SellerProfile = () => {
               Add
             </Button>
           </Box>
+
           {animals.map((animal, index) => (
             <Box key={index} display="flex" alignItems="center" gap={1}>
               <Typography variant="body2">

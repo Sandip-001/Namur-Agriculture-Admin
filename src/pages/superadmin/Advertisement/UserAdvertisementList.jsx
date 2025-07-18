@@ -17,12 +17,20 @@ import {
   Switch,
   FormControlLabel,
   InputAdornment,
+  Tooltip,
 } from "@mui/material";
 import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
 import SearchIcon from "@mui/icons-material/Search";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 import { IoCloseSharp } from "react-icons/io5";
+import { format } from "date-fns";
+import ImageHoverSlider from "../../../components/ImageHoverSlider";
+import CommentsModal from "../../../components/CommentsModal";
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+import AdsHeaderSection from "../../../components/AdsHeaderSection";
 
 const UserAdvertisementList = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -35,7 +43,7 @@ const UserAdvertisementList = () => {
   const [selectedAdvertisement, setSelectedAdvertisement] = useState(null);
 
   // New fields
-  const [isGridView, setIsGridView] = useState(false);
+  const [viewMode, setViewMode] = useState("list");
 
   const [subcategory, setSubcategory] = useState("");
   const [product, setProduct] = useState("");
@@ -47,12 +55,24 @@ const UserAdvertisementList = () => {
   const [selectedDistricts, setSelectedDistricts] = useState([]);
   const [expiryDate, setExpiryDate] = useState(null);
   const [forSale, setForSale] = useState(true); // true = For Sale, false = For Rent
-  const [image, setImage] = useState(null);
+  const [images, setImages] = useState([]);
   const [postType, setPostType] = useState("postnow"); // or 'schedule'
   const [scheduledDate, setscheduledDate] = useState("Now"); // default
 
-  /*const theme = useTheme();
-  const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));*/
+  //Comment model state
+  const [openCommentsModal, setOpenCommentsModal] = useState(false);
+  const [comments, setComments] = useState([]);
+
+  const handleOpenComments = (commentsData) => {
+    setComments(commentsData);
+    setOpenCommentsModal(true);
+  };
+
+  const handleDeleteComment = async (index) => {
+    // Delete API call here
+    console.log("Delete comment:", index);
+    setComments((prev) => prev.filter((_, i) => i !== index));
+  };
 
   useEffect(() => {
     setIsHideSidebarAndHeader(false);
@@ -80,8 +100,11 @@ const UserAdvertisementList = () => {
         price: 20,
         description:
           "Farm-fresh red onions directly from our organic farm. Ideal for cooking and storing.",
-        image:
+        images: [
           "https://acsinternationalexim.com/wp-content/uploads/2023/11/l-intro-1644158494.jpg",
+          "https://m.media-amazon.com/images/I/51DJ-9xkuQL.jpg",
+          "https://png.pngtree.com/thumb_back/fw800/background/20230901/pngtree-garlic-onions-carrots-and-onions-in-a-burlap-sack-image_13167752.jpg",
+        ],
         forSale: "rent",
         postType: "postnow",
         scheduledDate: "Now",
@@ -89,6 +112,21 @@ const UserAdvertisementList = () => {
         postedBy: "Sudhendu Mondal",
         contactNumber: "8637824327",
         districts: ["Mandya"],
+        createdDate: "2025-06-25 10:15 AM",
+        comments: [
+          {
+            userName: "RameshK",
+            comment: "Onions were super fresh and delivered quickly!",
+          },
+          {
+            userName: "KrishnFarm",
+            comment: "Price is very reasonable. Will order again.",
+          },
+          {
+            userName: "Sunita88",
+            comment: "Packaging could be improved but quality is good.",
+          },
+        ],
       },
       {
         no: 2,
@@ -100,7 +138,11 @@ const UserAdvertisementList = () => {
         price: 45,
         description:
           "Pure cow milk from grass-fed cows. No additives, fresh and healthy.",
-        image: "https://static.toiimg.com/photo/113458714.cms",
+        images: [
+          "https://static.toiimg.com/photo/113458714.cms",
+          "https://www.shutterstock.com/image-photo/dairy-products-bottles-milk-cottage-600nw-2483159649.jpg",
+          "https://www.shutterstock.com/image-photo/milk-jug-pouring-into-glass-600nw-657561061.jpg",
+        ],
         forSale: "sale",
         postType: "postnow",
         scheduledDate: "Now",
@@ -108,6 +150,25 @@ const UserAdvertisementList = () => {
         postedBy: "Sandip Chowdhury",
         contactNumber: "9876543210",
         districts: ["Mandya"],
+        createdDate: "2025-06-26 08:50 AM",
+        comments: [
+          {
+            userName: "EcoFarms",
+            comment: "Milk tastes very fresh, loved it!",
+          },
+          {
+            userName: "AjayDeals",
+            comment: "Good option for organic milk in Mandya.",
+          },
+          {
+            userName: "Neha_R",
+            comment: "Delivery was a bit late but quality compensated.",
+          },
+          {
+            userName: "Vijay_Agro",
+            comment: "Affordable and pure milk, recommend!",
+          },
+        ],
       },
       {
         no: 3,
@@ -119,8 +180,10 @@ const UserAdvertisementList = () => {
         price: 25,
         description:
           "Home-grown desi tomatoes. Perfect for salads and cooking, pesticide-free.",
-        image:
+        images: [
           "https://img.etimg.com/thumb/width-1200,height-900,imgsize-56196,resizemode-75,msid-95423774/magazines/panache/5-reasons-why-tomatoes-should-be-your-favourite-fruit-this-year.jpg",
+          "https://media.istockphoto.com/id/847335116/photo/tomatoes-on-the-vine.jpg?s=612x612&w=0&k=20&c=XspM2ySvUfqjnt7HL5qKyn0tyRb5qLsf1GAP6-3xQsw=",
+        ],
         forSale: "sale",
         postType: "postnow",
         scheduledDate: "Now",
@@ -128,6 +191,21 @@ const UserAdvertisementList = () => {
         postedBy: "Anjali Sharma",
         contactNumber: "9123456789",
         districts: ["Mysuru"],
+        createdDate: "2025-06-27 12:30 PM",
+        comments: [
+          {
+            userName: "Sunita88",
+            comment: "Loved the taste of these tomatoes.",
+          },
+          {
+            userName: "FarmNetUser",
+            comment: "Good size and freshness maintained during delivery.",
+          },
+          {
+            userName: "RameshK",
+            comment: "Great for salad and cooking, will order again.",
+          },
+        ],
       },
       {
         no: 4,
@@ -139,8 +217,11 @@ const UserAdvertisementList = () => {
         price: 7,
         description:
           "Farm-fresh country chicken eggs. Rich in nutrition and chemical-free.",
-        image:
+        images: [
           "https://media.post.rvohealth.io/wp-content/uploads/2020/12/duck-chicken-egg-eggs-732x549-thumbnail-732x549.jpg",
+          "https://cdn.britannica.com/94/151894-050-F72A5317/Brown-eggs.jpg",
+          "https://i.abcnewsfe.com/a/1980729d-c7e4-4a16-af2a-f62aaeb79bd9/eggs-1-as-gmh-240327_1711555375191_hpMain_4_16x9.jpg?w=992",
+        ],
         forSale: "rent",
         postType: "postnow",
         scheduledDate: "Now",
@@ -148,46 +229,25 @@ const UserAdvertisementList = () => {
         postedBy: "Sandip Chowdhury",
         contactNumber: "9876543210",
         districts: ["Bengaluru Rural"],
-      },
-      {
-        no: 3,
-        product: "Tomato",
-        subcategory: "Fruits & Veggies",
-        productName: "Desi Tomatoes",
-        unit: "kg",
-        quantity: 70,
-        price: 25,
-        description:
-          "Home-grown desi tomatoes. Perfect for salads and cooking, pesticide-free.",
-        image:
-          "https://img.etimg.com/thumb/width-1200,height-900,imgsize-56196,resizemode-75,msid-95423774/magazines/panache/5-reasons-why-tomatoes-should-be-your-favourite-fruit-this-year.jpg",
-        forSale: "sale",
-        postType: "postnow",
-        scheduledDate: "Now",
-        status: "Active",
-        postedBy: "Sudhendu Mondal",
-        contactNumber: "8637824327",
-        districts: ["Mysuru"],
-      },
-      {
-        no: 4,
-        product: "Eggs",
-        subcategory: "Poultry",
-        productName: "Country Chicken Eggs",
-        unit: "pieces",
-        quantity: 200,
-        price: 7,
-        description:
-          "Farm-fresh country chicken eggs. Rich in nutrition and chemical-free.",
-        image:
-          "https://media.post.rvohealth.io/wp-content/uploads/2020/12/duck-chicken-egg-eggs-732x549-thumbnail-732x549.jpg",
-        forSale: "rent",
-        postType: "postnow",
-        scheduledDate: "Now",
-        status: "Active",
-        postedBy: "Sandip Chowdhury",
-        contactNumber: "9876543210",
-        districts: ["Bangalore Rural"],
+        createdDate: "2025-06-28 09:00 AM",
+        comments: [
+          {
+            userName: "AjayDeals",
+            comment: "These eggs taste just like home-raised chickens!",
+          },
+          {
+            userName: "Neha_R",
+            comment: "Very happy with the quality and packaging.",
+          },
+          {
+            userName: "KrishnFarm",
+            comment: "Good quantity for this price range.",
+          },
+          {
+            userName: "FarmNetUser",
+            comment: "Delivery was quick and eggs were fresh.",
+          },
+        ],
       },
     ];
   };
@@ -199,8 +259,9 @@ const UserAdvertisementList = () => {
     const results = getDummyAdvertisements().filter(
       (ad) =>
         ad.postedBy.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        ad.status.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        ad.productName.toLowerCase().includes(searchQuery.toLowerCase())
+        ad.subcategory.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        ad.productName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        ad.product.toLowerCase().includes(searchQuery.toLowerCase())
     );
     setFilteredAds(results);
   }, [searchQuery]);
@@ -215,7 +276,7 @@ const UserAdvertisementList = () => {
     setPrice(ad.price || "");
     setDescription(ad.description || "");
     setSelectedDistricts(ad.districts || []);
-    setImage(ad.image || null);
+    setImages(ad.images || []);
     setForSale(ad.forSale === "sale"); // boolean: true = sale, false = rent
     setPostType(ad.postType || "postnow");
     setscheduledDate(ad.scheduledDate || "Now");
@@ -224,10 +285,12 @@ const UserAdvertisementList = () => {
   };
 
   const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setImage(file);
-    }
+    const files = Array.from(e.target.files);
+    setImages((prev) => [...prev, ...files]);
+  };
+
+  const handleRemoveImage = (index) => {
+    setImages((prev) => prev.filter((_, i) => i !== index));
   };
 
   const handleModalClose = () => {
@@ -241,7 +304,7 @@ const UserAdvertisementList = () => {
     setPrice("");
     setDescription("");
     setSelectedDistricts([]);
-    setImage(null);
+    setImages([]);
     setForSale(true);
     setPostType("postnow");
     setscheduledDate("Now");
@@ -277,9 +340,16 @@ const UserAdvertisementList = () => {
       for (const key in updatedData) {
         formData.append(key, updatedData[key]);
       }
-      if (image && typeof image !== "string") {
-        formData.append("image", image);
-      }
+      images.forEach((img, idx) => {
+        if (typeof img !== "string") {
+          formData.append("images", img); // new images
+        }
+      });
+
+      formData.append(
+        "existingImages",
+        JSON.stringify(images.filter((i) => typeof i === "string"))
+      ); // keep track of existing images
 
       // TODO: Make your PUT/PATCH API call here using formData
 
@@ -324,96 +394,62 @@ const UserAdvertisementList = () => {
   return (
     <>
       <div className="right-content w-100">
-        <div className="d-flex justify-content-between align-items-center gap-3 mb-3 card shadow border-0 w-100 flex-row p-4">
-          <h5 className="mb-0">User Advertisement List</h5>
+        <AdsHeaderSection
+          filteredAds={filteredAds}
+          setSearchQuery={setSearchQuery}
+          searchQuery={searchQuery}
+          viewMode={viewMode}
+          setViewMode={setViewMode}
+          title = {"User Advertisement List"}
+        />
 
-          <TextField
-            variant="outlined"
-            placeholder="Search user ads..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            size="small"
-            sx={{
-              width: { xs: "100%", sm: "300px" },
-              backgroundColor: "#fff",
-              borderRadius: 2,
-              "& .MuiOutlinedInput-root": {
-                "& fieldset": {
-                  borderColor: "#ccc",
-                },
-                "&:hover fieldset": {
-                  borderColor: "#f0883d",
-                },
-                "&.Mui-focused fieldset": {
-                  borderColor: "#f0883d",
-                },
-              },
-            }}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon sx={{ color: "#f0883d" }} />
-                </InputAdornment>
-              ),
-            }}
-          />
-        </div>
-
-        <div className="d-flex justify-content-end align-items-center gap-2 mb-3">
-          <span className="fw-bold">List View</span>
-          <div className="form-check form-switch">
-            <input
-              className="form-check-input"
-              type="checkbox"
-              id="viewToggle"
-              checked={isGridView}
-              onChange={() => setIsGridView(!isGridView)}
-            />
-          </div>
-          <span className="fw-bold">Grid View</span>
-        </div>
-
-        {isGridView ? (
+        {viewMode === "grid" ? (
           <div className="row g-2">
             {filteredAds.map((item, index) => (
               <div key={index} className="col-6 col-md-3 col-lg-2 mb-4">
                 <div className="card h-100 shadow-sm">
-                  <img
-                    src={item.image}
+                  <Slider
+                    dots={false}
+                    arrows={true}
+                    autoplay={false}
+                    autoplaySpeed={3000}
                     className="card-img-top"
-                    alt={item.productName}
-                    style={{ height: "130px", objectFit: "cover" }}
-                  />
+                  >
+                    {item.images.map((img, idx) => (
+                      <div key={idx}>
+                        <img
+                          src={img}
+                          alt={item.productName}
+                          style={{
+                            width: "100%",
+                            height: "130px",
+                            objectFit: "cover",
+                            borderTopLeftRadius: "0.25rem",
+                            borderTopRightRadius: "0.25rem",
+                          }}
+                        />
+                      </div>
+                    ))}
+                  </Slider>
                   <div className="card-body d-flex flex-column p-2">
                     {/* Content Section */}
                     <div className="flex-grow-1">
                       <h6 className="mb-1 fw-bold">{item.productName}</h6>
-                      <small className="text-muted">{item.subcategory}</small>
+                      <small className="text-muted">{item.product}</small>
 
                       <div className="mt-1">
                         <span className="badge bg-secondary me-1">
                           {item.quantity} {item.unit}
                         </span>
-                        <span className="badge bg-success">₹{item.price}</span>
-                      </div>
-
-                      <div className="mt-2">
+                        <span className="badge bg-success me-1">
+                          ₹{item.price}
+                        </span>
                         <span
                           className={`badge bg-${
                             item.forSale === "sale" ? "success" : "info"
                           } me-1`}
                         >
                           {item.forSale.toUpperCase()}
-                        </span>
-                      </div>
-
-                      <div className="mt-2">
-                        <span
-                          className={`badge rounded-pill bg-${
-                            item.status === "Active" ? "success" : "secondary"
-                          }`}
-                        >
-                          {item.status}
                         </span>
                       </div>
 
@@ -426,7 +462,7 @@ const UserAdvertisementList = () => {
                         </small>
                       </div>
 
-                      <div className="d-flex flex-wrap gap-1 mt-2">
+                      <div className="d-flex justify-content-between align-items-center gap-1 mt-2">
                         {item.districts.map((dist, idx) => (
                           <span
                             key={idx}
@@ -435,6 +471,13 @@ const UserAdvertisementList = () => {
                             {dist}
                           </span>
                         ))}
+
+                        <span
+                          style={{ fontSize: "0.7rem" }}
+                          className="fw-bold"
+                        >
+                          {format(new Date(item.createdDate), "do MMMM yyyy")}
+                        </span>
                       </div>
                     </div>
 
@@ -452,6 +495,14 @@ const UserAdvertisementList = () => {
                       >
                         <MdDelete />
                       </button>
+                      <button
+                        className="btn btn-sm btn-outline-info"
+                        onClick={
+                          () => handleOpenComments(item.comments) // You can pass the item.comments or item.no
+                        }
+                      >
+                        💬
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -466,82 +517,62 @@ const UserAdvertisementList = () => {
                   <tr>
                     <th>NO</th>
                     <th>IMAGE</th>
-                    <th>PRODUCT NAME</th>
-                    <th>QUANTITY</th>
+                    <th>ITEM </th>
                     <th>PRICE</th>
                     <th>FOR</th>
-                    <th>STATUS</th>
-                    <th>ADD BY</th>
-                    <th>MOBILE NUMBER</th>
+                    <th>CONTACT</th>
                     <th>DISTRICTS</th>
+                    <th>TIME</th>
                     <th>ACTION</th>
                   </tr>
                 </thead>
                 <tbody className="text-center">
                   {filteredAds.length > 0 ? (
                     filteredAds.map((item, index) => (
-                      <tr key={index}>
+                      <tr
+                        key={index}
+                        className="tableRow"
+                        onClick={() => handleEditClick(item)}
+                      >
                         <td># {item.no}</td>
 
-                        <td>
-                          <a
-                            href={item.image}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            title="Open full image"
-                          >
-                            <img
-                              src={item.image}
-                              alt={item.productName}
-                              width={100}
-                              height={100}
-                              style={{
-                                objectFit: "cover",
-                                borderRadius: "6px",
-                                cursor: "pointer",
-                              }}
-                            />
-                          </a>
+                        <td
+                          className="d-flex align-items-center justify-content-center"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <ImageHoverSlider images={item.images} />
                         </td>
 
                         <td>
                           <div className="fw-bold">{item.productName}</div>
-                          <small className="text-muted">
-                            {item.subcategory}
-                          </small>
+                          <small className="text-muted">{item.product}</small>
                         </td>
 
                         <td>
-                          {item.quantity} {item.unit}
+                          <div className="fw-bold">
+                            ₹{item.price} / {item.unit}
+                          </div>
+                          <small className="text-muted">{item.quantity}</small>
                         </td>
 
-                        <td>₹ {item.price}</td>
+                        <td>
+                          <h6>
+                            <span
+                              className={`badge bg-${
+                                item.forSale === "sale" ? "success" : "info"
+                              }`}
+                            >
+                              {item.forSale.toUpperCase()}
+                            </span>
+                          </h6>
+                        </td>
 
                         <td>
-                          <span
-                            className={`badge bg-${
-                              item.forSale === "sale" ? "success" : "info"
-                            }`}
-                          >
-                            {item.forSale.toUpperCase()}
+                          <div className="fw-semibold">{item.postedBy}</div>
+                          <span className="text-muted">
+                            {item.contactNumber}
                           </span>
                         </td>
-
-                        <td>
-                          <span
-                            className={`badge rounded-pill bg-${
-                              item.status === "Active" ? "success" : "secondary"
-                            }`}
-                          >
-                            {item.status}
-                          </span>
-                        </td>
-
-                        <td>
-                          <span className="fw-semibold">{item.postedBy}</span>
-                        </td>
-
-                        <td>{item.contactNumber}</td>
 
                         <td>
                           <div className="d-flex flex-wrap gap-1 justify-content-center">
@@ -557,18 +588,34 @@ const UserAdvertisementList = () => {
                         </td>
 
                         <td>
+                          {format(
+                            new Date(item.createdDate),
+                            "do MMMM yyyy, hh:mm a"
+                          )}
+                        </td>
+
+                        <td>
                           <div className="d-flex gap-2 justify-content-center">
-                            <button
-                              className="btn btn-sm btn-outline-success"
-                              onClick={() => handleEditClick(item)}
-                            >
-                              <FaPencilAlt />
-                            </button>
+                            {/* Delete Button */}
                             <button
                               className="btn btn-sm btn-outline-danger"
-                              onClick={() => handleDeleteClick(item.no)}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleDeleteClick(item.no);
+                              }}
                             >
                               <MdDelete />
+                            </button>
+
+                            {/* Comments Button */}
+                            <button
+                              className="btn btn-sm btn-outline-info"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleOpenComments(item.comments); // You can pass the item.comments or item.no
+                              }}
+                            >
+                              💬
                             </button>
                           </div>
                         </td>
@@ -593,8 +640,13 @@ const UserAdvertisementList = () => {
           onChange={(event, value) => setCurrentPage(value)}
         />
       </div>
-
-      {/* Edit Modal */}
+      <CommentsModal
+        open={openCommentsModal}
+        handleClose={() => setOpenCommentsModal(false)}
+        comments={comments}
+        handleDeleteComment={handleDeleteComment}
+      />
+      ;{/* Edit Modal */}
       <Dialog open={editModalOpen} onClose={handleModalClose} fullWidth>
         <DialogTitle className="d-flex justify-content-between align-items-center">
           Edit Advertisement
@@ -679,7 +731,7 @@ const UserAdvertisementList = () => {
           />
 
           <TextField
-            lavvvvvvbel="Price"
+            label="Price"
             type="number"
             fullWidth
             margin="normal"
@@ -767,23 +819,45 @@ const UserAdvertisementList = () => {
 
           {/* Image Upload */}
           <div className="mt-3">
-            <label>Update Product Image:</label>
+            <label>Update Product Images:</label>
             <input
               type="file"
               accept="image/*"
+              multiple
               onChange={handleImageChange}
               className="form-control mt-2"
             />
-            {image && (
-              <img
-                src={
-                  typeof image === "string" ? image : URL.createObjectURL(image)
-                }
-                alt="Preview"
-                className="mt-3 rounded"
-                style={{ maxWidth: "50%", maxHeight: 200 }}
-              />
-            )}
+
+            <div className="d-flex flex-wrap mt-3">
+              {images.map((img, idx) => (
+                <div key={idx} className="position-relative me-3 mb-3">
+                  <img
+                    src={
+                      typeof img === "string" ? img : URL.createObjectURL(img)
+                    }
+                    alt="preview"
+                    className="rounded"
+                    style={{
+                      width: 120,
+                      height: 120,
+                      objectFit: "cover",
+                      border: "1px solid #ddd",
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveImage(idx)}
+                    className="btn btn-sm btn-danger position-absolute top-0 end-0"
+                    style={{
+                      //transform: "translate(50%, -50%)",
+                      borderRadius: "10%",
+                    }}
+                  >
+                    &times;
+                  </button>
+                </div>
+              ))}
+            </div>
           </div>
         </DialogContent>
 

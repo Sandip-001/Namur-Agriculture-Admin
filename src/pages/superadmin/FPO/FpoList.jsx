@@ -51,7 +51,9 @@ const FpoList = () => {
         no: 1,
         image: man1,
         fpoName: "Green Harvest FPO",
-        address: "Near NH-44, Kanakapura Road, Bengaluru",
+        district: "Raichur",
+        taluk: "Manvi",
+        village: "AROLI",
         gstNo: "29ABCDE1234F1Z5",
         products: ["Tomatoes", "Chillies", "Turmeric"],
         regFarmers: 2,
@@ -62,7 +64,9 @@ const FpoList = () => {
         no: 2,
         image: man2,
         fpoName: "Kaveri Farmers Collective",
-        address: "Srirangapatna, Mysuru District, Karnataka",
+        district: "mandya",
+        taluk: "Srirangapatna",
+        village: "PALAHALLI",
         gstNo: "29FGHIJ6789K2Z3",
         products: ["Sugarcane", "Paddy", "Bananas"],
         regFarmers: 12,
@@ -73,7 +77,9 @@ const FpoList = () => {
         no: 3,
         image: man1,
         fpoName: "Coastal Agro Producers",
-        address: "Panambur, Mangaluru, Dakshina Kannada",
+        district: "Raichur",
+        taluk: "Manvi",
+        village: "AROLI",
         gstNo: "29KLMNO4567P3Z6",
         products: ["Coconut", "Cashew", "Arecanut"],
         regFarmers: 7,
@@ -84,7 +90,9 @@ const FpoList = () => {
         no: 4,
         image: man2,
         fpoName: "Belagavi Agro United",
-        address: "Tilakwadi, Belgaum, Karnataka",
+        district: "mandya",
+        taluk: "Srirangapatna",
+        village: "PALAHALLI",
         gstNo: "29PQRSU1234V4Z9",
         products: ["Maize", "Soybean", "Onions"],
         regFarmers: 24,
@@ -125,7 +133,11 @@ const FpoList = () => {
               <tbody className="text-center align-middle">
                 {dummyData.length > 0 ? (
                   dummyData.map((item, index) => (
-                    <tr key={index}>
+                    <tr
+                      key={index}
+                      className="tableRow"
+                      onClick={() => handleEditClick(item)}
+                    >
                       <td># {item.no}</td>
 
                       <td>
@@ -139,7 +151,10 @@ const FpoList = () => {
                       </td>
 
                       <td>
-                        {item.address.split(" ").slice(0, 5).join(" ") + "..."}
+                        <div>
+                          <div className="text-muted">{item.district}</div>
+                          <div className="fw-semibold">{item.taluk}</div>
+                        </div>
                       </td>
 
                       <td>
@@ -166,15 +181,8 @@ const FpoList = () => {
                       <td>
                         <div className="d-flex gap-2 align-items-center justify-content-center">
                           <button
-                            className="btn btn-sm btn-success"
-                            onClick={() => handleEditClick(item)}
-                          >
-                            <FaPencilAlt />
-                          </button>
-
-                          <button
                             className="btn btn-sm btn-danger"
-                            // onClick={() => handleDeleteClick(item.no)}
+                            onClick={(e) => e.stopPropagation()}
                           >
                             <MdDelete />
                           </button>

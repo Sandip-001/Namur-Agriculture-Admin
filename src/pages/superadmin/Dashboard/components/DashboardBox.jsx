@@ -84,9 +84,9 @@ const DashboardBox = () => {
               </Typography>
               {card.data.map((row, idx) => (
                 <Box key={idx} display="flex" justifyContent="space-between">
-                  <Typography variant="body1">{row[0]}</Typography>
-                  <Typography variant="body2" color="textSecondary">
-                    {row[1]}
+                  <Typography variant="body1" color="textSecondary">{row[1]}</Typography>
+                  <Typography variant="body2" >
+                    {row[0]}
                   </Typography>
                 </Box>
               ))}
