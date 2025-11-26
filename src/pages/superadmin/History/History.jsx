@@ -32,7 +32,6 @@ import {
   AddCircleOutline,
 } from "@mui/icons-material";
 
-
 const dummyNotificationLogs = [
   {
     previousId: "1",
@@ -40,16 +39,6 @@ const dummyNotificationLogs = [
     message: "Please water your fields due to heatwave warning.",
     deletedBy: "admin",
     userName: "Admin Panel",
-    createdAt: "2025-07-01 02:30 PM",
-  },
-];
-
-const ads = [
-  {
-    id: "1",
-    product: "Crop Advisory",
-    price: "$300",
-    deletedBy: "admin",
     createdAt: "2025-07-01 02:30 PM",
   },
 ];
@@ -64,19 +53,34 @@ const History = () => {
   const [newsSearchTerm, setNewsSearchTerm] = useState("");
   const [targetType, setTargetType] = useState("Notifications");
   const [newsLogs, setNewsLogs] = useState([]);
+  const [adsLogs, setAdsLogs] = useState([]);
 
   // Fetch News deletion logs from API
   useEffect(() => {
     const fetchNewsLogs = async () => {
       try {
         const res = await axiosInstance.get("/api/newsLogRoutes");
-        console.log(res.data);
+        //console.log(res.data);
         setNewsLogs(res.data);
       } catch (err) {
         console.error("❌ Error fetching news logs:", err);
       }
     };
     fetchNewsLogs();
+  }, []);
+
+  // Fetch Ads logs from API
+  useEffect(() => {
+    const fetchAdsLogs = async () => {
+      try {
+        const res = await axiosInstance.get("/api/adLog");
+        console.log(res.data);
+        setAdsLogs(res.data);
+      } catch (err) {
+        console.error("❌ Error fetching ads logs:", err);
+      }
+    };
+    fetchAdsLogs();
   }, []);
 
   const filteredNewsLogs = newsLogs.filter(
@@ -146,8 +150,9 @@ const History = () => {
               mb={3}
             >
               <Typography variant="h5" fontWeight="bold" gutterBottom>
-                Advertisement Deletion Logs
+                Advertisement Logs History
               </Typography>
+
               <Box
                 display="flex"
                 alignItems="center"
@@ -157,54 +162,79 @@ const History = () => {
                 <SearchIcon color="action" />
                 <TextField
                   variant="standard"
-                  placeholder="Search by product or user"
+                  placeholder="Search by product or actor"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
               </Box>
             </Box>
 
-            <Box sx={{ overflowX: "auto" }}>
-              <Table sx={{ minWidth: 600 }}>
-                <TableHead>
-                  <TableRow>
-                    <StyledTableCell>ID</StyledTableCell>
-                    <StyledTableCell>Product</StyledTableCell>
-                    <StyledTableCell>Price / Unit</StyledTableCell>
-                    <StyledTableCell>Deleted By</StyledTableCell>
-                    <StyledTableCell>Date & Time</StyledTableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {ads.map((log, idx) => (
-                    <TableRow key={idx}>
-                      <TableCell>{log.id}</TableCell>
-                      <TableCell>
-                        <Box display="flex" alignItems="center" gap={1}>
-                          <DeleteIcon color="error" />
-                          <Typography>{log.product}</Typography>
-                        </Box>
-                      </TableCell>
-                      <TableCell>₹{log.price}</TableCell>
-                      <TableCell>
-                        <Chip
-                          label={
-                            log.deletedBy === "admin"
-                              ? `Deleted by Admin`
-                              : `Deleted by ${log.userName}`
-                          }
-                          color={
-                            log.deletedBy === "admin" ? "error" : "primary"
-                          }
-                          size="small"
-                        />
-                      </TableCell>
-                      <TableCell>{log.createdAt}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </Box>
+            {/* Filter By Search */}
+            {adsLogs
+              .filter((log) => {
+                const productName = log?.payload?.product_name || "";
+                const actorName = log?.actor_name || "";
+
+                return (
+                  productName
+                    .toLowerCase()
+                    .includes(searchTerm.toLowerCase()) ||
+                  actorName.toLowerCase().includes(searchTerm.toLowerCase())
+                );
+              })
+              .map((log, index) => (
+                <Paper
+                  key={index}
+                  sx={{
+                    p: 2,
+                    mb: 2,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 2,
+                    borderLeft: `6px solid ${
+                      log.action === "create"
+                        ? "#4caf50"
+                        : log.action === "update"
+                        ? "#2196f3"
+                        : "#f44336"
+                    }`,
+                  }}
+                >
+                  {/* Action Icon */}
+                  {getActionIcon(log.action)}
+
+                  <Box flex={1}>
+                    {/* Title + Action */}
+                    <Typography variant="subtitle1" fontWeight="bold">
+                      {log.payload.product_name}
+                    </Typography>
+
+                    {/* Action, Actor, Role */}
+                    <Typography variant="body2" sx={{ opacity: 0.8 }}>
+                      {getActionChip(log.action)} by{" "}
+                      <strong>{log.actor_name}</strong> ({log.actor_role})
+                    </Typography>
+
+                    {/* Price / District */}
+                    <Typography variant="body2">
+                      ₹{log.payload.price} / {log.payload.unit || "—"} •{" "}
+                      {log.payload.districts?.join(", ")}
+                    </Typography>
+
+                    {/* Category / Product ID */}
+                    <Typography variant="caption" sx={{ opacity: 0.7 }}>
+                      Product ID: {log.ad_id}
+                    </Typography>
+                  </Box>
+
+                  {/* Time */}
+                  <Box textAlign="right">
+                    <Typography variant="caption" fontWeight="bold">
+                      {convertToIST(log.created_at)}
+                    </Typography>
+                  </Box>
+                </Paper>
+              ))}
           </Paper>
         )}
 
