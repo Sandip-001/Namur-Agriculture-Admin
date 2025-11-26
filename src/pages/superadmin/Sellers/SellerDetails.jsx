@@ -2,7 +2,7 @@
 import { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axiosInstance from "../../../utils/axiosInstance"; // adjust
-import UserHeader from "../../../components/seller-details/userHeader";
+import UserHeader from "../../../components/seller-details/UserHeader";
 import LandSelector from "../../../components/seller-details/LandSelector";
 import FoodProducts from "../../../components/seller-details/FoodProduct";
 import MachineProducts from "../../../components/seller-details/MachineProduct";
