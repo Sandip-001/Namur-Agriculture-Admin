@@ -32,17 +32,6 @@ import {
   AddCircleOutline,
 } from "@mui/icons-material";
 
-const dummyNotificationLogs = [
-  {
-    previousId: "1",
-    title: "Crop Advisory",
-    message: "Please water your fields due to heatwave warning.",
-    deletedBy: "admin",
-    userName: "Admin Panel",
-    createdAt: "2025-07-01 02:30 PM",
-  },
-];
-
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   fontWeight: 500,
 }));
@@ -54,6 +43,14 @@ const History = () => {
   const [targetType, setTargetType] = useState("Notifications");
   const [newsLogs, setNewsLogs] = useState([]);
   const [adsLogs, setAdsLogs] = useState([]);
+  const [logs, setLogs] = useState([]);
+
+  useEffect(() => {
+    (async () => {
+      const res = await axiosInstance.get("/api/notifications/logs?limit=50");
+      setLogs(res.data || []);
+    })();
+  }, []);
 
   // Fetch News deletion logs from API
   useEffect(() => {
@@ -246,46 +243,53 @@ const History = () => {
                 <Typography variant="h5" fontWeight="bold" gutterBottom>
                   Push Notification Logs
                 </Typography>
+
                 <Box sx={{ overflowX: "auto" }}>
                   <Table sx={{ minWidth: 650 }}>
                     <TableHead>
                       <TableRow>
-                        <TableCell>ID</TableCell>
                         <TableCell>Title</TableCell>
-                        <TableCell>Message</TableCell>
+                        <TableCell>Type</TableCell>
+                        <TableCell>Recipients</TableCell>
                         <TableCell>Created By</TableCell>
-                        <TableCell>Created At</TableCell>
+                        <TableCell>Sent At</TableCell>
                       </TableRow>
                     </TableHead>
+
                     <TableBody>
-                      {dummyNotificationLogs.map((log, index) => (
-                        <TableRow key={index}>
-                          <TableCell>{log.previousId}</TableCell>
+                      {logs.map((log, idx) => (
+                        <TableRow key={idx}>
                           <TableCell>
                             <Box display="flex" alignItems="center" gap={1}>
                               <NotificationsActive color="primary" />
                               {log.title}
                             </Box>
                           </TableCell>
-                          <TableCell>{log.message}</TableCell>
+
                           <TableCell>
                             <Chip
                               label={
-                                log.deletedBy === "admin"
-                                  ? `Created by Admin`
-                                  : `Created by ${log.userName}`
+                                log.type === "general" ? "General" : "Targeted"
                               }
                               color={
-                                log.deletedBy === "admin" ? "error" : "primary"
+                                log.type === "general" ? "primary" : "warning"
                               }
                               size="small"
                             />
                           </TableCell>
+
+                          <TableCell>{log.recipients_count || 0}</TableCell>
+
                           <TableCell>
-                            {format(
-                              new Date(log.createdAt),
-                              "do MMMM yyyy, hh:mm a"
-                            )}
+                            <Chip
+                              label={log.created_by_name || "Admin"}
+                              color="secondary"
+                              size="small"
+                            />
+                          </TableCell>
+
+                          <TableCell>
+                            {convertToIST(log.sent_at)}
                           </TableCell>
                         </TableRow>
                       ))}
