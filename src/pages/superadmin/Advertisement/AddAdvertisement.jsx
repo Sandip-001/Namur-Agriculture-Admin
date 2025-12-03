@@ -31,7 +31,7 @@ import { FaCloudUploadAlt, FaRegImages } from "react-icons/fa";
 import { IoCloseSharp } from "react-icons/io5";
 import { MyContext } from "../../../App";
 
-const units = ["Kg", "Gram", "Piece", "Ltr"];
+const units = ["Kg", "Gram", "Piece", "Ltr", "Unit"];
 
 const AddAdvertisement = () => {
   const navigate = useNavigate();
@@ -52,7 +52,10 @@ const AddAdvertisement = () => {
 
   // state
   const [title, setTitle] = useState("");
+  const [categories, setCategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState(null);
   const [subCategories, setSubCategories] = useState([]); // array of objects {id, name, category_id, category_name}
+  const [filteredSubcategories, setFilteredSubcategories] = useState([]);
   const [selectedSubCategory, setSelectedSubCategory] = useState(null); // object
   const [products, setProducts] = useState([]); // products for chosen subcategory (array of objects)
   const [product, setProduct] = useState(null); // selected product object
@@ -66,6 +69,7 @@ const AddAdvertisement = () => {
   const [scheduledDate, setScheduledDate] = useState(null);
   const [expiryDate, setExpiryDate] = useState(null);
   const [forSale, setForSale] = useState(true);
+  const [youtubeEmbedURL, setYoutubeEmbedURL] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [adsImages, setAdsImages] = useState([]);
 
@@ -92,6 +96,20 @@ const AddAdvertisement = () => {
           value: d,
         }));
 
+  // fetch categories (as objects)
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await axiosInstance.get("/api/categories");
+        // expect array of { id, name, category_id, category_name }
+        setCategories(res.data || []);
+      } catch (err) {
+        console.error("Failed to fetch categories:", err);
+        setAlertBox?.({ error: true, msg: "Failed to load categories" });
+      }
+    };
+    fetchCategories();
+  }, []);
 
   // fetch subcategories (as objects)
   useEffect(() => {
@@ -133,7 +151,34 @@ const AddAdvertisement = () => {
     fetchProductsForSubcat();
   }, [selectedSubCategory]);
 
-  
+  // When category changes
+  const handleCategoryChange = (categoryId) => {
+    const category = categories.find((c) => c.id === categoryId);
+    setSelectedCategory(category || null);
+
+    // filter subcategories based on category selection
+    const filteredSubs = subCategories.filter(
+      (sub) => sub.category_id === categoryId
+    );
+    setFilteredSubcategories(filteredSubs);
+
+    // Reset selections below category
+    setSelectedSubCategory(null);
+    setProducts([]);
+    setProduct(null);
+  };
+
+  // When subcategory changes
+  const handleSubcategoryChange = (subId) => {
+    const sub = filteredSubcategories.find((s) => s.id === subId);
+    setSelectedSubCategory(sub || null);
+
+    // Reset product when sub changes
+    if (!sub) {
+      setProducts([]);
+      setProduct(null);
+    }
+  };
 
   // handle product select
   const handleProductSelect = (prodId) => {
@@ -182,12 +227,24 @@ const AddAdvertisement = () => {
 
   // Validate before submit
   const validate = () => {
-    if (!productName || !selectedSubCategory || !product) {
-      setAlertBox?.({
+    if (!selectedCategory) {
+      setAlertBox({
         open: true,
         error: true,
-        msg: "Choose subcategory & product",
+        msg: "Please choose a Category!",
       });
+      return false;
+    }
+    if (!selectedSubCategory) {
+      setAlertBox({
+        open: true,
+        error: true,
+        msg: "Please choose a Subcategory!",
+      });
+      return false;
+    }
+    if (!product) {
+      setAlertBox({ open: true, error: true, msg: "Please choose a Product!" });
       return false;
     }
     if (!title) {
@@ -298,10 +355,7 @@ const AddAdvertisement = () => {
       const formData = new FormData();
 
       // required ids
-      formData.append(
-        "category_id",
-        product.category_id || selectedSubCategory.category_id
-      );
+      formData.append("category_id", selectedCategory.id);
       formData.append("subcategory_id", selectedSubCategory.id);
       formData.append("product_id", product.id);
       formData.append("product_name", product.name || productName);
@@ -312,6 +366,7 @@ const AddAdvertisement = () => {
       formData.append("description", description || "");
       formData.append("districts", JSON.stringify(selectedDistricts));
       formData.append("ad_type", forSale ? "sell" : "rent");
+      formData.append("video_url", youtubeEmbedURL); // Optional
 
       // post_type: use 'postnow' or 'schedule' to match backend
       formData.append("post_type", postType);
@@ -364,7 +419,7 @@ const AddAdvertisement = () => {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
-      console.log("ads data are", formData);
+      //console.log("ads data are", formData);
 
       setAlertBox({
         msg: res.data.message || "Ads created successfully",
@@ -382,6 +437,7 @@ const AddAdvertisement = () => {
       setPrice("");
       setDescription("");
       setSelectedDistricts([]);
+      setYoutubeEmbedURL("");
       setAdsImages([]);
       setPostType("postnow");
       setScheduledDate(null);
@@ -430,19 +486,42 @@ const AddAdvertisement = () => {
               />
             </Grid>
 
+            {/*Youtube Video Url */}
+            <Grid item size={1}>
+              <TextField
+                label="Youtube Video Url"
+                fullWidth
+                value={youtubeEmbedURL}
+                onChange={(e) => setYoutubeEmbedURL(e.target.value)}
+              />
+            </Grid>
+
             <Grid item size={1}>
               <FormControl fullWidth>
+                <InputLabel>Category</InputLabel>
+                <Select
+                  value={selectedCategory ? selectedCategory.id : ""}
+                  onChange={(e) => handleCategoryChange(e.target.value)}
+                  label="Category"
+                >
+                  {categories.map((cat) => (
+                    <MenuItem key={cat.id} value={cat.id}>
+                      {cat.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+
+            <Grid item size={1}>
+              <FormControl fullWidth disabled={!selectedCategory}>
                 <InputLabel>Sub Category</InputLabel>
                 <Select
                   value={selectedSubCategory ? selectedSubCategory.id : ""}
-                  onChange={(e) => {
-                    const id = e.target.value;
-                    const sub = subCategories.find((s) => s.id === id);
-                    setSelectedSubCategory(sub || null);
-                  }}
+                  onChange={(e) => handleSubcategoryChange(e.target.value)}
                   label="Sub Category"
                 >
-                  {subCategories.map((sub) => (
+                  {filteredSubcategories.map((sub) => (
                     <MenuItem key={sub.id} value={sub.id}>
                       {sub.name}
                     </MenuItem>
@@ -459,7 +538,7 @@ const AddAdvertisement = () => {
                   onChange={(e) => handleProductSelect(e.target.value)}
                   label="Product"
                 >
-                  {(products || []).map((prod) => (
+                  {products.map((prod) => (
                     <MenuItem key={prod.id} value={prod.id}>
                       {prod.name}
                     </MenuItem>

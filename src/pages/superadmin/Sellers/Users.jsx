@@ -15,6 +15,7 @@ import ResponsivePagination from "../../../components/Pagination";
 import { Modal, Box, IconButton, Tooltip } from "@mui/material";
 import RoomIcon from "@mui/icons-material/Room"; // Google Map icon
 import axiosInstance from "../../../utils/axiosInstance"; // ✅ use your axiosInstance
+import { createContext } from "react";
 
 const Users = () => {
   const navigate = useNavigate();
@@ -34,8 +35,8 @@ const Users = () => {
     setPage(value);
   };
 
-  const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [users, setUsers] = useState([])
   const [openMapModal, setOpenMapModal] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState(null);
 
@@ -182,6 +183,7 @@ const Users = () => {
                         <Button
                           component={Link}
                           to={`/user-products/${item.id}`}
+                          state={{ userName: item.username }} // ▶️ Pass username here
                           variant="outlined"
                           sx={{
                             color: "#f0883d",
@@ -264,7 +266,5 @@ const Users = () => {
     </>
   );
 };
-
-//now in user profile page http://localhost:5173/user-profile/3 which I already created now I want to modify it as per the api response where first particular user details will be shown with a edit button means when I click on edit a modal will be open and I can change user data and click on save button and user data will be change then user land details will be showing like land name, district, taluk, village , panchayat, survey no, hissa no, farm size and one user have mutiple lands so fetch it as per user id and from a dropdown where land name will be shown if I change the name the details will be changed then below that land on the particular land and for that user id food category land product details will be sown like product name, iamge and acres and if I want I can remove it or I can edit the details kike as per update api , same after food category machine category will be shown where machine related products name , image , resgistration no, chasis no, rs copy no which details coming from api that details dataa will be showing and admin can edit it and delete it same after machine category animal category products will be showing with iamge , name and quantity and admin can edit it and delete and if I change land anme from the dropdown the land products all details should be changed and create a modal component for edit land product details supoose I click on food category particular product edit button then only poducts whose category name is food that details will be showing in dropdown and I can change the data , same for machinery and animal and last for block user call block and unblock api do this section msot attractive, eyecatchy and resposnive and fully functional with modern Ui methodoly this is particular user details api 
 
 export default Users;

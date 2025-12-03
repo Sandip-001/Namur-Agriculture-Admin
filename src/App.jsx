@@ -38,6 +38,7 @@ import FpoAdvertisementList from "./pages/superadmin/Advertisement/FpoAdsList";
 import AddForFpo from "./pages/superadmin/Advertisement/AddForFpo";
 import AddCropCalendar from "./pages/superadmin/CropCalender/AddCropCalendar";
 import CropCalendarList from "./pages/superadmin/CropCalender/CropCalendarList";
+import ProductEnquiry from "./pages/superadmin/ProductEnquiry/ProductEnquiry";
 
 const MyContext = createContext();
 
@@ -398,6 +399,17 @@ function App() {
                 element={
                   <PrivateRoute
                     element={<CropCalendarList />}
+                    page="Categories"
+                  />
+                }
+              />
+
+              <Route
+                exact
+                path="/product-enquries-list"
+                element={
+                  <PrivateRoute
+                    element={<ProductEnquiry />}
                     page="Categories"
                   />
                 }

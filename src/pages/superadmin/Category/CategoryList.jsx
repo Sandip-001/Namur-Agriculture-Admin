@@ -217,7 +217,7 @@ const CategoryList = () => {
       </div>
 
       {/* Edit Modal */}
-      <Dialog open={editModalOpen} onClose={handleModalClose} fullWidth>
+      {/*<Dialog open={editModalOpen} onClose={handleModalClose} fullWidth>
         <DialogTitle className="d-flex justify-content-between align-items-center">
           Edit Category
           <IconButton onClick={handleModalClose}>
@@ -270,7 +270,7 @@ const CategoryList = () => {
             Save Changes
           </Button>
         </DialogActions>
-      </Dialog>
+      </Dialog>*/}
     </>
   );
 };

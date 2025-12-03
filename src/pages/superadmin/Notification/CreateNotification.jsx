@@ -99,6 +99,7 @@ const CreateNotification = () => {
         payload = {
           title,
           description: message,
+          districts: selectedDistricts,
           created_by: user?.role || "admin",
           created_by_name: user?.name,
         };
@@ -133,7 +134,7 @@ const CreateNotification = () => {
       setAlertBox({
         error: false,
         open: true,
-        message: "Notification sent successfully!",
+        msg: "Notification sent successfully!",
       });
 
       setTitle("");
@@ -146,7 +147,7 @@ const CreateNotification = () => {
       setAlertBox({
         error: true,
         open: true,
-        message: error.response?.data?.message || "Failed to send notification",
+        msg: error.response?.data?.message || "Failed to send notification",
       });
     }
   };
@@ -251,30 +252,77 @@ const CreateNotification = () => {
                 ))}
               </Select>
             </FormControl>
+
+            <TextField
+              fullWidth
+              label="Notification Title"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              margin="normal"
+              sx={{ marginTop: 3, backgroundColor: "#a9ffa9" }}
+            />
+
+            {/* Notification Message */}
+            <TextField
+              fullWidth
+              multiline
+              rows={4}
+              label="Notification Message"
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              margin="normal"
+              sx={{ backgroundColor: "#a9ffa9" }}
+            />
+          </>
+        )}
+
+        {targetType === "all" && (
+          <>
+            <TextField
+              fullWidth
+              label="Notification Title"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              margin="normal"
+              sx={{ marginTop: 3, backgroundColor: "#a9ffa9" }}
+            />
+
+            {/* Notification Message */}
+            <TextField
+              fullWidth
+              multiline
+              rows={4}
+              label="Notification Message"
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              margin="normal"
+              sx={{ backgroundColor: "#a9ffa9" }}
+            />
+
+            <FormControl fullWidth sx={{marginTop:3}}>
+              <InputLabel>Select District</InputLabel>
+              <Select
+                multiple
+                value={selectedDistricts}
+                onChange={handledistChange}
+                input={<OutlinedInput label="Select District" />}
+                renderValue={(selected) => selected.join(", ")}
+               
+              >
+                {districtOptions.map((dist) => (
+                  <MenuItem key={dist.value} value={dist.value}>
+                    <Checkbox
+                      checked={selectedDistricts.includes(dist.value)}
+                    />
+                    <ListItemText primary={dist.label} />
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
           </>
         )}
 
         {/* Notification Title */}
-        <TextField
-          fullWidth
-          label="Notification Title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          margin="normal"
-          sx={{ marginTop: 3, backgroundColor: "#a9ffa9" }}
-        />
-
-        {/* Notification Message */}
-        <TextField
-          fullWidth
-          multiline
-          rows={4}
-          label="Notification Message"
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          margin="normal"
-          sx={{ backgroundColor: "#a9ffa9" }}
-        />
 
         {/* Submit */}
         <Box mt={4} display="flex" justifyContent="center">

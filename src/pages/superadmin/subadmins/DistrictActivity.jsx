@@ -1,35 +1,49 @@
 import React, { useContext, useEffect, useState } from "react";
 import { MyContext } from "../../../App";
 import ResponsivePagination from "../../../components/Pagination";
+import axiosInstance from "../../../utils/axiosInstance";
 
 const DistrictActivity = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const totalPages = 1; // or calculate based on data length
 
+  const [districts, setDistricts] = useState([]);
+
   const { setProgress, setAlertBox, setIsHideSidebarAndHeader } =
     useContext(MyContext);
+
+  const fetchDistrictActivity = async () => {
+    try {
+      setProgress(20);
+      const res = await axiosInstance.get(
+        `/api/user/admin/district-activity`
+      );
+      console.log("District Activity", res.data);
+      setDistricts(res.data);
+
+      setProgress(100);
+    } catch (error) {
+      console.error("Error fetching ads:", error);
+      setAlertBox({
+        open: true,
+        msg: "Failed to load district activities",
+        error: true,
+      });
+      setProgress(100);
+    }
+  };
 
   useEffect(() => {
     setIsHideSidebarAndHeader(false);
     window.scrollTo(0, 0);
+    fetchDistrictActivity();
   }, []);
 
-  useEffect(() => {
-    setProgress(20);
-    setProgress(100);
-  }, []); // Fetch products when page or category changes
 
   const handlePageChange = (event, value) => {
     setPage(value);
   };
 
-  const distActivity = [
-    { district: "Bagalkot", users: 50, ads: 10, news: 5 },
-    { district: "Bengaluru Urban", users: 30, ads: 10, news: 5 },
-    { district: "Bengaluru Rural", users: 20, ads: 10, news: 7 },
-    { district: "Belagavi", users: 30, ads: 10, news: 9 },
-    { district: "Ballari", users: 18, ads: 32, news: 6 },
-  ];
 
   return (
     <>
@@ -50,18 +64,16 @@ const DistrictActivity = () => {
                   <th>District</th>
                   <th>Users</th>
                   <th>Ads</th>
-                  <th>News</th>
                 </tr>
               </thead>
               <tbody className="text-center">
-                {distActivity.length > 0 ? (
-                  distActivity.map((item, index) => (
+                {districts.length > 0 ? (
+                  districts.map((item, index) => (
                     <tr key={index}>
                       <td>{index + 1}</td>
-                      <td>{item.district}</td>
-                      <td>{item.users}</td>
-                      <td>{item.ads}</td>
-                      <td>{item.news}</td>
+                      <td>{item.district_name}</td>
+                      <td>{item.total_users}</td>
+                      <td>{item.total_ads}</td>
                     </tr>
                   ))
                 ) : (

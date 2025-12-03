@@ -40,6 +40,8 @@ const AdvertisementList = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredAds, setFilteredAds] = useState([]);
   const [productsMap, setProductsMap] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState(null);
   const [subCategories, setSubCategories] = useState([]);
   const [selectedSubCategory, setSelectedSubCategory] = useState(null);
 
@@ -92,6 +94,7 @@ const AdvertisementList = () => {
       setProgress(100);
     }
   };
+
   const startIndex = (currentPage - 1) * pageSize;
   const paginatedAds = useMemo(() => {
     const start = (currentPage - 1) * pageSize;
@@ -162,6 +165,21 @@ const AdvertisementList = () => {
     fetchSubCategories();
   }, []);
 
+  // fetch categories (as objects)
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await axiosInstance.get("/api/categories");
+        // expect array of { id, name, category_id, category_name }
+        setCategories(res.data || []);
+      } catch (err) {
+        console.error("Failed to fetch categories:", err);
+        setAlertBox?.({ error: true, msg: "Failed to load categories" });
+      }
+    };
+    fetchCategories();
+  }, []);
+
   const handleSubCategoryChange = async (subcat) => {
     setSelectedSubCategory(subcat);
 
@@ -179,10 +197,12 @@ const AdvertisementList = () => {
     setSelectedAdvertisement(ad);
     setEditModalOpen(true);
 
-    // 🔥 FIX: Set parent’s selected subcategory so products load
-    setSelectedSubCategory({
-      id: ad.subcategory_id,
-    });
+    // Auto select category & subcategory
+    const subcat = subCategories.find((s) => s.id === ad.subcategory_id);
+    const cat = categories.find((c) => c.id === subcat?.category_id);
+
+    setSelectedCategory(cat || null);
+    setSelectedSubCategory(subcat || null);
   };
 
   const handleDeleteClick = async (adId) => {
@@ -286,9 +306,12 @@ const AdvertisementList = () => {
                         <span className="badge bg-success me-1">
                           ₹{item.price}
                         </span>
+
                         <span
                           className={`badge bg-${
-                            item.ad_type === "sell" ? "success" : "info"
+                            item.ad_type?.toLowerCase() === "sell"
+                              ? "success"
+                              : "info"
                           } me-1`}
                         >
                           {item.ad_type.toUpperCase()}
@@ -432,11 +455,14 @@ const AdvertisementList = () => {
                           </div>
                           <small className="text-muted">{item.quantity}</small>
                         </td>
+
                         <td>
                           <h6>
                             <span
                               className={`badge bg-${
-                                item.ad_type === "sell" ? "success" : "info"
+                                item.ad_type?.toLowerCase() === "sell"
+                                  ? "success"
+                                  : "info"
                               }`}
                             >
                               {item.ad_type.toUpperCase()}
@@ -535,7 +561,7 @@ const AdvertisementList = () => {
                                 handleDeleteClick(item.id);
                               }}
                             >
-                              <MdDelete />
+                              <MdDelete className="fs-4" />
                             </button>
 
                             <button
@@ -545,7 +571,7 @@ const AdvertisementList = () => {
                                 handleOpenComments(item.comments || []);
                               }}
                             >
-                              💬
+                              <span className="fs-4">💬</span>
                             </button>
                           </div>
                         </td>
@@ -594,6 +620,9 @@ const AdvertisementList = () => {
           selectedSubCategory={selectedSubCategory}
           setSelectedSubCategory={setSelectedSubCategory}
           user={user}
+          categories={categories}
+          selectedCategory={selectedCategory}
+          setSelectedCategory={setSelectedCategory}
         />
       )}
     </>

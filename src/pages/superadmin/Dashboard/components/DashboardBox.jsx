@@ -1,21 +1,31 @@
-import React from "react";
-import {
-  Box,
-  Grid,
-  Typography,
-  Card,
-  CardContent,
-  useTheme,
-} from "@mui/material";
+import { Box, Typography, Card, CardContent, useTheme } from "@mui/material";
+import { useState } from "react";
+import { useEffect } from "react";
+import axiosInstance from "../../../../utils/axiosInstance";
 
 const DashboardBox = () => {
   const theme = useTheme();
+
+  const [stats, setStats] = useState({});
+
+  useEffect(() => {
+    const fetchDashboardStats = async () => {
+      try {
+        const res = await axiosInstance.get("/api/dashboard/stats");
+        setStats(res.data);
+      } catch (err) {
+        console.error("Error loading stats:", err);
+      }
+    };
+
+    fetchDashboardStats();
+  }, []);
 
   const infoCards = [
     {
       title: "Total Users",
       data: [
-        ["1000", "Total users"],
+        [`${stats.totalUsers ?? 0} (P1)`, "Total users"],
         ["5", "Currently online"],
         ["20", "Today installs"],
         ["50", "Last week installs"],
@@ -26,7 +36,7 @@ const DashboardBox = () => {
     {
       title: "Total Products",
       data: [
-        ["50", "Total products"],
+        [`${stats.totalProducts ?? 0} (P1)`, "Total products"],
         ["Cow", "Most ads"],
         ["Tractor", "Most viewed"],
         ["Toys", "Least viewed"],
@@ -37,7 +47,7 @@ const DashboardBox = () => {
     {
       title: "Total Ads",
       data: [
-        ["1000", "Total ads"],
+        [`${stats.totalAds ?? 0} (P1)`, "Total ads"],
         ["75", "Active ads"],
         ["10", "Today’s ads"],
         ["5000", "Total views"],
@@ -48,10 +58,10 @@ const DashboardBox = () => {
     {
       title: "Total News",
       data: [
-        ["1000", "Total news"],
+        [`${stats.totalNews ?? 0} (P1)`, "Total news"],
         ["50", "Active news"],
         ["20", "Today news"],
-        ["#5556", "Mostr viewed"],
+        ["#5556", "Most viewed"],
         ["500", "Most viewed"],
       ],
       color: "#ffe082",
@@ -84,10 +94,10 @@ const DashboardBox = () => {
               </Typography>
               {card.data.map((row, idx) => (
                 <Box key={idx} display="flex" justifyContent="space-between">
-                  <Typography variant="body1" color="textSecondary">{row[1]}</Typography>
-                  <Typography variant="body2" >
-                    {row[0]}
+                  <Typography variant="body1" color="textSecondary">
+                    {row[1]}
                   </Typography>
+                  <Typography variant="body2">{row[0]}</Typography>
                 </Box>
               ))}
             </CardContent>

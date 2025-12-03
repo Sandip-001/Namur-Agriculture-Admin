@@ -26,7 +26,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import karnatakaData from "../../../data/karnataka_districts_taluks_villages.json";
 import { FaRegImages } from "react-icons/fa";
 
-const unitsList = ["Kg", "Gram", "Piece", "Ltr"];
+const unitsList = ["Kg", "Gram", "Piece", "Ltr", "Unit"];
 export default function EditAdvertisementModal({
   open,
   handleClose,
@@ -40,6 +40,9 @@ export default function EditAdvertisementModal({
   onSubCategoryChange,
   selectedSubCategory,
   setSelectedSubCategory,
+  categories = [],
+  selectedCategory,
+  setSelectedCategory,
 }) {
   // Local state (form)
   const [title, setTitle] = useState("");
@@ -55,7 +58,9 @@ export default function EditAdvertisementModal({
   const [scheduledDate, setScheduledDate] = useState(null);
   const [expiryDate, setExpiryDate] = useState(null);
   const [forSale, setForSale] = useState(true);
+  const [youtubeEmbedURL, setYoutubeEmbedURL] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [filteredSubcategories, setFilteredSubcategories] = useState([]);
 
   // Images:
   const [adsImages, setAdsImages] = useState([]);
@@ -82,6 +87,17 @@ export default function EditAdvertisementModal({
     label: d,
     value: d,
   }));
+
+  const normalizeUnit = (unit) => {
+    if (!unit) return "";
+    const lower = unit.toLowerCase();
+    if (lower === "kg") return "Kg";
+    if (lower === "gram") return "Gram";
+    if (lower === "piece") return "Piece";
+    if (lower === "ltr") return "Ltr";
+    if (lower === "unit") return "Unit";
+    return unit; // fallback if new unit added later
+  };
 
   useEffect(() => {
     if (!selectedAdvertisement) return;
@@ -127,7 +143,7 @@ export default function EditAdvertisementModal({
     setExistingImages(imgs);
     setAdsImages(imgs); // UI renders from this
     setNewFiles([]);
-
+    setYoutubeEmbedURL(selectedAdvertisement.video_url || "");
     // extra_fields
     const extra = selectedAdvertisement.extra_fields || {};
     // set machinery fields (some may be missing)
@@ -148,7 +164,7 @@ export default function EditAdvertisementModal({
 
     setSelectedBreed(extra.breed ?? "");
 
-    setUnit(selectedAdvertisement.unit ?? "");
+    setUnit(normalizeUnit(selectedAdvertisement.unit ?? ""));
     // set title if empty
     if (!selectedAdvertisement.title)
       setTitle(selectedAdvertisement.product_name);
@@ -248,6 +264,31 @@ export default function EditAdvertisementModal({
     setSelectedDistricts(typeof value === "string" ? value.split(",") : value);
   };
 
+  const handleCategoryChange = (categoryId) => {
+    const catObj = categories.find((c) => c.id === categoryId);
+
+    setFilteredSubcategories(
+      subCategories.filter((s) => s.category_id === categoryId)
+    );
+
+    setSelectedCategory(catObj);
+    setSelectedSubCategory(null); // reset
+    setSelectedProduct(null);
+    setAvailableProducts([]);
+  };
+
+  useEffect(() => {
+    if (!selectedCategory) {
+      setFilteredSubcategories([]);
+      return;
+    }
+
+    const list = subCategories.filter(
+      (s) => s.category_id === selectedCategory.id
+    );
+    setFilteredSubcategories(list);
+  }, [selectedCategory, subCategories]);
+
   const handleSubCatSelect = (e) => {
     const id = Number(e.target.value);
     const subcatObj = subCategories.find((s) => s.id === id);
@@ -273,16 +314,17 @@ export default function EditAdvertisementModal({
   }, [products]);
 
   const isLocked =
-    selectedAdvertisement?.post_type === "schedule" && selectedAdvertisement?.status === "active";
+    selectedAdvertisement?.post_type === "schedule" &&
+    selectedAdvertisement?.status === "active";
 
   // Validation (similar to create flow)
   const validate = () => {
     // required
-    if (!selectedSubCategory || !selectedProduct) {
-      setAlertBox?.({
+    if (!selectedCategory || !selectedSubCategory || !selectedProduct) {
+      setAlertBox({
         open: true,
         error: true,
-        msg: "Please choose subcategory and product",
+        msg: "Please select Category, Subcategory and Product",
       });
       return false;
     }
@@ -396,8 +438,9 @@ export default function EditAdvertisementModal({
       formData.append("title", title);
       formData.append(
         "category_id",
-        selectedSubCategory?.category_id ?? selectedAdvertisement.category_id
+        selectedCategory?.id ?? selectedAdvertisement.category_id
       );
+
       formData.append(
         "subcategory_id",
         selectedSubCategory?.id ?? selectedAdvertisement.subcategory_id
@@ -415,6 +458,7 @@ export default function EditAdvertisementModal({
       formData.append("price", String(price));
       formData.append("description", description || "");
       formData.append("ad_type", forSale ? "sell" : "rent");
+      formData.append("video_url", youtubeEmbedURL); // Optional
       // ===== only send post_type & dates when editable =====
       if (!isLocked) {
         // send the user's choice
@@ -434,7 +478,7 @@ export default function EditAdvertisementModal({
             dayjs(expiryDate).format("YYYY-MM-DD")
           );
         }
-      } 
+      }
 
       // districts as stringified array (backend expects TEXT[] in DB, controller will accept JSON string)
       formData.append("districts", JSON.stringify(selectedDistricts || []));
@@ -516,16 +560,34 @@ export default function EditAdvertisementModal({
 
       <DialogContent dividers>
         <Grid container spacing={3} columns={{ xs: 1, sm: 2 }}>
-          {/* Subcategory select */}
+          {/* Category */}
           <Grid item size={1}>
             <FormControl fullWidth>
+              <InputLabel>Category</InputLabel>
+              <Select
+                value={selectedCategory?.id || ""}
+                label="Category"
+                onChange={(e) => handleCategoryChange(Number(e.target.value))}
+              >
+                {categories.map((cat) => (
+                  <MenuItem key={cat.id} value={cat.id}>
+                    {cat.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Grid>
+
+          {/* SubCategory */}
+          <Grid item size={1}>
+            <FormControl fullWidth disabled={!selectedCategory}>
               <InputLabel>Subcategory</InputLabel>
               <Select
                 value={selectedSubCategory?.id || ""}
                 label="Subcategory"
                 onChange={handleSubCatSelect}
               >
-                {subCategories.map((s) => (
+                {filteredSubcategories.map((s) => (
                   <MenuItem key={s.id} value={s.id}>
                     {s.name}
                   </MenuItem>
@@ -534,22 +596,22 @@ export default function EditAdvertisementModal({
             </FormControl>
           </Grid>
 
-          {/* Product select */}
+          {/* Product */}
           <Grid item size={1}>
-            <FormControl fullWidth>
+            <FormControl fullWidth disabled={!selectedSubCategory}>
               <InputLabel>Product</InputLabel>
               <Select
                 value={selectedProduct?.id || ""}
                 label="Product"
                 onChange={(e) => {
-                  const pid = e.target.value;
-                  const prod =
-                    availableProducts.find((p) => p.id === pid) || null;
+                  const prod = products.find(
+                    (p) => p.id === Number(e.target.value)
+                  );
                   setSelectedProduct(prod);
                   setProductName(prod?.name || "");
                 }}
               >
-                {availableProducts.map((p) => (
+                {products.map((p) => (
                   <MenuItem key={p.id} value={p.id}>
                     {p.name}
                   </MenuItem>
@@ -565,6 +627,16 @@ export default function EditAdvertisementModal({
               fullWidth
               value={title}
               onChange={(e) => setTitle(e.target.value)}
+            />
+          </Grid>
+
+          {/*Youtube Video Url */}
+          <Grid item size={1}>
+            <TextField
+              label="Youtube Video Url"
+              fullWidth
+              value={youtubeEmbedURL}
+              onChange={(e) => setYoutubeEmbedURL(e.target.value)}
             />
           </Grid>
 

@@ -10,8 +10,13 @@ import { useSelector } from "react-redux";
 
 const pageAccessConfig = {
   Dashboard: [],
-  Categories: ["AddCategory", "CategoryList", "AddSubCategory", "SubCategoryList"],
-  Products: ["AddProduct", "ProductList"],
+  Categories: [
+    "AddCategory",
+    "CategoryList",
+    "AddSubCategory",
+    "SubCategoryList",
+  ],
+  Products: ["AddProduct", "ProductList", "ProductEnquiry"],
   Orders: ["OrderList"],
   Users: ["Users", "SellerProfile", "SellerProductList"],
   News: ["AddNews", "NewsList"],
@@ -45,20 +50,20 @@ const Sidebar = () => {
   };
 
   // check page/subpage access
-const hasAccess = (page, subPage = null) => {
-  if (!user) return false;
-  if (user.role === "admin") return true;
+  const hasAccess = (page, subPage = null) => {
+    if (!user) return false;
+    if (user.role === "admin") return true;
 
-  // Must have parent page access
-  if (!user.page_access?.includes(page)) return false;
+    // Must have parent page access
+    if (!user.page_access?.includes(page)) return false;
 
-  // Parent page only
-  if (!subPage) return true;
+    // Parent page only
+    if (!subPage) return true;
 
-  // Parent + subPage
-  const allowedSubPages = pageAccessConfig[page] || [];
-  return allowedSubPages.includes(subPage);
-};
+    // Parent + subPage
+    const allowedSubPages = pageAccessConfig[page] || [];
+    return allowedSubPages.includes(subPage);
+  };
 
   // style disabled links
   const linkStyle = (page, subPage = null) => ({
@@ -72,82 +77,118 @@ const hasAccess = (page, subPage = null) => {
       <ul>
         {/* Dashboard */}
         <li>
-          <Link to="/" onClick={handleCloseSidebarOnMobile} style={linkStyle("Dashboard")}>
+          <Link
+            to="/"
+            onClick={handleCloseSidebarOnMobile}
+            style={linkStyle("Dashboard")}
+          >
             <Button
               className={`w-100 ${activeTab === 0 ? "active" : ""}`}
               onClick={() => setActiveTab(0)}
               disabled={!hasAccess("Dashboard")}
             >
-              <span className="icon"><MdDashboard /></span>
+              <span className="icon">
+                <MdDashboard />
+              </span>
               Dashboard
             </Button>
           </Link>
         </li>
 
         {/* Advertisement */}
-       <li style={linkStyle("Advertisement")}>
-  <Button
-    className={`w-100 ${activeTab === 1 ? "active" : ""}`}
-    onClick={() => isOpenSubmenu(1)}
-    disabled={!hasAccess("Advertisement")}
-  >
-    <span className="icon"><RiAdvertisementFill /></span>
-    Advertisement
-    <span className="arrow"><FaAngleRight /></span>
-  </Button>
-  <div className={`submenuWrapper ${activeTab === 1 ? "colapse" : "colapsed"}`}>
-    <ul className="submenu">
-      <li>
-        <Link to="/admin-advertisement-list" onClick={handleCloseSidebarOnMobile}
-          style={linkStyle("Advertisement", "AdminAdvertisementList")}>
-          Admin Ads
-        </Link>
-      </li>
-      <li>
-        <Link to="/user-advertisement-list" onClick={handleCloseSidebarOnMobile}
-          style={linkStyle("Advertisement", "UserAdvertisementList")}>
-          User Ads
-        </Link>
-      </li>
-      <li>
-        <Link to="/fpo-advertisement-list" onClick={handleCloseSidebarOnMobile}
-          style={linkStyle("Advertisement", "FpoAdvertisementList")}>
-          FPO Ads
-        </Link>
-      </li>
-    </ul>
-  </div>
-</li>
-
+        <li style={linkStyle("Advertisement")}>
+          <Button
+            className={`w-100 ${activeTab === 1 ? "active" : ""}`}
+            onClick={() => isOpenSubmenu(1)}
+            disabled={!hasAccess("Advertisement")}
+          >
+            <span className="icon">
+              <RiAdvertisementFill />
+            </span>
+            Advertisement
+            <span className="arrow">
+              <FaAngleRight />
+            </span>
+          </Button>
+          <div
+            className={`submenuWrapper ${
+              activeTab === 1 ? "colapse" : "colapsed"
+            }`}
+          >
+            <ul className="submenu">
+              <li>
+                <Link
+                  to="/admin-advertisement-list"
+                  onClick={handleCloseSidebarOnMobile}
+                  style={linkStyle("Advertisement", "AdminAdvertisementList")}
+                >
+                  Admin Ads
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/user-advertisement-list"
+                  onClick={handleCloseSidebarOnMobile}
+                  style={linkStyle("Advertisement", "UserAdvertisementList")}
+                >
+                  User Ads
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/fpo-advertisement-list"
+                  onClick={handleCloseSidebarOnMobile}
+                  style={linkStyle("Advertisement", "FpoAdvertisementList")}
+                >
+                  FPO Ads
+                </Link>
+              </li>
+            </ul>
+          </div>
+        </li>
 
         {/* Users */}
-       <li style={linkStyle("Users")}>
-  <Button
-    className={`w-100 ${activeTab === 2 ? "active" : ""}`}
-    onClick={() => isOpenSubmenu(2)}
-    disabled={!hasAccess("Users")}
-  >
-    <span className="icon"><FaUsers /></span>
-    Users
-    <span className="arrow"><FaAngleRight /></span>
-  </Button>
-  <div className={`submenuWrapper ${activeTab === 2 ? "colapse" : "colapsed"}`}>
-    <ul className="submenu">
-      <li>
-        <Link to="/users" onClick={handleCloseSidebarOnMobile}
-          style={linkStyle("Users", "Users")}>
-          All Users
-        </Link>
-      </li>
-      <li>
-        <Link to="/FPO-list" onClick={handleCloseSidebarOnMobile}
-          style={linkStyle("FPO", "FpoList")}>
-          FPO
-        </Link>
-      </li>
-    </ul>
-  </div>
-</li>
+        <li style={linkStyle("Users")}>
+          <Button
+            className={`w-100 ${activeTab === 2 ? "active" : ""}`}
+            onClick={() => isOpenSubmenu(2)}
+            disabled={!hasAccess("Users")}
+          >
+            <span className="icon">
+              <FaUsers />
+            </span>
+            Users
+            <span className="arrow">
+              <FaAngleRight />
+            </span>
+          </Button>
+          <div
+            className={`submenuWrapper ${
+              activeTab === 2 ? "colapse" : "colapsed"
+            }`}
+          >
+            <ul className="submenu">
+              <li>
+                <Link
+                  to="/users"
+                  onClick={handleCloseSidebarOnMobile}
+                  style={linkStyle("Users", "Users")}
+                >
+                  All Users
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/FPO-list"
+                  onClick={handleCloseSidebarOnMobile}
+                  style={linkStyle("FPO", "FpoList")}
+                >
+                  FPO
+                </Link>
+              </li>
+            </ul>
+          </div>
+        </li>
 
         {/* Communication (News + Notification) */}
         <li>
@@ -156,21 +197,35 @@ const hasAccess = (page, subPage = null) => {
             onClick={() => isOpenSubmenu(3)}
             disabled={!hasAccess("News") && !hasAccess("Notification")}
           >
-            <span className="icon"><IoNotifications /></span>
+            <span className="icon">
+              <IoNotifications />
+            </span>
             Communication
-            <span className="arrow"><FaAngleRight /></span>
+            <span className="arrow">
+              <FaAngleRight />
+            </span>
           </Button>
-          <div className={`submenuWrapper ${activeTab === 3 ? "colapse" : "colapsed"}`}>
+          <div
+            className={`submenuWrapper ${
+              activeTab === 3 ? "colapse" : "colapsed"
+            }`}
+          >
             <ul className="submenu">
               <li>
-                <Link to="/news-list" onClick={handleCloseSidebarOnMobile}
-                  style={linkStyle("News", "NewsList")}>
+                <Link
+                  to="/news-list"
+                  onClick={handleCloseSidebarOnMobile}
+                  style={linkStyle("News", "NewsList")}
+                >
                   News
                 </Link>
               </li>
               <li>
-                <Link to="/create-notification" onClick={handleCloseSidebarOnMobile}
-                  style={linkStyle("Notification", "CreateNotification")}>
+                <Link
+                  to="/create-notification"
+                  onClick={handleCloseSidebarOnMobile}
+                  style={linkStyle("Notification", "CreateNotification")}
+                >
                   Notification
                 </Link>
               </li>
@@ -185,40 +240,72 @@ const hasAccess = (page, subPage = null) => {
             onClick={() => isOpenSubmenu(4)}
             disabled={!hasAccess("Categories") && !hasAccess("Products")}
           >
-            <span className="icon"><MdManageAccounts /></span>
+            <span className="icon">
+              <MdManageAccounts />
+            </span>
             Management
-            <span className="arrow"><FaAngleRight /></span>
+            <span className="arrow">
+              <FaAngleRight />
+            </span>
           </Button>
-          <div className={`submenuWrapper ${activeTab === 4 ? "colapse" : "colapsed"}`}>
+          <div
+            className={`submenuWrapper ${
+              activeTab === 4 ? "colapse" : "colapsed"
+            }`}
+          >
             <ul className="submenu">
               <li>
-                <Link to="/category-list" onClick={handleCloseSidebarOnMobile}
-                  style={linkStyle("Categories", "CategoryList")}>
+                <Link
+                  to="/category-list"
+                  onClick={handleCloseSidebarOnMobile}
+                  style={linkStyle("Categories", "CategoryList")}
+                >
                   Category
                 </Link>
               </li>
               <li>
-                <Link to="/subCategory-list" onClick={handleCloseSidebarOnMobile}
-                  style={linkStyle("Categories", "SubCategoryList")}>
+                <Link
+                  to="/subCategory-list"
+                  onClick={handleCloseSidebarOnMobile}
+                  style={linkStyle("Categories", "SubCategoryList")}
+                >
                   Sub-Category
                 </Link>
               </li>
               <li>
-                <Link to="/product-list" onClick={handleCloseSidebarOnMobile}
-                  style={linkStyle("Products", "ProductList")}>
+                <Link
+                  to="/product-list"
+                  onClick={handleCloseSidebarOnMobile}
+                  style={linkStyle("Products", "ProductList")}
+                >
                   Product
                 </Link>
               </li>
               <li>
-                <Link to="/subadmin-list" onClick={handleCloseSidebarOnMobile}
-                  style={linkStyle("SubAdmins", "SubAdminList")}>
+                <Link
+                  to="/subadmin-list"
+                  onClick={handleCloseSidebarOnMobile}
+                  style={linkStyle("SubAdmins", "SubAdminList")}
+                >
                   Subadmin
                 </Link>
               </li>
               <li>
-                <Link to="/distActivity" onClick={handleCloseSidebarOnMobile}
-                  style={linkStyle("Districts", "DistrictActivity")}>
+                <Link
+                  to="/distActivity"
+                  onClick={handleCloseSidebarOnMobile}
+                  style={linkStyle("Districts", "DistrictActivity")}
+                >
                   District Activity
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/product-enquries-list"
+                  onClick={handleCloseSidebarOnMobile}
+                  style={linkStyle("Products", "ProductEnquiry")}
+                >
+                  Product Enquiry
                 </Link>
               </li>
             </ul>
@@ -227,13 +314,19 @@ const hasAccess = (page, subPage = null) => {
 
         {/* History */}
         <li>
-          <Link to="/logs" onClick={handleCloseSidebarOnMobile} style={linkStyle("History", "History")}>
+          <Link
+            to="/logs"
+            onClick={handleCloseSidebarOnMobile}
+            style={linkStyle("History", "History")}
+          >
             <Button
               className={`w-100 ${activeTab === 5 ? "active" : ""}`}
               onClick={() => setActiveTab(5)}
               disabled={!hasAccess("History")}
             >
-              <span className="icon"><RiHistoryFill /></span>
+              <span className="icon">
+                <RiHistoryFill />
+              </span>
               History
             </Button>
           </Link>
@@ -242,52 +335,66 @@ const hasAccess = (page, subPage = null) => {
         {/* Orders */}
         <li>
           <div></div>
-          <Link to="/orders" onClick={handleCloseSidebarOnMobile} style={linkStyle("Orders", "OrderList")}>
+          <Link
+            to="/orders"
+            onClick={handleCloseSidebarOnMobile}
+            style={linkStyle("Orders", "OrderList")}
+          >
             <Button
               className={`w-100 ${activeTab === 6 ? "active" : ""}`}
               onClick={() => setActiveTab(6)}
               disabled={!hasAccess("Orders")}
             >
-              <span className="icon"><FaClipboardCheck /></span>
+              <span className="icon">
+                <FaClipboardCheck />
+              </span>
               Orders
             </Button>
           </Link>
         </li>
 
- {/* Crop Calendar */}
-<li style={linkStyle("CropCalendar")}>
-  <Button
-    className={`w-100 ${activeTab === 7 ? "active" : ""}`}
-    onClick={() => isOpenSubmenu(7)}
-    disabled={!hasAccess("CropCalendar")}
-  >
-    <span className="icon"><MdManageAccounts /></span>
-    Crop Calendar
-    <span className="arrow"><FaAngleRight /></span>
-  </Button>
-  <div className={`submenuWrapper ${activeTab === 7 ? "colapse" : "colapsed"}`}>
-    <ul className="submenu">
-      <li>
-        <Link
-          to="/upload-crop-calender"
-          onClick={handleCloseSidebarOnMobile}
-          style={linkStyle("CropCalendar", "UploadCropCalendar")}
-        >
-          Uploads
-        </Link>
-      </li>
-      <li>
-        <Link
-          to="/crop-calender-list"
-          onClick={handleCloseSidebarOnMobile}
-          style={linkStyle("CropCalendar", "CropCalendarList")}
-        >
-          Organize
-        </Link>
-      </li>
-    </ul>
-  </div>
-</li>
+        {/* Crop Calendar */}
+        <li style={linkStyle("CropCalendar")}>
+          <Button
+            className={`w-100 ${activeTab === 7 ? "active" : ""}`}
+            onClick={() => isOpenSubmenu(7)}
+            disabled={!hasAccess("CropCalendar")}
+          >
+            <span className="icon">
+              <MdManageAccounts />
+            </span>
+            Crop Calendar
+            <span className="arrow">
+              <FaAngleRight />
+            </span>
+          </Button>
+          <div
+            className={`submenuWrapper ${
+              activeTab === 7 ? "colapse" : "colapsed"
+            }`}
+          >
+            <ul className="submenu">
+              <li>
+                <Link
+                  to="/upload-crop-calender"
+                  onClick={handleCloseSidebarOnMobile}
+                  style={linkStyle("CropCalendar", "UploadCropCalendar")}
+                >
+                  Uploads
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/crop-calender-list"
+                  onClick={handleCloseSidebarOnMobile}
+                  style={linkStyle("CropCalendar", "CropCalendarList")}
+                >
+                  Organize
+                </Link>
+              </li>
+            </ul>
+          </div>
+        </li>
       </ul>
     </div>
   );

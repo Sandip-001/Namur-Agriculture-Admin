@@ -40,6 +40,8 @@ const UserAdvertisementList = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredAds, setFilteredAds] = useState([]);
   const [productsMap, setProductsMap] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState(null);
   const [subCategories, setSubCategories] = useState([]);
   const [selectedSubCategory, setSelectedSubCategory] = useState(null);
 
@@ -69,8 +71,7 @@ const UserAdvertisementList = () => {
 
       // ✅ Filter ads only if created_by_role is admin or subadmin
       const filteredData = (res.data || []).filter(
-        (ad) =>
-          ad.created_by_role === "user" 
+        (ad) => ad.created_by_role === "user"
       );
 
       setAds(filteredData);
@@ -162,6 +163,21 @@ const UserAdvertisementList = () => {
     fetchSubCategories();
   }, []);
 
+  // fetch categories (as objects)
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await axiosInstance.get("/api/categories");
+        // expect array of { id, name, category_id, category_name }
+        setCategories(res.data || []);
+      } catch (err) {
+        console.error("Failed to fetch categories:", err);
+        setAlertBox?.({ error: true, msg: "Failed to load categories" });
+      }
+    };
+    fetchCategories();
+  }, []);
+
   const handleSubCategoryChange = async (subcat) => {
     setSelectedSubCategory(subcat);
 
@@ -179,10 +195,12 @@ const UserAdvertisementList = () => {
     setSelectedAdvertisement(ad);
     setEditModalOpen(true);
 
-    // 🔥 FIX: Set parent’s selected subcategory so products load
-    setSelectedSubCategory({
-      id: ad.subcategory_id,
-    });
+    // Auto select category & subcategory
+    const subcat = subCategories.find((s) => s.id === ad.subcategory_id);
+    const cat = categories.find((c) => c.id === subcat?.category_id);
+
+    setSelectedCategory(cat || null);
+    setSelectedSubCategory(subcat || null);
   };
 
   const handleDeleteClick = async (adId) => {
@@ -308,10 +326,12 @@ const UserAdvertisementList = () => {
 
                         <span
                           className={`badge bg-${
-                            item.status === "active" ? "success" : "secondary"
-                          }`}
+                            item.ad_type?.toLowerCase() === "sell"
+                              ? "success"
+                              : "info"
+                          } me-1`}
                         >
-                          {item.status}
+                          {item.ad_type.toUpperCase()}
                         </span>
                       </div>
 
@@ -434,7 +454,9 @@ const UserAdvertisementList = () => {
                           <h6>
                             <span
                               className={`badge bg-${
-                                item.ad_type === "sell" ? "success" : "info"
+                                item.ad_type?.toLowerCase() === "sell"
+                                  ? "success"
+                                  : "info"
                               }`}
                             >
                               {item.ad_type.toUpperCase()}
@@ -533,7 +555,7 @@ const UserAdvertisementList = () => {
                                 handleDeleteClick(item.id);
                               }}
                             >
-                              <MdDelete />
+                              <MdDelete className="fs-4" />
                             </button>
 
                             <button
@@ -543,7 +565,7 @@ const UserAdvertisementList = () => {
                                 handleOpenComments(item.comments || []);
                               }}
                             >
-                              💬
+                              <span className="fs-4">💬</span>
                             </button>
                           </div>
                         </td>
@@ -592,6 +614,9 @@ const UserAdvertisementList = () => {
           selectedSubCategory={selectedSubCategory}
           setSelectedSubCategory={setSelectedSubCategory}
           user={user}
+          categories={categories}
+          selectedCategory={selectedCategory}
+          setSelectedCategory={setSelectedCategory}
         />
       )}
     </>

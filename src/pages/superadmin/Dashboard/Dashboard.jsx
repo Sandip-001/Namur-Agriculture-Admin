@@ -1,13 +1,10 @@
-import React, { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import DashboardBox from "./components/DashboardBox";
-import { MdDelete, MdShoppingBag } from "react-icons/md";
-import { GiStarsStack } from "react-icons/gi";
 import { HiDotsVertical } from "react-icons/hi";
 import { MyContext } from "../../../App";
 import { Select } from "@mui/material";
 import onion from "../../../assets/onion.png";
 import goat from "../../../assets/goat.png";
-import cow from "../../../assets/cow.png";
 import { Chart } from "react-google-charts";
 import { Line } from "react-chartjs-2";
 import {
@@ -20,9 +17,11 @@ import {
   Legend,
 } from "chart.js";
 import { Avatar, Button, Menu, MenuItem } from "@mui/material";
-import { IoIosTimer, IoMdCart } from "react-icons/io";
-import { Link } from "react-router-dom";
+import { IoIosTimer } from "react-icons/io";
 import { RxCrossCircled } from "react-icons/rx";
+import axiosInstance from "../../../utils/axiosInstance";
+import { format } from "date-fns";
+import ImageHoverSlider from "../../../components/ImageHoverSlider";
 
 ChartJS.register(
   CategoryScale,
@@ -46,47 +45,103 @@ export const options = {
   chartArea: { width: "100%", height: "100%" },
 };
 
-const userJoinData = {
-  daily: [
-    { date: "2025-06-18", count: 5 },
-    { date: "2025-06-19", count: 8 },
-    { date: "2025-06-20", count: 3 },
-    { date: "2025-06-21", count: 6 },
-    { date: "2025-06-22", count: 7 },
-    { date: "2025-06-23", count: 2 },
-    { date: "2025-06-24", count: 9 },
-  ],
-  weekly: [
-    { week: "Week 1", count: 40 },
-    { week: "Week 2", count: 35 },
-    { week: "Week 3", count: 48 },
-    { week: "Week 4", count: 52 },
-  ],
-  monthly: [
-    { month: "Jan", count: 120 },
-    { month: "Feb", count: 140 },
-    { month: "Mar", count: 160 },
-    { month: "Apr", count: 180 },
-    { month: "May", count: 200 },
-    { month: "Jun", count: 170 },
-  ],
-};
-
 const Dashboard = () => {
   const { setProgress, setAlertBox, setIsHideSidebarAndHeader } =
     useContext(MyContext);
 
   const [view, setView] = useState("daily");
+  const [userJoinData, setUserJoinData] = useState({
+    daily: [],
+    weekly: [],
+    monthly: [],
+  });
+  const [districts, setDistricts] = useState([]);
+  const [products, setProducts] = useState([]);
+  const [ads, setAds] = useState([]);
 
   useEffect(() => {
     setIsHideSidebarAndHeader(false);
     window.scrollTo(0, 0);
   }, []);
 
+  const fetchDistrictActivity = async () => {
+    try {
+      setProgress(20);
+      const res = await axiosInstance.get(`/api/user/admin/district-activity`);
+      console.log("District Activity", res.data);
+      const limitedDistActivity = res.data.slice(0, 6);
+      setDistricts(limitedDistActivity);
+
+      setProgress(100);
+    } catch (error) {
+      console.error("Error fetching ads:", error);
+      setAlertBox({
+        open: true,
+        msg: "Failed to load district activities",
+        error: true,
+      });
+      setProgress(100);
+    }
+  };
+
+  const fetchProducts = async () => {
+    try {
+      setProgress(20);
+      const res = await axiosInstance.get(`/api/products`);
+      console.log("District Activity", res.data);
+
+      // Only keep first 5 records
+      const limitedProducts = res.data.slice(0, 5);
+      setProducts(limitedProducts);
+      setProgress(100);
+    } catch (error) {
+      console.error("Error fetching ads:", error);
+      setAlertBox({
+        open: true,
+        msg: "Failed to load products",
+        error: true,
+      });
+      setProgress(100);
+    }
+  };
+
+  const fetchAds = async () => {
+    try {
+      setProgress(20);
+      const res = await axiosInstance.get("/api/ads");
+
+      const limitedAds = res.data.slice(0, 5);
+      setAds(limitedAds);
+      setProgress(100);
+    } catch (error) {
+      console.error("Error fetching ads:", error);
+      setAlertBox({
+        open: true,
+        msg: "Failed to load advertisements",
+        error: true,
+      });
+      setProgress(100);
+    }
+  };
+
+  const fetchInsights = async () => {
+    try {
+      setProgress(20);
+      const res = await axiosInstance.get("/api/user/admin/insights");
+      setUserJoinData(res.data);
+      setProgress(100)
+    } catch (err) {
+      console.error("Error fetching insights:", err);
+    }
+  };
+
+
   useEffect(() => {
-    setProgress(20);
-    setProgress(100);
-  }, [setProgress]);
+    fetchDistrictActivity();
+    fetchProducts();
+    fetchInsights();
+    fetchAds();
+  }, []);
 
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
@@ -97,32 +152,6 @@ const Dashboard = () => {
     setAnchorEl(null);
   };
   const ITEM_HEIGHT = 48;
-
-  const products = [
-    { image: cow, name: "Cows", subCategory: "Animals", category: "Animal" },
-    {
-      image: onion,
-      name: "Onions",
-      subCategory: "Vegetables",
-      category: "Food",
-    },
-    { image: goat, name: "Goats", subCategory: "Animals", category: "Animal" },
-    { image: cow, name: "Cows", subCategory: "Animals", category: "Animal" },
-    {
-      image: onion,
-      name: "Onions",
-      subCategory: "Vegetables",
-      category: "Food",
-    },
-  ];
-
-  const distActivity = [
-    { district: "Bagalkot", users: 50, ads: 10, news: 5 },
-    { district: "Bengaluru Urban", users: 30, ads: 10, news: 5 },
-    { district: "Bengaluru Rural", users: 20, ads: 10, news: 7 },
-    { district: "Belagavi", users: 30, ads: 10, news: 9 },
-    { district: "Ballari", users: 18, ads: 32, news: 6 },
-  ];
 
   const getDummyOrders = () => {
     return [
@@ -197,92 +226,6 @@ const Dashboard = () => {
     ];
   };
 
-  const getDummyAdvertisements = () => {
-    return [
-      {
-        no: 1,
-        product: "Onion",
-        subcategory: "Vegetables",
-        productName: "Fresh Red Onion",
-        unit: "kg",
-        quantity: 100,
-        price: 20,
-        description:
-          "Farm-fresh red onions directly from our organic farm. Ideal for cooking and storing.",
-        image:
-          "https://acsinternationalexim.com/wp-content/uploads/2023/11/l-intro-1644158494.jpg",
-        forSale: "rent",
-        postType: "postnow",
-        scheduledDate: "Now",
-        status: "Active",
-        postedBy: "Sudhendu Mondal",
-        contactNumber: "8637824327",
-        districts: ["Mandya"],
-      },
-      {
-        no: 2,
-        product: "Milk",
-        subcategory: "Dairy Products",
-        productName: "Organic Cow Milk",
-        unit: "litre",
-        quantity: 50,
-        price: 45,
-        description:
-          "Pure cow milk from grass-fed cows. No additives, fresh and healthy.",
-        image: "https://static.toiimg.com/photo/113458714.cms",
-        forSale: "sale",
-        postType: "postnow",
-        scheduledDate: "Now",
-        status: "Active",
-        postedBy: "Sandip Chowdhury",
-        contactNumber: "9876543210",
-        districts: ["Mandya"],
-      },
-      {
-        no: 3,
-        product: "Tomato",
-        subcategory: "Fruits & Veggies",
-        productName: "Desi Tomatoes",
-        unit: "kg",
-        quantity: 70,
-        price: 25,
-        description:
-          "Home-grown desi tomatoes. Perfect for salads and cooking, pesticide-free.",
-        image:
-          "https://img.etimg.com/thumb/width-1200,height-900,imgsize-56196,resizemode-75,msid-95423774/magazines/panache/5-reasons-why-tomatoes-should-be-your-favourite-fruit-this-year.jpg",
-        forSale: "sale",
-        postType: "postnow",
-        scheduledDate: "Now",
-        status: "Active",
-        postedBy: "Anjali Sharma",
-        contactNumber: "9123456789",
-        districts: ["Mysuru"],
-      },
-      {
-        no: 4,
-        product: "Eggs",
-        subcategory: "Poultry",
-        productName: "Country Chicken Eggs",
-        unit: "pieces",
-        quantity: 200,
-        price: 7,
-        description:
-          "Farm-fresh country chicken eggs. Rich in nutrition and chemical-free.",
-        image:
-          "https://media.post.rvohealth.io/wp-content/uploads/2020/12/duck-chicken-egg-eggs-732x549-thumbnail-732x549.jpg",
-        forSale: "rent",
-        postType: "postnow",
-        scheduledDate: "Now",
-        status: "Active",
-        postedBy: "Sandip Chowdhury",
-        contactNumber: "9876543210",
-        districts: ["Bengaluru Rural"],
-      },
-    ];
-  };
-
-  const dummyAdsData = getDummyAdvertisements();
-
   const dummyData = getDummyOrders();
 
   const [comments, setComments] = useState([
@@ -313,7 +256,8 @@ const Dashboard = () => {
     },
     {
       name: "Neha_R",
-      comment: "Love the new UI! Much better than the previous version grater than previous one 👏",
+      comment:
+        "Love the new UI! Much better than the previous version grater than previous one 👏",
     },
     {
       name: "AjayDeals",
@@ -346,13 +290,28 @@ const Dashboard = () => {
   };
 
   const chartOptions = {
-    responsive: true,
-    plugins: {
-      legend: {
-        display: false, // disables the box/legend
-      },
-    },
-  };
+  responsive: true,
+  plugins: {
+    legend: { display: false },
+    tooltip: {
+      callbacks: {
+        label: function (context) {
+          const entry = userJoinData[view][context.dataIndex];
+
+          if (view === "weekly") {
+            return [
+              `Users Joined: ${entry.count}`,
+              entry.days // 👈 show week date range
+            ];
+          }
+
+          return `Users Joined: ${context.raw}`;
+        }
+      }
+    }
+  }
+};
+
 
   return (
     <div className="right-content w-100">
@@ -520,7 +479,9 @@ const Dashboard = () => {
 
         <div className="col-md-4 col-12 mb-4">
           <div className="p-3 shadow rounded-4 bg-white">
-            <h6 className="fw-semibold mb-3">Products</h6>
+            <h6 className="fw-semibold mb-3">
+              Products <strong>(P1)</strong>
+            </h6>
             <ul className="list-unstyled m-0">
               {products.map((product, idx) => (
                 <li
@@ -528,15 +489,17 @@ const Dashboard = () => {
                   className="d-flex align-items-center justify-content-between py-2 border-bottom"
                 >
                   <div className="d-flex align-items-center gap-2">
-                    <Avatar src={product.image} alt={product.name} />
+                    <Avatar src={product.image_url} alt={product.name} />
                     <div>
                       <div className="fw-semibold">{product.name}</div>
                       <div className="text-muted small">
-                        {product.subCategory}
+                        {product.subcategory_name}
                       </div>
                     </div>
                   </div>
-                  <div className="text-muted small">{product.category}</div>
+                  <div className="text-muted small">
+                    {product.category_name}
+                  </div>
                 </li>
               ))}
             </ul>
@@ -547,7 +510,9 @@ const Dashboard = () => {
       <div className="row mt-2">
         <div className="col-md-6 col-12 mb-4">
           <div className="shadow border-0 p-3 h-100">
-            <h3 className="mb-3">District Activity</h3>
+            <h3 className="mb-3">
+              District Activity <strong>(P1)</strong>
+            </h3>
 
             <div className="table-responsive">
               <table className="table table-bordered table-striped align-middle text-nowrap">
@@ -560,18 +525,16 @@ const Dashboard = () => {
                     <th>District</th>
                     <th>Users</th>
                     <th>Ads</th>
-                    <th>News</th>
                   </tr>
                 </thead>
                 <tbody className="text-center">
-                  {distActivity.length > 0 ? (
-                    distActivity.map((item, index) => (
+                  {districts.length > 0 ? (
+                    districts.map((item, index) => (
                       <tr key={index}>
                         <td>{index + 1}</td>
-                        <td>{item.district}</td>
-                        <td>{item.users}</td>
-                        <td>{item.ads}</td>
-                        <td>{item.news}</td>
+                        <td>{item.district_name}</td>
+                        <td>{item.total_users}</td>
+                        <td>{item.total_ads}</td>
                       </tr>
                     ))
                   ) : (
@@ -589,7 +552,7 @@ const Dashboard = () => {
         <div className="col-md-6 col-12 mb-4">
           <div className="p-3 shadow rounded-4 bg-white h-100">
             <div className="d-flex justify-content-between align-items-center mb-1">
-              <h6 className="fw-bold mb-0">User Join Insights</h6>
+              <h6 className="fw-bold mb-0">User Join Insights <strong>(P1)</strong></h6>
 
               <div>
                 <Select
@@ -699,7 +662,9 @@ const Dashboard = () => {
       </div>
 
       <div className="card shadow border-0 p-3 mt-4">
-        <h3 className="hd mb-3">Recent Ads</h3>
+        <h3 className="hd mb-3">
+          Recent Ads <strong>(P1)</strong>
+        </h3>
 
         <div className="table-responsive">
           <table className="table table-bordered table-striped align-middle text-nowrap">
@@ -707,83 +672,112 @@ const Dashboard = () => {
               <tr>
                 <th>NO</th>
                 <th>IMAGE</th>
-                <th>PRODUCT NAME</th>
-                <th>QUANTITY</th>
+                <th>ITEM </th>
                 <th>PRICE</th>
-                <th>FOR</th>
                 <th>STATUS</th>
-                <th>ADD BY</th>
-                <th>MOBILE NUMBER</th>
+                <th>CONTACT</th>
                 <th>DISTRICTS</th>
+                <th>TIME</th>
               </tr>
             </thead>
             <tbody className="text-center">
-              {dummyAdsData.length > 0 ? (
-                dummyAdsData.map((item, index) => (
-                  <tr key={index}>
-                    <td># {item.no}</td>
-
+              {ads.length > 0 ? (
+                ads.map((item, index) => (
+                  <tr key={item.id} className="tableRow">
+                    <td># {index + 1}</td>
+                    <td
+                      className="d-flex align-items-center justify-content-center"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <ImageHoverSlider images={item.images || []} />
+                    </td>
                     <td>
-                      <a
-                        href={item.image}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        title="Open full image"
-                      >
-                        <img
-                          src={item.image}
-                          alt={item.productName}
-                          width={100}
-                          height={100}
-                          style={{
-                            objectFit: "cover",
-                            borderRadius: "6px",
-                            cursor: "pointer",
-                          }}
-                        />
-                      </a>
+                      <div className="fw-bold">{item.title}</div>
+                      <small className="text-muted">{item.product_name}</small>
+                    </td>
+                    <td>
+                      <div className="fw-bold">
+                        ₹{item.price} / {item.unit}
+                      </div>
+                      <small className="text-muted">{item.quantity}</small>
                     </td>
 
                     <td>
-                      <div className="fw-bold">{item.productName}</div>
-                      <small className="text-muted">{item.subcategory}</small>
+                      <h6>
+                        <span
+                          className={`badge bg-${
+                            item.ad_type?.toLowerCase() === "sell"
+                              ? "success"
+                              : "info"
+                          }`}
+                        >
+                          {item.ad_type.toUpperCase()}
+                        </span>
+                      </h6>
+
+                      <h6>
+                        <span
+                          className={`badge bg-${
+                            item.post_type === "postnow"
+                              ? "primary"
+                              : "warning text-dark"
+                          }`}
+                        >
+                          {item.post_type === "postnow"
+                            ? "Post Now"
+                            : "Scheduled"}
+                        </span>
+                      </h6>
+
+                      {/* STATUS BADGE */}
+                      <h6>
+                        <span
+                          className={`badge bg-${
+                            item.status === "active"
+                              ? "success"
+                              : item.status === "pending"
+                              ? "warning text-dark"
+                              : "danger"
+                          }`}
+                        >
+                          {item.status.charAt(0).toUpperCase() +
+                            item.status.slice(1)}
+                        </span>
+                      </h6>
+
+                      {/* <h6>
+                                      <span
+                                        className={`badge rounded-pill bg-${
+                                          item.expiry_date ? "secondary" : "success"
+                                        }`}
+                                      >
+                                        {item.expiry_date ? "Expired" : "Active"}
+                                      </span>
+                                    </h6> */}
                     </td>
 
                     <td>
-                      {item.quantity} {item.unit}
+                      <div className="fw-semibold">{item.creator_name}</div>
+
+                      {/* Show role */}
+                      <span className="text-muted">{item.created_by_role}</span>
+
+                      {/* Show mobile number depending on role */}
+                      {item.created_by_role === "user" && item.user_mobile && (
+                        <div className="text-muted">{item.user_mobile}</div>
+                      )}
+
+                      {item.created_by_role === "subadmin" &&
+                        item.subadmin_number && (
+                          <div className="text-muted">
+                            {item.subadmin_number}
+                          </div>
+                        )}
                     </td>
-
-                    <td>₹ {item.price}</td>
-
-                    <td>
-                      <span
-                        className={`badge bg-${
-                          item.forSale === "sale" ? "success" : "info"
-                        }`}
-                      >
-                        {item.forSale.toUpperCase()}
-                      </span>
-                    </td>
-
-                    <td>
-                      <span
-                        className={`badge rounded-pill bg-${
-                          item.status === "Active" ? "success" : "secondary"
-                        }`}
-                      >
-                        {item.status}
-                      </span>
-                    </td>
-
-                    <td>
-                      <span className="fw-semibold">{item.postedBy}</span>
-                    </td>
-
-                    <td>{item.contactNumber}</td>
 
                     <td>
                       <div className="d-flex flex-wrap gap-1 justify-content-center">
-                        {item.districts.map((dist, idx) => (
+                        {(item.districts || "[]").map((dist, idx) => (
                           <span
                             key={idx}
                             className="badge bg-light text-dark border"
@@ -792,6 +786,12 @@ const Dashboard = () => {
                           </span>
                         ))}
                       </div>
+                    </td>
+                    <td>
+                      {format(
+                        new Date(item.created_at),
+                        "do MMMM yyyy, hh:mm a"
+                      )}
                     </td>
                   </tr>
                 ))
