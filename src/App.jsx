@@ -39,6 +39,7 @@ import AddForFpo from "./pages/superadmin/Advertisement/AddForFpo";
 import AddCropCalendar from "./pages/superadmin/CropCalender/AddCropCalendar";
 import CropCalendarList from "./pages/superadmin/CropCalender/CropCalendarList";
 import ProductEnquiry from "./pages/superadmin/ProductEnquiry/ProductEnquiry";
+import ScanUser from "./pages/superadmin/Sellers/ScanUser";
 
 const MyContext = createContext();
 
@@ -172,6 +173,7 @@ function App() {
           >
             <Routes>
               <Route exact path="/login" element={<Login />} />
+              <Route exact path="/scan" element={<ScanUser />} />
 
               {/* Dashboard */}
               <Route

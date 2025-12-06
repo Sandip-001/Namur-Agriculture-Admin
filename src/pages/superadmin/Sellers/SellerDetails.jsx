@@ -34,6 +34,9 @@ export default function SellerProfile() {
   const [editLPItem, setEditLPItem] = useState(null);
   const [editLPModalOpen, setEditLPModalOpen] = useState(false);
 
+  const [showBarcode, setShowBarcode] = useState(false);
+
+
   useEffect(() => {
     fetchAll();
     // eslint-disable-next-line
@@ -299,6 +302,9 @@ export default function SellerProfile() {
           isBlocked={user.is_blocked}
           onToggleBlock={toggleBlock}
           onOpenEdit={() => setEditUserOpen(true)}
+          setShowBarcode = {setShowBarcode}
+          showBarcode = {showBarcode}
+
         />
 
         <Box mb={2}>
