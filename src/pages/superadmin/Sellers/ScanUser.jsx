@@ -1,10 +1,18 @@
 import React, { useEffect, useState } from "react";
 import axiosInstance from "../../../utils/axiosInstance"; // adjust
 import { Box, Typography, CircularProgress, Card, CardContent } from "@mui/material";
+import { useContext } from "react";
+import { MyContext } from "../../../App";
 
 const ScanUser = () => {
+  const { setIsHideSidebarAndHeader, setAlertBox } = useContext(MyContext);
   const [userDetails, setUserDetails] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+      setIsHideSidebarAndHeader(true);
+      window.scrollTo(0, 0);
+    }, [setIsHideSidebarAndHeader]);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -19,7 +27,7 @@ const ScanUser = () => {
   }, []);
 
   return (
-    <Box textAlign="center" mt={4} className="right-content w-100">
+    <Box textAlign="center" mt={4}>
       <Typography variant="h5">User Details</Typography>
 
       {loading && <CircularProgress sx={{ mt: 3 }} />}
