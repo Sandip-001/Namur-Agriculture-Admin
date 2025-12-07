@@ -40,6 +40,7 @@ import AddCropCalendar from "./pages/superadmin/CropCalender/AddCropCalendar";
 import CropCalendarList from "./pages/superadmin/CropCalender/CropCalendarList";
 import ProductEnquiry from "./pages/superadmin/ProductEnquiry/ProductEnquiry";
 import ScanUser from "./pages/superadmin/Sellers/ScanUser";
+import LandMapPage from "./pages/superadmin/Sellers/LandMapPage";
 
 const MyContext = createContext();
 
@@ -416,6 +417,18 @@ function App() {
                   />
                 }
               />
+
+              <Route
+                exact
+                path="/land-map"
+                element={
+                  <PrivateRoute
+                    element={<LandMapPage />}
+                    page="Map"
+                  />
+                }
+              />
+              
             </Routes>
           </div>
         </div>

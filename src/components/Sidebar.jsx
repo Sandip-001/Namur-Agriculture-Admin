@@ -19,6 +19,7 @@ const pageAccessConfig = {
   Products: ["AddProduct", "ProductList", "ProductEnquiry"],
   Orders: ["OrderList"],
   Users: ["Users", "SellerProfile", "SellerProductList"],
+  Map: ["Map"],
   News: ["AddNews", "NewsList"],
   Advertisement: [
     "AddAdvertisement",
@@ -306,6 +307,15 @@ const Sidebar = () => {
                   style={linkStyle("Products", "ProductEnquiry")}
                 >
                   Product Enquiry
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/land-map"
+                  onClick={handleCloseSidebarOnMobile}
+                  style={linkStyle("Map", "map")}
+                >
+                  Map
                 </Link>
               </li>
             </ul>

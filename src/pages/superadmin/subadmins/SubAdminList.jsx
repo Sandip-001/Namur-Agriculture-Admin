@@ -59,6 +59,7 @@ const SubAdminList = () => {
     "Districts",
     "FPO",
     "CropCalendar",
+    "Map"
   ];
 
   useEffect(() => {

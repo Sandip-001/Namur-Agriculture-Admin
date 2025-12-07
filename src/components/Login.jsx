@@ -85,6 +85,7 @@ const Login = () => {
               History: "/logs",
               Districts: "/distActivity",
               FPO: "/FPO-list",
+              Map: "/land-map"
             };
 
             const redirectPath = pageRouteMap[firstPage] || "/unauthorized";

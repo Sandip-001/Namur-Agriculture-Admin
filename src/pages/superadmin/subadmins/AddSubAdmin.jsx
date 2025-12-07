@@ -61,6 +61,7 @@ const pages = [
   "Districts",
   "FPO",
   "CropCalendar",
+  "Map",
 ];
 
 const AddSubAdmin = () => {
