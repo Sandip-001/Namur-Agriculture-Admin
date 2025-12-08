@@ -162,7 +162,7 @@ export default function LandMapPage() {
         msg: "Failed to fetch data",
         error: true,
       });
-      setProgress(100);
+      setProgress(100)
     }
   };
 
