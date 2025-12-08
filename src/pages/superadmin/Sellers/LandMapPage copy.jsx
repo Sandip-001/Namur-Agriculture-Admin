@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState, useRef } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   MapContainer,
   TileLayer,
@@ -6,8 +6,7 @@ import {
   Popup,
   Marker,
   Tooltip,
-  useMap,
-  useMapEvents
+  useMap
 } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
@@ -34,129 +33,94 @@ function getRandomColor() {
 // Component to add SVG patterns to the map
 function SVGPatternDefs({ landMapData }) {
   const map = useMap();
-  const patternsCreated = useRef(false);
-
-  // Listen to map events to ensure patterns are applied
-  useMapEvents({
-    load: () => {
-      createPatterns();
-    },
-    zoomend: () => {
-      if (!patternsCreated.current) {
-        createPatterns();
-      }
-    },
-    moveend: () => {
-      if (!patternsCreated.current) {
-        createPatterns();
-      }
-    }
-  });
-
-  const createPatterns = () => {
-    if (!map || !landMapData.length) return;
-
-    // Use setTimeout to ensure SVG is rendered
-    setTimeout(() => {
-      const overlayPane = map.getPanes()?.overlayPane;
-      if (!overlayPane) return;
-
-      const svgElement = overlayPane.querySelector('svg');
-      if (!svgElement) return;
-
-      // Create or get defs element
-      let defs = svgElement.querySelector('defs');
-      if (!defs) {
-        defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
-        svgElement.insertBefore(defs, svgElement.firstChild);
-      }
-
-      // Create patterns for each land
-      landMapData.forEach((land) => {
-        if (land.food_products && land.food_products.length > 0) {
-          const patternId = `pattern-${land.land_id}`;
-          
-          // Remove existing pattern if any
-          const existingPattern = defs.querySelector(`#${patternId}`);
-          if (existingPattern) {
-            return; // Pattern already exists
-          }
-
-          // Create pattern element
-          const pattern = document.createElementNS('http://www.w3.org/2000/svg', 'pattern');
-          pattern.setAttribute('id', patternId);
-          pattern.setAttribute('patternUnits', 'userSpaceOnUse');
-          pattern.setAttribute('patternContentUnits', 'userSpaceOnUse');
-          
-          // Adjust pattern size based on number of products
-          const products = land.food_products;
-          const numProducts = products.length;
-          
-          if (numProducts === 1) {
-            // Single product - smaller tiles
-            pattern.setAttribute('width', '50');
-            pattern.setAttribute('height', '50');
-            
-            const image = document.createElementNS('http://www.w3.org/2000/svg', 'image');
-            image.setAttributeNS('http://www.w3.org/1999/xlink', 'href', products[0].product_image);
-            image.setAttribute('width', '45');
-            image.setAttribute('height', '45');
-            image.setAttribute('x', '2.5');
-            image.setAttribute('y', '2.5');
-            image.setAttribute('opacity', '0.75');
-            image.setAttribute('preserveAspectRatio', 'xMidYMid slice');
-            pattern.appendChild(image);
-          } else if (numProducts === 2) {
-            // Two products - side by side
-            pattern.setAttribute('width', '100');
-            pattern.setAttribute('height', '50');
-            
-            products.forEach((product, idx) => {
-              const image = document.createElementNS('http://www.w3.org/2000/svg', 'image');
-              image.setAttributeNS('http://www.w3.org/1999/xlink', 'href', product.product_image);
-              image.setAttribute('width', '45');
-              image.setAttribute('height', '45');
-              image.setAttribute('x', idx * 50 + 2.5);
-              image.setAttribute('y', '2.5');
-              image.setAttribute('opacity', '0.75');
-              image.setAttribute('preserveAspectRatio', 'xMidYMid slice');
-              pattern.appendChild(image);
-            });
-          } else {
-            // Multiple products - grid layout
-            const cols = Math.ceil(Math.sqrt(numProducts));
-            const tileSize = 50;
-            pattern.setAttribute('width', cols * tileSize);
-            pattern.setAttribute('height', cols * tileSize);
-            
-            products.forEach((product, idx) => {
-              const row = Math.floor(idx / cols);
-              const col = idx % cols;
-              
-              const image = document.createElementNS('http://www.w3.org/2000/svg', 'image');
-              image.setAttributeNS('http://www.w3.org/1999/xlink', 'href', product.product_image);
-              image.setAttribute('width', '45');
-              image.setAttribute('height', '45');
-              image.setAttribute('x', col * tileSize + 2.5);
-              image.setAttribute('y', row * tileSize + 2.5);
-              image.setAttribute('opacity', '0.75');
-              image.setAttribute('preserveAspectRatio', 'xMidYMid slice');
-              pattern.appendChild(image);
-            });
-          }
-          
-          defs.appendChild(pattern);
-        }
-      });
-
-      patternsCreated.current = true;
-    }, 100);
-  };
 
   useEffect(() => {
-    if (map && landMapData.length > 0) {
-      createPatterns();
+    if (!map || !landMapData.length) return;
+
+    // Get the SVG overlay pane
+    const svgElement = map.getPanes().overlayPane.querySelector('svg');
+    if (!svgElement) return;
+
+    // Create or get defs element
+    let defs = svgElement.querySelector('defs');
+    if (!defs) {
+      defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+      svgElement.insertBefore(defs, svgElement.firstChild);
     }
+
+    // Create patterns for each land
+    landMapData.forEach((land) => {
+      if (land.food_products && land.food_products.length > 0) {
+        const patternId = `pattern-${land.land_id}`;
+        
+        // Remove existing pattern if any
+        const existingPattern = defs.querySelector(`#${patternId}`);
+        if (existingPattern) {
+          existingPattern.remove();
+        }
+
+        // Create pattern element
+        const pattern = document.createElementNS('http://www.w3.org/2000/svg', 'pattern');
+        pattern.setAttribute('id', patternId);
+        pattern.setAttribute('patternUnits', 'userSpaceOnUse');
+        
+        // Adjust pattern size based on number of products
+        const products = land.food_products;
+        const numProducts = products.length;
+        
+        if (numProducts === 1) {
+          // Single product - smaller tiles
+          pattern.setAttribute('width', '40');
+          pattern.setAttribute('height', '40');
+          
+          const image = document.createElementNS('http://www.w3.org/2000/svg', 'image');
+          image.setAttribute('href', products[0].product_image);
+          image.setAttribute('width', '35');
+          image.setAttribute('height', '35');
+          image.setAttribute('x', '2.5');
+          image.setAttribute('y', '2.5');
+          image.setAttribute('opacity', '0.7');
+          pattern.appendChild(image);
+        } else if (numProducts === 2) {
+          // Two products - side by side
+          pattern.setAttribute('width', '80');
+          pattern.setAttribute('height', '40');
+          
+          products.forEach((product, idx) => {
+            const image = document.createElementNS('http://www.w3.org/2000/svg', 'image');
+            image.setAttribute('href', product.product_image);
+            image.setAttribute('width', '35');
+            image.setAttribute('height', '35');
+            image.setAttribute('x', idx * 40 + 2.5);
+            image.setAttribute('y', '2.5');
+            image.setAttribute('opacity', '0.7');
+            pattern.appendChild(image);
+          });
+        } else {
+          // Multiple products - grid layout
+          const cols = Math.ceil(Math.sqrt(numProducts));
+          const tileSize = 40;
+          pattern.setAttribute('width', cols * tileSize);
+          pattern.setAttribute('height', cols * tileSize);
+          
+          products.forEach((product, idx) => {
+            const row = Math.floor(idx / cols);
+            const col = idx % cols;
+            
+            const image = document.createElementNS('http://www.w3.org/2000/svg', 'image');
+            image.setAttribute('href', product.product_image);
+            image.setAttribute('width', '35');
+            image.setAttribute('height', '35');
+            image.setAttribute('x', col * tileSize + 2.5);
+            image.setAttribute('y', row * tileSize + 2.5);
+            image.setAttribute('opacity', '0.7');
+            pattern.appendChild(image);
+          });
+        }
+        
+        defs.appendChild(pattern);
+      }
+    });
   }, [map, landMapData]);
 
   return null;
@@ -177,7 +141,7 @@ export default function LandMapPage() {
     useContext(MyContext);
 
   const [landMapData, setLandMapData] = useState([]);
-  const [mapReady, setMapReady] = useState(false);
+  const [selectedLand, setSelectedLand] = useState(null);
 
   useEffect(() => {
     setIsHideSidebarAndHeader(false);
@@ -198,23 +162,18 @@ export default function LandMapPage() {
         msg: "Failed to fetch data",
         error: true,
       });
-      setProgress(100);
+      setProgress(100)
     }
   };
 
   return (
-    <MapContainer 
-      center={[16.4307, 77.2655]} 
-      zoom={14} 
-      style={mapStyle}
-      whenReady={() => setMapReady(true)}
-    >
+    <MapContainer center={[16.4307, 77.2655]} zoom={14} style={mapStyle}>
       <TileLayer 
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
       />
 
-      {mapReady && <SVGPatternDefs landMapData={landMapData} />}
+      <SVGPatternDefs landMapData={landMapData} />
 
       {landMapData.map((land) => {
         const center = getCenter(land.coordinates);
@@ -228,8 +187,7 @@ export default function LandMapPage() {
             (p) =>
               `<img src="${p.product_image}" 
                 style="width:32px;height:32px;border-radius:50%;border:2px solid white;margin-left:-6px;box-shadow:0 2px 8px rgba(0,0,0,0.3);" 
-                alt="${p.product_name}" 
-                crossorigin="anonymous" />`
+                alt="${p.product_name}" />`
           )
           .join("") || "";
 
@@ -247,27 +205,16 @@ export default function LandMapPage() {
               pathOptions={{
                 color: randomColor,
                 weight: 3,
-                fillOpacity: 0.7,
-                fill: true,
-                fillColor: randomColor,
+                fillOpacity: hasProducts ? 0.8 : 0.5,
+                fillColor: hasProducts ? `url(#pattern-${land.land_id})` : randomColor,
               }}
-              ref={(ref) => {
-                if (ref && hasProducts) {
-                  // Apply pattern fill after polygon is rendered
-                  const element = ref._path;
-                  if (element) {
-                    element.style.fill = `url(#pattern-${land.land_id})`;
-                    element.style.fillOpacity = '0.8';
-                  }
-                }
+              eventHandlers={{
+                click: () => {
+                  setSelectedLand(land);
+                },
               }}
             >
-              <Popup 
-                maxWidth={350} 
-                className="custom-popup"
-                closeButton={true}
-                autoClose={false}
-              >
+              <Popup maxWidth={350} className="custom-popup">
                 <div style={{ 
                   padding: '10px',
                   fontFamily: 'system-ui, -apple-system, sans-serif'
@@ -284,7 +231,6 @@ export default function LandMapPage() {
                     <img
                       src={land.profile_image_url}
                       alt={land.username}
-                      crossOrigin="anonymous"
                       style={{ 
                         width: '60px',
                         height: '60px',
@@ -373,7 +319,6 @@ export default function LandMapPage() {
                             <img
                               src={product.product_image}
                               alt={product.product_name}
-                              crossOrigin="anonymous"
                               style={{
                                 width: '45px',
                                 height: '45px',
@@ -426,6 +371,15 @@ export default function LandMapPage() {
                   permanent 
                   direction="top"
                   className="custom-tooltip"
+                  style={{
+                    backgroundColor: 'white',
+                    border: '2px solid #3B82F6',
+                    borderRadius: '8px',
+                    padding: '4px 8px',
+                    fontWeight: '600',
+                    fontSize: '0.85rem',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.2)'
+                  }}
                 >
                   {land.food_products.map((p) => p.product_name).join(", ")}
                 </Tooltip>
@@ -436,9 +390,6 @@ export default function LandMapPage() {
       })}
 
       <style>{`
-        .leaflet-container {
-          background: #f0f0f0;
-        }
         .custom-popup .leaflet-popup-content-wrapper {
           border-radius: 16px;
           box-shadow: 0 8px 32px rgba(0,0,0,0.15);
@@ -447,34 +398,18 @@ export default function LandMapPage() {
         .custom-popup .leaflet-popup-content {
           margin: 0;
           width: auto !important;
-          min-width: 300px;
         }
         .custom-popup .leaflet-popup-tip {
           background: white;
-        }
-        .custom-popup .leaflet-popup-close-button {
-          color: #1F2937 !important;
-          font-size: 24px !important;
-          padding: 8px !important;
-          font-weight: bold !important;
-        }
-        .custom-popup .leaflet-popup-close-button:hover {
-          color: #EF4444 !important;
         }
         .custom-tooltip {
           background: white !important;
           border: 2px solid #3B82F6 !important;
           border-radius: 8px !important;
           box-shadow: 0 2px 8px rgba(0,0,0,0.2) !important;
-          padding: 4px 8px !important;
-          font-weight: 600 !important;
-          font-size: 0.85rem !important;
         }
         .custom-tooltip::before {
           border-top-color: #3B82F6 !important;
-        }
-        .leaflet-popup {
-          margin-bottom: 20px;
         }
       `}</style>
     </MapContainer>
