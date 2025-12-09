@@ -41,6 +41,8 @@ import CropCalendarList from "./pages/superadmin/CropCalender/CropCalendarList";
 import ProductEnquiry from "./pages/superadmin/ProductEnquiry/ProductEnquiry";
 import ScanUser from "./pages/superadmin/Sellers/ScanUser";
 import LandMapPage from "./pages/superadmin/Sellers/LandMapPage";
+import LandMapUpload from "./pages/superadmin/Map/LandMapUpload";
+import LandMapList from "./pages/superadmin/Map/LandMapList";
 
 
 const MyContext = createContext();
@@ -425,6 +427,28 @@ function App() {
                 element={
                   <PrivateRoute
                     element={<LandMapPage />}
+                    page="Map"
+                  />
+                }
+              />
+
+              <Route
+                exact
+                path="/upload-land-map-data"
+                element={
+                  <PrivateRoute
+                    element={<LandMapUpload />}
+                    page="Map"
+                  />
+                }
+              />
+
+              <Route
+                exact
+                path="/land-map-list"
+                element={
+                  <PrivateRoute
+                    element={<LandMapList />}
                     page="Map"
                   />
                 }

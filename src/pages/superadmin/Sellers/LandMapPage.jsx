@@ -19,147 +19,20 @@ const mapStyle = {
   height: "100vh",
 };
 
-function getRandomColor() {
-  const colors = [
-    "#1abc9c",
-    "#3498db",
-    "#9b59b6",
-    "#f39c12",
-    "#e74c3c",
-    "#2ecc71",
-  ];
-  return colors[Math.floor(Math.random() * colors.length)];
-}
-
-// Component to add SVG patterns to the map
-function SVGPatternDefs({ landMapData }) {
-  const map = useMap();
-  const patternsCreated = useRef(false);
-
-  // Listen to map events to ensure patterns are applied
-  useMapEvents({
-    load: () => {
-      createPatterns();
-    },
-    zoomend: () => {
-      if (!patternsCreated.current) {
-        createPatterns();
-      }
-    },
-    moveend: () => {
-      if (!patternsCreated.current) {
-        createPatterns();
-      }
-    }
-  });
-
-  const createPatterns = () => {
-    if (!map || !landMapData.length) return;
-
-    // Use setTimeout to ensure SVG is rendered
-    setTimeout(() => {
-      const overlayPane = map.getPanes()?.overlayPane;
-      if (!overlayPane) return;
-
-      const svgElement = overlayPane.querySelector('svg');
-      if (!svgElement) return;
-
-      // Create or get defs element
-      let defs = svgElement.querySelector('defs');
-      if (!defs) {
-        defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
-        svgElement.insertBefore(defs, svgElement.firstChild);
-      }
-
-      // Create patterns for each land
-      landMapData.forEach((land) => {
-        if (land.food_products && land.food_products.length > 0) {
-          const patternId = `pattern-${land.land_id}`;
-          
-          // Remove existing pattern if any
-          const existingPattern = defs.querySelector(`#${patternId}`);
-          if (existingPattern) {
-            return; // Pattern already exists
-          }
-
-          // Create pattern element
-          const pattern = document.createElementNS('http://www.w3.org/2000/svg', 'pattern');
-          pattern.setAttribute('id', patternId);
-          pattern.setAttribute('patternUnits', 'userSpaceOnUse');
-          pattern.setAttribute('patternContentUnits', 'userSpaceOnUse');
-          
-          // Adjust pattern size based on number of products
-          const products = land.food_products;
-          const numProducts = products.length;
-          
-          if (numProducts === 1) {
-            // Single product - smaller tiles
-            pattern.setAttribute('width', '50');
-            pattern.setAttribute('height', '50');
-            
-            const image = document.createElementNS('http://www.w3.org/2000/svg', 'image');
-            image.setAttributeNS('http://www.w3.org/1999/xlink', 'href', products[0].product_image);
-            image.setAttribute('width', '45');
-            image.setAttribute('height', '45');
-            image.setAttribute('x', '2.5');
-            image.setAttribute('y', '2.5');
-            image.setAttribute('opacity', '0.75');
-            image.setAttribute('preserveAspectRatio', 'xMidYMid slice');
-            pattern.appendChild(image);
-          } else if (numProducts === 2) {
-            // Two products - side by side
-            pattern.setAttribute('width', '100');
-            pattern.setAttribute('height', '50');
-            
-            products.forEach((product, idx) => {
-              const image = document.createElementNS('http://www.w3.org/2000/svg', 'image');
-              image.setAttributeNS('http://www.w3.org/1999/xlink', 'href', product.product_image);
-              image.setAttribute('width', '45');
-              image.setAttribute('height', '45');
-              image.setAttribute('x', idx * 50 + 2.5);
-              image.setAttribute('y', '2.5');
-              image.setAttribute('opacity', '0.75');
-              image.setAttribute('preserveAspectRatio', 'xMidYMid slice');
-              pattern.appendChild(image);
-            });
-          } else {
-            // Multiple products - grid layout
-            const cols = Math.ceil(Math.sqrt(numProducts));
-            const tileSize = 50;
-            pattern.setAttribute('width', cols * tileSize);
-            pattern.setAttribute('height', cols * tileSize);
-            
-            products.forEach((product, idx) => {
-              const row = Math.floor(idx / cols);
-              const col = idx % cols;
-              
-              const image = document.createElementNS('http://www.w3.org/2000/svg', 'image');
-              image.setAttributeNS('http://www.w3.org/1999/xlink', 'href', product.product_image);
-              image.setAttribute('width', '45');
-              image.setAttribute('height', '45');
-              image.setAttribute('x', col * tileSize + 2.5);
-              image.setAttribute('y', row * tileSize + 2.5);
-              image.setAttribute('opacity', '0.75');
-              image.setAttribute('preserveAspectRatio', 'xMidYMid slice');
-              pattern.appendChild(image);
-            });
-          }
-          
-          defs.appendChild(pattern);
-        }
-      });
-
-      patternsCreated.current = true;
-    }, 100);
-  };
-
-  useEffect(() => {
-    if (map && landMapData.length > 0) {
-      createPatterns();
-    }
-  }, [map, landMapData]);
-
-  return null;
+// stable color pick by id (so color doesn't change each render)
+const COLORS = [
+  "#1abc9c",
+  "#3498db",
+  "#9b59b6",
+  "#f39c12",
+  "#e74c3c",
+  "#2ecc71",
+  "#6b7280",
+  "#10b981",
+];
+function colorForId(id) {
+  if (!id && id !== 0) return COLORS[Math.floor(Math.random() * COLORS.length)];
+  return COLORS[id % COLORS.length];
 }
 
 // Center of polygon
@@ -172,6 +45,110 @@ const getCenter = (coords) => {
   return [latSum / coords.length, lngSum / coords.length];
 };
 
+// Component to add SVG patterns to the map for product image fills
+function SVGPatternDefs({ landMapData }) {
+  const map = useMap();
+  const patternsCreated = useRef({}); // track created patterns
+
+  useMapEvents({
+    load: () => createPatterns(),
+    zoomend: () => createPatterns(),
+    moveend: () => createPatterns()
+  });
+
+  const createPatterns = () => {
+    if (!map || !landMapData?.length) return;
+
+    // ensure an overlayPane svg exists
+    setTimeout(() => {
+      const overlayPane = map.getPanes()?.overlayPane;
+      if (!overlayPane) return;
+      const svgElement = overlayPane.querySelector("svg");
+      if (!svgElement) return;
+
+      let defs = svgElement.querySelector("defs");
+      if (!defs) {
+        defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
+        svgElement.insertBefore(defs, svgElement.firstChild);
+      }
+
+      landMapData.forEach((land) => {
+        // for each matched user that has food_products create a pattern id unique by map_id + user_id
+        (land.matched_lands || []).forEach((m) => {
+          const products = m.food_products || [];
+          if (!products.length) return;
+
+          const patternId = `pattern-map-${land.map_id}-user-${m.user_id}`;
+          if (patternsCreated.current[patternId]) return; // already created
+
+          const pattern = document.createElementNS("http://www.w3.org/2000/svg", "pattern");
+          pattern.setAttribute("id", patternId);
+          pattern.setAttribute("patternUnits", "userSpaceOnUse");
+          pattern.setAttribute("patternContentUnits", "userSpaceOnUse");
+
+          // layout logic: if single product smaller tile, if multiple grid
+          const num = products.length;
+          if (num === 1) {
+            pattern.setAttribute("width", "48");
+            pattern.setAttribute("height", "48");
+            const img = document.createElementNS("http://www.w3.org/2000/svg", "image");
+            img.setAttributeNS("http://www.w3.org/1999/xlink", "href", products[0].product_image);
+            img.setAttribute("width", "44");
+            img.setAttribute("height", "44");
+            img.setAttribute("x", "2");
+            img.setAttribute("y", "2");
+            img.setAttribute("opacity", "0.85");
+            img.setAttribute("preserveAspectRatio", "xMidYMid slice");
+            pattern.appendChild(img);
+          } else if (num === 2) {
+            pattern.setAttribute("width", "100");
+            pattern.setAttribute("height", "50");
+            products.forEach((p, idx) => {
+              const img = document.createElementNS("http://www.w3.org/2000/svg", "image");
+              img.setAttributeNS("http://www.w3.org/1999/xlink", "href", p.product_image);
+              img.setAttribute("width", "45");
+              img.setAttribute("height", "45");
+              img.setAttribute("x", idx * 50 + 2.5);
+              img.setAttribute("y", "2.5");
+              img.setAttribute("opacity", "0.85");
+              img.setAttribute("preserveAspectRatio", "xMidYMid slice");
+              pattern.appendChild(img);
+            });
+          } else {
+            const cols = Math.ceil(Math.sqrt(num));
+            const tile = 48;
+            pattern.setAttribute("width", cols * tile);
+            pattern.setAttribute("height", cols * tile);
+            products.forEach((p, idx) => {
+              const row = Math.floor(idx / cols);
+              const col = idx % cols;
+              const img = document.createElementNS("http://www.w3.org/2000/svg", "image");
+              img.setAttributeNS("http://www.w3.org/1999/xlink", "href", p.product_image);
+              img.setAttribute("width", "44");
+              img.setAttribute("height", "44");
+              img.setAttribute("x", col * tile + 2);
+              img.setAttribute("y", row * tile + 2);
+              img.setAttribute("opacity", "0.85");
+              img.setAttribute("preserveAspectRatio", "xMidYMid slice");
+              pattern.appendChild(img);
+            });
+          }
+
+          defs.appendChild(pattern);
+          patternsCreated.current[patternId] = true;
+        });
+      });
+    }, 80);
+  };
+
+  useEffect(() => {
+    if (map && landMapData?.length) createPatterns();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [map, landMapData]);
+
+  return null;
+}
+
 export default function LandMapPage() {
   const { setProgress, setAlertBox, setIsHideSidebarAndHeader } =
     useContext(MyContext);
@@ -183,6 +160,7 @@ export default function LandMapPage() {
     setIsHideSidebarAndHeader(false);
     window.scrollTo(0, 0);
     fetchLandMapData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchLandMapData = async () => {
@@ -218,216 +196,155 @@ export default function LandMapPage() {
 
       {landMapData.map((land) => {
         const center = getCenter(land.coordinates);
-        const randomColor = getRandomColor();
-        const hasProducts = land.food_products && land.food_products.length > 0;
+        const fillColor = colorForId(land.map_id);
+        // determine if any matched user has food_products
+        const matched = land.matched_lands || [];
+        const usersWithProducts = matched.filter((m) => (m.food_products && m.food_products.length > 0));
+        const hasProducts = usersWithProducts.length > 0;
 
-        // Create marker icon with product images
-        const productIconsHTML = land.food_products
-          ?.slice(0, 3)
-          .map(
-            (p) =>
-              `<img src="${p.product_image}" 
-                style="width:32px;height:32px;border-radius:50%;border:2px solid white;margin-left:-6px;box-shadow:0 2px 8px rgba(0,0,0,0.3);" 
-                alt="${p.product_name}" 
-                crossorigin="anonymous" />`
-          )
-          .join("") || "";
-
-        const multiProductIcon = L.divIcon({
-          html: `<div style="display:flex;align-items:center;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.3));">${productIconsHTML}</div>`,
-          className: "",
-          iconSize: [100, 50],
-          iconAnchor: [50, 25],
-        });
+        // create marker icon for product icons (show first user's products)
+        let multiProductIcon = null;
+        if (hasProducts) {
+          const productsForMarker = usersWithProducts[0].food_products.slice(0, 3);
+          const productIconsHTML = productsForMarker
+            .map(
+              (p) =>
+                `<img src="${p.product_image}" 
+                  style="width:32px;height:32px;border-radius:50%;border:2px solid white;margin-left:-6px;box-shadow:0 2px 8px rgba(0,0,0,0.3);" 
+                  alt="${p.product_name}" crossorigin="anonymous" />`
+            )
+            .join("") || "";
+          multiProductIcon = L.divIcon({
+            html: `<div style="display:flex;align-items:center;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.3));">${productIconsHTML}</div>`,
+            className: "",
+            iconSize: [100, 50],
+            iconAnchor: [50, 25],
+          });
+        }
 
         return (
-          <React.Fragment key={land.land_id}>
+          <React.Fragment key={land.map_id}>
             <Polygon
               positions={land.coordinates}
               pathOptions={{
-                color: randomColor,
-                weight: 3,
-                fillOpacity: 0.7,
+                color: fillColor,
+                weight: 2,
+                fillOpacity: 0.85,
                 fill: true,
-                fillColor: randomColor,
+                fillColor: fillColor,
               }}
               ref={(ref) => {
                 if (ref && hasProducts) {
-                  // Apply pattern fill after polygon is rendered
+                  // if there are multiple users with products, prefer the first user's pattern for fill
+                  const firstUser = usersWithProducts[0];
+                  const patternId = `pattern-map-${land.map_id}-user-${firstUser.user_id}`;
                   const element = ref._path;
                   if (element) {
-                    element.style.fill = `url(#pattern-${land.land_id})`;
-                    element.style.fillOpacity = '0.8';
+                    element.style.fill = `url(#${patternId})`;
+                    element.style.fillOpacity = '0.95';
+                  }
+                } else {
+                  // ensure plain color fill when no product
+                  const element = ref && ref._path;
+                  if (element) {
+                    element.style.fill = fillColor;
+                    element.style.fillOpacity = '0.7';
                   }
                 }
               }}
             >
               <Popup 
-                maxWidth={350} 
+                maxWidth={420} 
                 className="custom-popup"
                 closeButton={true}
                 autoClose={false}
               >
-                <div style={{ 
-                  padding: '10px',
-                  fontFamily: 'system-ui, -apple-system, sans-serif'
-                }}>
-                  {/* User Info */}
-                  <div style={{ 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    gap: '12px',
-                    marginBottom: '12px',
-                    paddingBottom: '12px',
-                    borderBottom: '2px solid #e5e7eb'
-                  }}>
-                    <img
-                      src={land.profile_image_url}
-                      alt={land.username}
-                      crossOrigin="anonymous"
-                      style={{ 
-                        width: '60px',
-                        height: '60px',
-                        borderRadius: '50%',
-                        border: '3px solid #3B82F6',
-                        objectFit: 'cover'
-                      }}
-                    />
-                    <div>
-                      <h4 style={{ 
-                        margin: '0 0 4px 0',
-                        fontSize: '1.1rem',
-                        fontWeight: '700',
-                        color: '#1F2937'
-                      }}>
-                        {land.username}
-                      </h4>
-                      <p style={{ 
-                        margin: 0,
-                        fontSize: '0.9rem',
-                        color: '#6B7280',
-                        fontWeight: '600'
-                      }}>
-                        📞 {land.mobile}
-                      </p>
-                    </div>
-                  </div>
+                <div style={{ padding: '10px', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
+                  {/* If there are matched users, list each user and their details */}
+                  {matched.length > 0 ? (
+                    matched.map((m, idx) => (
+                      <div key={m.user_id || idx} style={{ marginBottom: '14px', paddingBottom: '12px', borderBottom: idx !== matched.length - 1 ? '1px dashed #e5e7eb' : 'none' }}>
+                        {/* User header */}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '10px' }}>
+                          <img
+                            src={m.profile_image_url}
+                            alt={m.username}
+                            crossOrigin="anonymous"
+                            style={{ width: '56px', height: '56px', borderRadius: '50%', border: '3px solid #3B82F6', objectFit: 'cover' }}
+                          />
+                          <div>
+                            <h4 style={{ margin: 0, fontSize: '1rem', fontWeight: 700, color: '#1F2937' }}>{m.username}</h4>
+                            <p style={{ margin: 0, fontSize: '0.9rem', color: '#6B7280', fontWeight: 600 }}>📞 {m.mobile}</p>
+                          </div>
+                        </div>
 
-                  {/* Land Details */}
-                  <div style={{ 
-                    marginBottom: '12px',
-                    paddingBottom: '12px',
-                    borderBottom: '2px solid #e5e7eb'
-                  }}>
-                    <h5 style={{ 
-                      margin: '0 0 8px 0',
-                      fontSize: '1rem',
-                      fontWeight: '700',
-                      color: '#1F2937'
-                    }}>
-                      🏞️ {land.land_name}
-                    </h5>
-                    <div style={{ 
-                      display: 'grid',
-                      gridTemplateColumns: '1fr 1fr',
-                      gap: '6px',
-                      fontSize: '0.85rem',
-                      color: '#4B5563'
-                    }}>
-                      <div><strong>📍 District:</strong> {land.district}</div>
-                      <div><strong>🏘️ Village:</strong> {land.village}</div>
-                      <div><strong>📋 Survey:</strong> {land.survey_no}/{land.hissa_no}</div>
-                      <div><strong>📏 Size:</strong> {land.farm_size} Acres</div>
-                    </div>
-                  </div>
+                        {/* Land details for this matched user */}
+                        <div style={{ marginBottom: '8px' }}>
+                          <h5 style={{ margin: '0 0 8px 0', fontSize: '0.95rem', fontWeight: 700, color: '#1F2937' }}>
+                            🏞️ {m.land_name || `Land ${land.survey_no}/${land.hissa_no}`}
+                          </h5>
+                          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px', fontSize: '0.85rem', color: '#4B5563' }}>
+                            <div><strong>📍 District:</strong> {land.district}</div>
+                            <div><strong>🏘️ Village:</strong> {land.village}</div>
+                            <div><strong>📋 Survey:</strong> {land.survey_no}/{land.hissa_no}</div>
+                            <div><strong>📏 Size:</strong> {m.farm_size || land.area_acres} Acres</div>
+                          </div>
+                        </div>
 
-                  {/* Products */}
-                  {land.food_products && land.food_products.length > 0 && (
-                    <div>
-                      <h5 style={{ 
-                        margin: '0 0 10px 0',
-                        fontSize: '1rem',
-                        fontWeight: '700',
-                        color: '#1F2937'
-                      }}>
-                        🌱 Products ({land.food_products.length})
-                      </h5>
-                      <div style={{ 
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: '8px'
-                      }}>
-                        {land.food_products.map((product, idx) => (
-                          <div 
-                            key={idx}
-                            style={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: '10px',
-                              padding: '8px',
-                              backgroundColor: '#F9FAFB',
-                              borderRadius: '8px',
-                              border: '1px solid #E5E7EB'
-                            }}
-                          >
-                            <img
-                              src={product.product_image}
-                              alt={product.product_name}
-                              crossOrigin="anonymous"
-                              style={{
-                                width: '45px',
-                                height: '45px',
-                                borderRadius: '8px',
-                                objectFit: 'cover',
-                                border: '2px solid white',
-                                boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-                              }}
-                            />
-                            <div style={{ flex: 1 }}>
-                              <div style={{ 
-                                fontWeight: '700',
-                                fontSize: '0.9rem',
-                                color: '#1F2937',
-                                marginBottom: '2px'
-                              }}>
-                                {product.product_name}
-                              </div>
-                              <div style={{ 
-                                fontSize: '0.75rem',
-                                color: '#6B7280'
-                              }}>
-                                {product.category_name} • {product.subcategory_name}
-                              </div>
-                            </div>
-                            <div style={{
-                              backgroundColor: '#10B981',
-                              color: 'white',
-                              padding: '4px 10px',
-                              borderRadius: '12px',
-                              fontSize: '0.8rem',
-                              fontWeight: '700',
-                              whiteSpace: 'nowrap'
-                            }}>
-                              {product.acres} Acres
+                        {/* Products for this user (if any) */}
+                        {m.food_products && m.food_products.length > 0 ? (
+                          <div>
+                            <h5 style={{ margin: '0 0 10px 0', fontSize: '1rem', fontWeight: 700, color: '#1F2937' }}>🌱 Products ({m.food_products.length})</h5>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                              {m.food_products.map((product, pidx) => (
+                                <div key={pidx} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '8px', backgroundColor: '#F9FAFB', borderRadius: '8px', border: '1px solid #E5E7EB' }}>
+                                  <img src={product.product_image} alt={product.product_name} crossOrigin="anonymous" style={{ width: '45px', height: '45px', borderRadius: '8px', objectFit: 'cover', border: '2px solid white', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }} />
+                                  <div style={{ flex: 1 }}>
+                                    <div style={{ fontWeight: 700, fontSize: '0.9rem', color: '#1F2937', marginBottom: '2px' }}>{product.product_name}</div>
+                                    <div style={{ fontSize: '0.75rem', color: '#6B7280' }}>{product.category_name} • {product.subcategory_name}</div>
+                                  </div>
+                                  <div style={{ backgroundColor: '#10B981', color: 'white', padding: '4px 10px', borderRadius: '12px', fontSize: '0.8rem', fontWeight: 700, whiteSpace: 'nowrap' }}>{product.acres} Acres</div>
+                                </div>
+                              ))}
                             </div>
                           </div>
-                        ))}
+                        ) : (
+                          // No products for this matched user; explicitly mention none
+                          <div style={{ padding: '8px 0', color: '#6B7280', fontSize: '0.9rem' }}>
+                            This user has no food products listed for this land.
+                          </div>
+                        )}
                       </div>
+                    ))
+                  ) : (
+                    // No matched users at all: show land-only info
+                    <div>
+                      <h4 style={{ margin: '0 0 8px 0', fontSize: '1rem', fontWeight: 700, color: '#1F2937' }}>Land details</h4>
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px', fontSize: '0.9rem', color: '#4B5563' }}>
+                        <div><strong>📍 District:</strong> {land.district}</div>
+                        <div><strong>🏘️ Village:</strong> {land.village}</div>
+                        <div><strong>📋 Survey:</strong> {land.survey_no}/{land.hissa_no}</div>
+                        <div><strong>📏 Size:</strong> {land.area_acres} Acres</div>
+                      </div>
+                      <div style={{ marginTop: '10px', color: '#6B7280' }}>No matched user found for this land.</div>
                     </div>
                   )}
                 </div>
               </Popup>
             </Polygon>
 
-            {/* Marker with product icons */}
-            {land.food_products && land.food_products.length > 0 && (
+            {/* Permanent tooltip over polygon center showing survey/hissa */}
+            <Marker position={center} opacity={0} interactive={false}>
+              <Tooltip permanent direction="center" className="custom-tooltip-survey">
+                {land.survey_no}/{land.hissa_no}
+              </Tooltip>
+            </Marker>
+
+            {/* Marker with product icons for lands that have products */}
+            {hasProducts && multiProductIcon && (
               <Marker position={center} icon={multiProductIcon}>
-                <Tooltip 
-                  permanent 
-                  direction="top"
-                  className="custom-tooltip"
-                >
-                  {land.food_products.map((p) => p.product_name).join(", ")}
+                <Tooltip permanent direction="top" className="custom-tooltip">
+                  {usersWithProducts[0].food_products.map((p) => p.product_name).join(", ")}
                 </Tooltip>
               </Marker>
             )}
@@ -440,7 +357,7 @@ export default function LandMapPage() {
           background: #f0f0f0;
         }
         .custom-popup .leaflet-popup-content-wrapper {
-          border-radius: 16px;
+          border-radius: 12px;
           box-shadow: 0 8px 32px rgba(0,0,0,0.15);
           padding: 0;
         }
@@ -454,12 +371,9 @@ export default function LandMapPage() {
         }
         .custom-popup .leaflet-popup-close-button {
           color: #1F2937 !important;
-          font-size: 24px !important;
-          padding: 8px !important;
+          font-size: 22px !important;
+          padding: 6px !important;
           font-weight: bold !important;
-        }
-        .custom-popup .leaflet-popup-close-button:hover {
-          color: #EF4444 !important;
         }
         .custom-tooltip {
           background: white !important;
@@ -473,8 +387,14 @@ export default function LandMapPage() {
         .custom-tooltip::before {
           border-top-color: #3B82F6 !important;
         }
-        .leaflet-popup {
-          margin-bottom: 20px;
+        .custom-tooltip-survey {
+          background: rgba(255,255,255,0.95) !important;
+          border: 1px solid rgba(0,0,0,0.08) !important;
+          border-radius: 6px !important;
+          padding: 6px 8px !important;
+          font-weight: 700 !important;
+          font-size: 0.9rem !important;
+          color: #111827 !important;
         }
       `}</style>
     </MapContainer>

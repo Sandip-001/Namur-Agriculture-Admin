@@ -4,7 +4,7 @@ import { FaAngleRight, FaClipboardCheck, FaUsers } from "react-icons/fa6";
 import { MdDashboard, MdManageAccounts } from "react-icons/md";
 import { Link } from "react-router-dom";
 import { MyContext } from "../App";
-import { IoNotifications } from "react-icons/io5";
+import { IoMap, IoNotifications } from "react-icons/io5";
 import { RiAdvertisementFill, RiHistoryFill } from "react-icons/ri";
 import { useSelector } from "react-redux";
 
@@ -19,7 +19,7 @@ const pageAccessConfig = {
   Products: ["AddProduct", "ProductList", "ProductEnquiry"],
   Orders: ["OrderList"],
   Users: ["Users", "SellerProfile", "SellerProductList"],
-  Map: ["Map"],
+  Map: ["Map", "LandMapData"],
   News: ["AddNews", "NewsList"],
   Advertisement: [
     "AddAdvertisement",
@@ -309,15 +309,6 @@ const Sidebar = () => {
                   Product Enquiry
                 </Link>
               </li>
-              <li>
-                <Link
-                  to="/land-map"
-                  onClick={handleCloseSidebarOnMobile}
-                  style={linkStyle("Map", "map")}
-                >
-                  Map
-                </Link>
-              </li>
             </ul>
           </div>
         </li>
@@ -400,6 +391,49 @@ const Sidebar = () => {
                   style={linkStyle("CropCalendar", "CropCalendarList")}
                 >
                   Organize
+                </Link>
+              </li>
+            </ul>
+          </div>
+        </li>
+
+         {/* Map */}
+        <li style={linkStyle("Map")}>
+          <Button
+            className={`w-100 ${activeTab === 8 ? "active" : ""}`}
+            onClick={() => isOpenSubmenu(8)}
+            disabled={!hasAccess("CropCalendar")}
+          >
+            <span className="icon">
+              <IoMap />
+            </span>
+            Map
+            <span className="arrow">
+              <FaAngleRight />
+            </span>
+          </Button>
+          <div
+            className={`submenuWrapper ${
+              activeTab === 8 ? "colapse" : "colapsed"
+            }`}
+          >
+            <ul className="submenu">
+              <li>
+                <Link
+                  to="/land-map-list"
+                  onClick={handleCloseSidebarOnMobile}
+                  style={linkStyle("Map", "LandMapData")}
+                >
+                  land Map Data
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/land-map"
+                  onClick={handleCloseSidebarOnMobile}
+                  style={linkStyle("Map", "Map")}
+                >
+                  Map
                 </Link>
               </li>
             </ul>
