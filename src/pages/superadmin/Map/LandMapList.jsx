@@ -205,28 +205,23 @@ const LandMapList = () => {
               </Select>
             </FormControl>
           </Grid>
-
-          
         </Grid>
 
         {(district || taluk || village) && (
-           
-              <Button
-                variant="contained"
-                color="warning"
-                className="m-auto d-block mt-3"
-                
-                onClick={() => {
-                  setDistrict("");
-                  setTaluk("");
-                  setVillage("");
-                  setCurrentPage(1);
-                }}
-              >
-                Clear Filter
-              </Button>
-            
-          )}
+          <Button
+            variant="contained"
+            color="warning"
+            className="m-auto d-block mt-3"
+            onClick={() => {
+              setDistrict("");
+              setTaluk("");
+              setVillage("");
+              setCurrentPage(1);
+            }}
+          >
+            Clear Filter
+          </Button>
+        )}
 
         <div className="card shadow border-0 p-3 mt-4">
           <div className="table-responsive">
