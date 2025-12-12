@@ -4,8 +4,16 @@ import ResponsivePagination from "../../../components/Pagination";
 import Swal from "sweetalert2";
 import { MdDelete } from "react-icons/md";
 import { Link } from "react-router-dom";
-import { Button } from "@mui/material";
+import {
+  Button,
+  FormControl,
+  Grid,
+  InputLabel,
+  MenuItem,
+  Select,
+} from "@mui/material";
 import axiosInstance from "../../../utils/axiosInstance";
+import karnatakaData from "../../../data/karnataka_districts_taluks_villages.json";
 
 const LandMapList = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -15,6 +23,29 @@ const LandMapList = () => {
     useContext(MyContext);
 
   const [mapData, setMapData] = useState([]);
+  const [district, setDistrict] = useState("");
+  const [taluk, setTaluk] = useState("");
+  const [village, setVillage] = useState("");
+
+  const districtOptions = Object.keys(karnatakaData).map((d) => ({
+    label: d,
+    value: d,
+  }));
+
+  const talukOptions = district
+    ? Object.keys(karnatakaData[district] || {}).map((t) => ({
+        label: t,
+        value: t,
+      }))
+    : [];
+
+  const villageOptions =
+    district && taluk
+      ? (karnatakaData[district]?.[taluk] || []).map((v) => ({
+          label: v,
+          value: v,
+        }))
+      : [];
 
   useEffect(() => {
     setIsHideSidebarAndHeader(false);
@@ -40,10 +71,33 @@ const LandMapList = () => {
     }
   };
 
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const paginatedMapData = mapData.slice(startIndex, startIndex + itemsPerPage);
+  // 🔥 FILTER FUNCTION (case insensitive)
+  const filteredData = mapData.filter((item) => {
+    const d = item.district?.toLowerCase();
+    const t = item.taluk?.toLowerCase();
+    const v = item.village?.toLowerCase();
 
-  const totalPages = Math.ceil(mapData.length / itemsPerPage);
+    const fd = district.toLowerCase();
+    const ft = taluk.toLowerCase();
+    const fv = village.toLowerCase();
+
+    if (district && !taluk && !village) return d === fd;
+
+    if (district && taluk && !village) return d === fd && t === ft;
+
+    if (district && taluk && village) return d === fd && t === ft && v === fv;
+
+    return true;
+  });
+
+  // 🚀 PAGINATION LOGIC
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const paginatedMapData = filteredData.slice(
+    startIndex,
+    startIndex + itemsPerPage
+  );
 
   // 🚀 Delete Map Data API
   const handleDeleteClick = async (id) => {
@@ -78,10 +132,101 @@ const LandMapList = () => {
           <h5 className="mb-0">Map Data</h5>
           <div className="ms-auto d-flex align-items-center">
             <Link to={"/upload-land-map-data"}>
-              <Button className="btn-blue ms-3 ps-3 pe-3">Upload Map Data</Button>
+              <Button className="btn-blue ms-3 ps-3 pe-3">
+                Upload Map Data
+              </Button>
             </Link>
           </div>
         </div>
+
+        <Grid
+          container
+          spacing={2}
+          columns={{ xs: 3, sm: 3, md: 3, lg: 3 }}
+          className="mt-4"
+        >
+          <Grid item size={1}>
+            <FormControl fullWidth>
+              <InputLabel>District</InputLabel>
+              <Select
+                value={district}
+                label="District"
+                onChange={(e) => {
+                  setDistrict(e.target.value);
+                  setTaluk(""); // reset dependent fields
+                  setVillage("");
+                }}
+                required
+              >
+                {districtOptions.map((district) => (
+                  <MenuItem key={district.value} value={district.value}>
+                    {district.label}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Grid>
+
+          <Grid item size={1}>
+            <FormControl fullWidth disabled={!district}>
+              <InputLabel>Taluk</InputLabel>
+              <Select
+                value={taluk}
+                label="Taluk"
+                onChange={(e) => {
+                  setTaluk(e.target.value);
+                  setVillage("");
+                }}
+                required
+              >
+                {talukOptions.map((taluk) => (
+                  <MenuItem key={taluk.value} value={taluk.value}>
+                    {taluk.label}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Grid>
+
+          <Grid item size={1}>
+            <FormControl fullWidth disabled={!taluk}>
+              <InputLabel>Village</InputLabel>
+              <Select
+                value={village}
+                label="Village"
+                onChange={(e) => setVillage(e.target.value)}
+                required
+              >
+                {villageOptions.map((village) => (
+                  <MenuItem key={village.value} value={village.value}>
+                    {village.label}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Grid>
+
+          
+        </Grid>
+
+        {(district || taluk || village) && (
+           
+              <Button
+                variant="contained"
+                color="warning"
+                className="m-auto d-block mt-3"
+                
+                onClick={() => {
+                  setDistrict("");
+                  setTaluk("");
+                  setVillage("");
+                  setCurrentPage(1);
+                }}
+              >
+                Clear Filter
+              </Button>
+            
+          )}
 
         <div className="card shadow border-0 p-3 mt-4">
           <div className="table-responsive">

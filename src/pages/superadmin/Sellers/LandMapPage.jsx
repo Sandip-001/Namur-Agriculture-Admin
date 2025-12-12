@@ -7,7 +7,7 @@ import {
   Marker,
   Tooltip,
   useMap,
-  useMapEvents
+  useMapEvents,
 } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
@@ -37,7 +37,8 @@ function colorForId(id) {
 
 // Center of polygon
 const getCenter = (coords) => {
-  let latSum = 0, lngSum = 0;
+  let latSum = 0,
+    lngSum = 0;
   coords.forEach(([lat, lng]) => {
     latSum += lat;
     lngSum += lng;
@@ -53,7 +54,7 @@ function SVGPatternDefs({ landMapData }) {
   useMapEvents({
     load: () => createPatterns(),
     zoomend: () => createPatterns(),
-    moveend: () => createPatterns()
+    moveend: () => createPatterns(),
   });
 
   const createPatterns = () => {
@@ -81,7 +82,10 @@ function SVGPatternDefs({ landMapData }) {
           const patternId = `pattern-map-${land.map_id}-user-${m.user_id}`;
           if (patternsCreated.current[patternId]) return; // already created
 
-          const pattern = document.createElementNS("http://www.w3.org/2000/svg", "pattern");
+          const pattern = document.createElementNS(
+            "http://www.w3.org/2000/svg",
+            "pattern"
+          );
           pattern.setAttribute("id", patternId);
           pattern.setAttribute("patternUnits", "userSpaceOnUse");
           pattern.setAttribute("patternContentUnits", "userSpaceOnUse");
@@ -91,8 +95,15 @@ function SVGPatternDefs({ landMapData }) {
           if (num === 1) {
             pattern.setAttribute("width", "48");
             pattern.setAttribute("height", "48");
-            const img = document.createElementNS("http://www.w3.org/2000/svg", "image");
-            img.setAttributeNS("http://www.w3.org/1999/xlink", "href", products[0].product_image);
+            const img = document.createElementNS(
+              "http://www.w3.org/2000/svg",
+              "image"
+            );
+            img.setAttributeNS(
+              "http://www.w3.org/1999/xlink",
+              "href",
+              products[0].product_image
+            );
             img.setAttribute("width", "44");
             img.setAttribute("height", "44");
             img.setAttribute("x", "2");
@@ -104,8 +115,15 @@ function SVGPatternDefs({ landMapData }) {
             pattern.setAttribute("width", "100");
             pattern.setAttribute("height", "50");
             products.forEach((p, idx) => {
-              const img = document.createElementNS("http://www.w3.org/2000/svg", "image");
-              img.setAttributeNS("http://www.w3.org/1999/xlink", "href", p.product_image);
+              const img = document.createElementNS(
+                "http://www.w3.org/2000/svg",
+                "image"
+              );
+              img.setAttributeNS(
+                "http://www.w3.org/1999/xlink",
+                "href",
+                p.product_image
+              );
               img.setAttribute("width", "45");
               img.setAttribute("height", "45");
               img.setAttribute("x", idx * 50 + 2.5);
@@ -122,8 +140,15 @@ function SVGPatternDefs({ landMapData }) {
             products.forEach((p, idx) => {
               const row = Math.floor(idx / cols);
               const col = idx % cols;
-              const img = document.createElementNS("http://www.w3.org/2000/svg", "image");
-              img.setAttributeNS("http://www.w3.org/1999/xlink", "href", p.product_image);
+              const img = document.createElementNS(
+                "http://www.w3.org/2000/svg",
+                "image"
+              );
+              img.setAttributeNS(
+                "http://www.w3.org/1999/xlink",
+                "href",
+                p.product_image
+              );
               img.setAttribute("width", "44");
               img.setAttribute("height", "44");
               img.setAttribute("x", col * tile + 2);
@@ -155,6 +180,16 @@ export default function LandMapPage() {
 
   const [landMapData, setLandMapData] = useState([]);
   const [mapReady, setMapReady] = useState(false);
+  const [zoomLevel, setZoomLevel] = useState(14);
+
+  function ZoomWatcher({ setZoomLevel }) {
+    const map = useMapEvents({
+      zoomend: () => {
+        setZoomLevel(map.getZoom());
+      },
+    });
+    return null;
+  }
 
   useEffect(() => {
     setIsHideSidebarAndHeader(false);
@@ -181,16 +216,18 @@ export default function LandMapPage() {
   };
 
   return (
-    <MapContainer 
-      center={[16.4307, 77.2655]} 
-      zoom={14} 
+    <MapContainer
+      center={[16.4307, 77.2655]}
+      zoom={14}
       style={mapStyle}
       whenReady={() => setMapReady(true)}
     >
-      <TileLayer 
+      <TileLayer
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
       />
+
+      <ZoomWatcher setZoomLevel={setZoomLevel} />
 
       {mapReady && <SVGPatternDefs landMapData={landMapData} />}
 
@@ -199,21 +236,27 @@ export default function LandMapPage() {
         const fillColor = colorForId(land.map_id);
         // determine if any matched user has food_products
         const matched = land.matched_lands || [];
-        const usersWithProducts = matched.filter((m) => (m.food_products && m.food_products.length > 0));
+        const usersWithProducts = matched.filter(
+          (m) => m.food_products && m.food_products.length > 0
+        );
         const hasProducts = usersWithProducts.length > 0;
 
         // create marker icon for product icons (show first user's products)
         let multiProductIcon = null;
         if (hasProducts) {
-          const productsForMarker = usersWithProducts[0].food_products.slice(0, 3);
-          const productIconsHTML = productsForMarker
-            .map(
-              (p) =>
-                `<img src="${p.product_image}" 
+          const productsForMarker = usersWithProducts[0].food_products.slice(
+            0,
+            3
+          );
+          const productIconsHTML =
+            productsForMarker
+              .map(
+                (p) =>
+                  `<img src="${p.product_image}" 
                   style="width:32px;height:32px;border-radius:50%;border:2px solid white;margin-left:-6px;box-shadow:0 2px 8px rgba(0,0,0,0.3);" 
                   alt="${p.product_name}" crossorigin="anonymous" />`
-            )
-            .join("") || "";
+              )
+              .join("") || "";
           multiProductIcon = L.divIcon({
             html: `<div style="display:flex;align-items:center;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.3));">${productIconsHTML}</div>`,
             className: "",
@@ -241,76 +284,222 @@ export default function LandMapPage() {
                   const element = ref._path;
                   if (element) {
                     element.style.fill = `url(#${patternId})`;
-                    element.style.fillOpacity = '0.95';
+                    element.style.fillOpacity = "0.95";
                   }
                 } else {
                   // ensure plain color fill when no product
                   const element = ref && ref._path;
                   if (element) {
                     element.style.fill = fillColor;
-                    element.style.fillOpacity = '0.7';
+                    element.style.fillOpacity = "0.7";
                   }
                 }
               }}
             >
-              <Popup 
-                maxWidth={420} 
+              <Popup
+                maxWidth={420}
                 className="custom-popup"
                 closeButton={true}
                 autoClose={false}
               >
-                <div style={{ padding: '10px', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
+                <div
+                  style={{
+                    padding: "10px",
+                    fontFamily: "system-ui, -apple-system, sans-serif",
+                  }}
+                >
                   {/* If there are matched users, list each user and their details */}
                   {matched.length > 0 ? (
                     matched.map((m, idx) => (
-                      <div key={m.user_id || idx} style={{ marginBottom: '14px', paddingBottom: '12px', borderBottom: idx !== matched.length - 1 ? '1px dashed #e5e7eb' : 'none' }}>
+                      <div
+                        key={m.user_id || idx}
+                        style={{
+                          marginBottom: "14px",
+                          paddingBottom: "12px",
+                          borderBottom:
+                            idx !== matched.length - 1
+                              ? "1px dashed #e5e7eb"
+                              : "none",
+                        }}
+                      >
                         {/* User header */}
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '10px' }}>
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "12px",
+                            marginBottom: "10px",
+                          }}
+                        >
                           <img
                             src={m.profile_image_url}
                             alt={m.username}
                             crossOrigin="anonymous"
-                            style={{ width: '56px', height: '56px', borderRadius: '50%', border: '3px solid #3B82F6', objectFit: 'cover' }}
+                            style={{
+                              width: "56px",
+                              height: "56px",
+                              borderRadius: "50%",
+                              border: "3px solid #3B82F6",
+                              objectFit: "cover",
+                            }}
                           />
                           <div>
-                            <h4 style={{ margin: 0, fontSize: '1rem', fontWeight: 700, color: '#1F2937' }}>{m.username}</h4>
-                            <p style={{ margin: 0, fontSize: '0.9rem', color: '#6B7280', fontWeight: 600 }}>📞 {m.mobile}</p>
+                            <h4
+                              style={{
+                                margin: 0,
+                                fontSize: "1rem",
+                                fontWeight: 700,
+                                color: "#1F2937",
+                              }}
+                            >
+                              {m.username}
+                            </h4>
+                            <p
+                              style={{
+                                margin: 0,
+                                fontSize: "0.9rem",
+                                color: "#6B7280",
+                                fontWeight: 600,
+                              }}
+                            >
+                              📞 {m.mobile}
+                            </p>
                           </div>
                         </div>
 
                         {/* Land details for this matched user */}
-                        <div style={{ marginBottom: '8px' }}>
-                          <h5 style={{ margin: '0 0 8px 0', fontSize: '0.95rem', fontWeight: 700, color: '#1F2937' }}>
-                            🏞️ {m.land_name || `Land ${land.survey_no}/${land.hissa_no}`}
+                        <div style={{ marginBottom: "8px" }}>
+                          <h5
+                            style={{
+                              margin: "0 0 8px 0",
+                              fontSize: "0.95rem",
+                              fontWeight: 700,
+                              color: "#1F2937",
+                            }}
+                          >
+                            🏞️{" "}
+                            {m.land_name ||
+                              `Land ${land.survey_no}/${land.hissa_no}`}
                           </h5>
-                          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px', fontSize: '0.85rem', color: '#4B5563' }}>
-                            <div><strong>📍 District:</strong> {land.district}</div>
-                            <div><strong>🏘️ Village:</strong> {land.village}</div>
-                            <div><strong>📋 Survey:</strong> {land.survey_no}/{land.hissa_no}</div>
-                            <div><strong>📏 Size:</strong> {m.farm_size || land.area_acres} Acres</div>
+                          <div
+                            style={{
+                              display: "grid",
+                              gridTemplateColumns: "1fr 1fr",
+                              gap: "6px",
+                              fontSize: "0.85rem",
+                              color: "#4B5563",
+                            }}
+                          >
+                            <div>
+                              <strong>📍 District:</strong> {land.district}
+                            </div>
+                            <div>
+                              <strong>🏘️ Village:</strong> {land.village}
+                            </div>
+                            <div>
+                              <strong>📋 Survey:</strong> {land.survey_no}/
+                              {land.hissa_no}
+                            </div>
+                            <div>
+                              <strong>📏 Size:</strong>{" "}
+                              {m.farm_size || land.area_acres} Acres
+                            </div>
                           </div>
                         </div>
 
                         {/* Products for this user (if any) */}
                         {m.food_products && m.food_products.length > 0 ? (
                           <div>
-                            <h5 style={{ margin: '0 0 10px 0', fontSize: '1rem', fontWeight: 700, color: '#1F2937' }}>🌱 Products ({m.food_products.length})</h5>
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                            <h5
+                              style={{
+                                margin: "0 0 10px 0",
+                                fontSize: "1rem",
+                                fontWeight: 700,
+                                color: "#1F2937",
+                              }}
+                            >
+                              🌱 Products ({m.food_products.length})
+                            </h5>
+                            <div
+                              style={{
+                                display: "flex",
+                                flexDirection: "column",
+                                gap: "8px",
+                              }}
+                            >
                               {m.food_products.map((product, pidx) => (
-                                <div key={pidx} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '8px', backgroundColor: '#F9FAFB', borderRadius: '8px', border: '1px solid #E5E7EB' }}>
-                                  <img src={product.product_image} alt={product.product_name} crossOrigin="anonymous" style={{ width: '45px', height: '45px', borderRadius: '8px', objectFit: 'cover', border: '2px solid white', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }} />
+                                <div
+                                  key={pidx}
+                                  style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: "10px",
+                                    padding: "8px",
+                                    backgroundColor: "#F9FAFB",
+                                    borderRadius: "8px",
+                                    border: "1px solid #E5E7EB",
+                                  }}
+                                >
+                                  <img
+                                    src={product.product_image}
+                                    alt={product.product_name}
+                                    crossOrigin="anonymous"
+                                    style={{
+                                      width: "45px",
+                                      height: "45px",
+                                      borderRadius: "8px",
+                                      objectFit: "cover",
+                                      border: "2px solid white",
+                                      boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+                                    }}
+                                  />
                                   <div style={{ flex: 1 }}>
-                                    <div style={{ fontWeight: 700, fontSize: '0.9rem', color: '#1F2937', marginBottom: '2px' }}>{product.product_name}</div>
-                                    <div style={{ fontSize: '0.75rem', color: '#6B7280' }}>{product.category_name} • {product.subcategory_name}</div>
+                                    <div
+                                      style={{
+                                        fontWeight: 700,
+                                        fontSize: "0.9rem",
+                                        color: "#1F2937",
+                                        marginBottom: "2px",
+                                      }}
+                                    >
+                                      {product.product_name}
+                                    </div>
+                                    <div
+                                      style={{
+                                        fontSize: "0.75rem",
+                                        color: "#6B7280",
+                                      }}
+                                    >
+                                      {product.category_name} •{" "}
+                                      {product.subcategory_name}
+                                    </div>
                                   </div>
-                                  <div style={{ backgroundColor: '#10B981', color: 'white', padding: '4px 10px', borderRadius: '12px', fontSize: '0.8rem', fontWeight: 700, whiteSpace: 'nowrap' }}>{product.acres} Acres</div>
+                                  <div
+                                    style={{
+                                      backgroundColor: "#10B981",
+                                      color: "white",
+                                      padding: "4px 10px",
+                                      borderRadius: "12px",
+                                      fontSize: "0.8rem",
+                                      fontWeight: 700,
+                                      whiteSpace: "nowrap",
+                                    }}
+                                  >
+                                    {product.acres} Acres
+                                  </div>
                                 </div>
                               ))}
                             </div>
                           </div>
                         ) : (
                           // No products for this matched user; explicitly mention none
-                          <div style={{ padding: '8px 0', color: '#6B7280', fontSize: '0.9rem' }}>
+                          <div
+                            style={{
+                              padding: "8px 0",
+                              color: "#6B7280",
+                              fontSize: "0.9rem",
+                            }}
+                          >
                             This user has no food products listed for this land.
                           </div>
                         )}
@@ -319,14 +508,42 @@ export default function LandMapPage() {
                   ) : (
                     // No matched users at all: show land-only info
                     <div>
-                      <h4 style={{ margin: '0 0 8px 0', fontSize: '1rem', fontWeight: 700, color: '#1F2937' }}>Land details</h4>
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px', fontSize: '0.9rem', color: '#4B5563' }}>
-                        <div><strong>📍 District:</strong> {land.district}</div>
-                        <div><strong>🏘️ Village:</strong> {land.village}</div>
-                        <div><strong>📋 Survey:</strong> {land.survey_no}/{land.hissa_no}</div>
-                        <div><strong>📏 Size:</strong> {land.area_acres} Acres</div>
+                      <h4
+                        style={{
+                          margin: "0 0 8px 0",
+                          fontSize: "1rem",
+                          fontWeight: 700,
+                          color: "#1F2937",
+                        }}
+                      >
+                        Land details
+                      </h4>
+                      <div
+                        style={{
+                          display: "grid",
+                          gridTemplateColumns: "1fr 1fr",
+                          gap: "6px",
+                          fontSize: "0.9rem",
+                          color: "#4B5563",
+                        }}
+                      >
+                        <div>
+                          <strong>📍 District:</strong> {land.district}
+                        </div>
+                        <div>
+                          <strong>🏘️ Village:</strong> {land.village}
+                        </div>
+                        <div>
+                          <strong>📋 Survey:</strong> {land.survey_no}/
+                          {land.hissa_no}
+                        </div>
+                        <div>
+                          <strong>📏 Size:</strong> {land.area_acres} Acres
+                        </div>
                       </div>
-                      <div style={{ marginTop: '10px', color: '#6B7280' }}>No matched user found for this land.</div>
+                      <div style={{ marginTop: "10px", color: "#6B7280" }}>
+                        No matched user found for this land.
+                      </div>
                     </div>
                   )}
                 </div>
@@ -334,17 +551,25 @@ export default function LandMapPage() {
             </Polygon>
 
             {/* Permanent tooltip over polygon center showing survey/hissa */}
-            <Marker position={center} opacity={0} interactive={false}>
-              <Tooltip permanent direction="center" className="custom-tooltip-survey">
-                {land.survey_no}/{land.hissa_no}
-              </Tooltip>
-            </Marker>
+            {zoomLevel >= 16 && (
+              <Marker position={center} opacity={0} interactive={false}>
+                <Tooltip
+                  permanent
+                  direction="center"
+                  className="custom-tooltip-survey"
+                >
+                  {land.survey_no}/{land.hissa_no}
+                </Tooltip>
+              </Marker>
+            )}
 
             {/* Marker with product icons for lands that have products */}
-            {hasProducts && multiProductIcon && (
+            {hasProducts && multiProductIcon && zoomLevel >= 16 && (
               <Marker position={center} icon={multiProductIcon}>
                 <Tooltip permanent direction="top" className="custom-tooltip">
-                  {usersWithProducts[0].food_products.map((p) => p.product_name).join(", ")}
+                  {usersWithProducts[0].food_products
+                    .map((p) => p.product_name)
+                    .join(", ")}
                 </Tooltip>
               </Marker>
             )}
